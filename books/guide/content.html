@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Reader's Guide</title>
+</head>
+<body>
+<h1>The Reader's Guide</h1>
+
+<h2>Welcome to the library</h2>
+<p>This is a quiet place for your notes. Every subject lives on the shelf as its own book, and every book opens into the same reader, so once you know your way around one, you know them all.</p>
+<p>The reader stays out of your way. Its bars slide away as you read and come back when you scroll up, tap the middle of the page, or move your mouse to the top or bottom of the screen.</p>
+<div class="note">
+  <p><strong>Your reading is remembered.</strong> Close a book at any point and it reopens exactly where you stopped. The library's home page shows how far you've got in each subject and lets you jump straight back in.</p>
+</div>
+
+<h2>Finding your way</h2>
+<h3>Contents</h3>
+<p>Open the contents panel with the list icon at the top, or press <kbd>T</kbd>. Every chapter is listed with an estimate of how long it takes to read, and the chapter you're in is marked. Chapters you've already passed are slightly faded.</p>
+<h3>The progress bar</h3>
+<p>The bar along the bottom shows where you are in the whole book. The small ticks mark where each chapter begins. Hover over the bar to see which chapter sits at any point, then click or drag to go there.</p>
+<p>Next to it you'll see your percentage and how many minutes are left in the current chapter. If you'd rather not see the time, you can switch it off in the display settings.</p>
+
+<h2>Making it yours</h2>
+<p>Open the display settings with the <strong>Aa</strong> button, or press <kbd>A</kbd>. Everything you change applies to every book and is remembered next time.</p>
+<ul>
+  <li><strong>Theme.</strong> Paper for daylight, Sepia for long evenings, Sage for a softer green page, Dusk for low light and Night for true darkness. Auto follows your device's light or dark mode.</li>
+  <li><strong>Brightness.</strong> Dims the whole page, which is useful in a dark room even with a dark theme.</li>
+  <li><strong>Typeface.</strong> Book (Literata) is designed for long reading on screens. Classic is a traditional Garamond. Modern is a clean sans-serif. Legible is designed for maximum clarity.</li>
+  <li><strong>Text size, spacing and margins.</strong> Adjust until a line feels comfortable. Most readers settle on lines of about ten to fourteen words.</li>
+  <li><strong>Alignment and paragraphs.</strong> Choose justified text with indented paragraphs for a printed-book feel, or left-aligned, spaced paragraphs for notes.</li>
+</ul>
+<p>Changing any of these keeps your place: the paragraph you were reading stays at the top of the screen.</p>
+
+<h2>Turning pages</h2>
+<p>You can scroll as you would on any page, but you can also turn a whole screen at a time. Tap or click near the left or right edge of the page, or use the keyboard.</p>
+<table>
+  <thead>
+    <tr><th>Key</th><th>What it does</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><kbd>→</kbd> or <kbd>Space</kbd></td><td>Next page</td></tr>
+    <tr><td><kbd>←</kbd> or <kbd>Shift</kbd> + <kbd>Space</kbd></td><td>Previous page</td></tr>
+    <tr><td><kbd>T</kbd></td><td>Open or close the contents</td></tr>
+    <tr><td><kbd>/</kbd> or <kbd>S</kbd></td><td>Search in this book</td></tr>
+    <tr><td><kbd>B</kbd></td><td>Bookmark this page</td></tr>
+    <tr><td><kbd>A</kbd></td><td>Display settings</td></tr>
+    <tr><td><kbd>F</kbd></td><td>Focus mode: hide everything but the text</td></tr>
+    <tr><td><kbd>+</kbd> and <kbd>−</kbd></td><td>Larger or smaller text</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>Close whatever is open</td></tr>
+  </tbody>
+</table>
+
+<h2>Marking what matters</h2>
+<h3>Highlights</h3>
+<p>Select any passage and a small toolbar appears. Pick one of four colours to highlight it. Tap a highlight later to change its colour, copy it or remove it. All your highlights are collected in the contents panel under <em>Highlights</em>, so revision before an exam is one tap away.</p>
+<h3>Bookmarks</h3>
+<p>Press <kbd>B</kbd> or tap the ribbon icon to bookmark the page you're on. The ribbon fills in whenever a bookmarked page is on screen. Your bookmarks are listed in the contents panel with the chapter and a line of text, so you can tell them apart.</p>
+<h3>Looking things up</h3>
+<p>Select a single word and choose <em>Define</em> to see a short dictionary entry without leaving the page. Choose <em>Search</em> to find every other place that word or phrase appears in the book.</p>
+
+<h2>What notes can contain</h2>
+<p>Notes can include anything a well-made page can: headings, lists, tables, images, quotations and code. A few things get special treatment.</p>
+<h3>Formulas</h3>
+<p>Mathematical notation is typeset properly. For example, the price elasticity of demand is written as \( E_d = \dfrac{\%\,\Delta Q_d}{\%\,\Delta P} \), and a formula can also stand on its own line:</p>
+<p>\[ \text{GDP} = C + I + G + (X - M) \]</p>
+<h3>Footnotes</h3>
+<p>Small numbered links open as a pop-up note instead of sending you to the bottom of the page.<sup><a href="#fn1" id="fnref1">1</a></sup> Tap anywhere else to close it.</p>
+<h3>Self-test questions</h3>
+<p>Questions can hide their answers until you're ready:</p>
+<details>
+  <summary>What does the progress bar's tick mark show?</summary>
+  <p>The start of each chapter, so you can see how the book is divided and jump to any chapter.</p>
+</details>
+<blockquote>
+  <p>Quotations and key ideas are set apart like this, so they stand out when you skim a chapter.</p>
+</blockquote>
+
+<h2>How notes get here</h2>
+<p>Each subject's notes arrive as a single finished HTML file. Claude places it on the right book, fits it to the reader's typography and themes, and publishes the update. The library refreshes within about a minute.</p>
+<p>For the best results, a notes file should use:</p>
+<ol>
+  <li>One heading level for chapters (for example <code>&lt;h2&gt;</code>) and the next level for sections within them (<code>&lt;h3&gt;</code>). These become the contents.</li>
+  <li>Normal paragraphs, lists and tables rather than layouts built from boxes.</li>
+  <li><code>\( … \)</code> for formulas inside a sentence and <code>\[ … \]</code> for formulas on their own line.</li>
+</ol>
+<p>Colours, fonts and layouts from the original file are replaced by the reader's own, so every book feels like part of one library.</p>
+
+<h2>Privacy</h2>
+<p>This website is public: anyone with the link can read the notes. Keep anything private out of them.</p>
+<p>Your reading progress, highlights, bookmarks and settings are different. They're stored only in the browser you're using and are never sent anywhere. A different device or browser starts fresh.</p>
+
+<hr>
+
+<section class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn1"><p>Like this one. Footnotes are a good home for sources, side remarks and examples that would interrupt the main text. <a href="#fnref1" role="doc-backlink">↩</a></p></li>
+  </ol>
+</section>
+</body>
+</html>

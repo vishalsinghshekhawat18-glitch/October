@@ -1,3 +1,0 @@
-- [Home](/)
-- **Economics**
-  - [Overview](economics/)

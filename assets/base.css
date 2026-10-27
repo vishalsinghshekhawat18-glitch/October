@@ -1,0 +1,243 @@
+/* Shared tokens, themes and book covers for the library and the reader. */
+
+:root {
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', SFMono-Regular, Menlo, Consolas, monospace;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --radius: 14px;
+}
+
+/* Themes. Paper is the default; the others are chosen in the reader or on the home page. */
+:root,
+:root[data-theme="paper"] {
+  --bg: #faf7f1;
+  --surface: #fffdf9;
+  --surface-2: #f2ede3;
+  --ink: #24201a;
+  --ink-2: #4a443b;
+  --muted: #877f72;
+  --line: #e5ddcf;
+  --accent: #9b5a2c;
+  --accent-ink: #fffaf3;
+  --shadow: 40 28 12;
+  --sel: rgba(155, 90, 44, .2);
+  --hl-yellow: rgba(247, 205, 70, .48);
+  --hl-green: rgba(126, 194, 110, .42);
+  --hl-blue: rgba(110, 165, 230, .40);
+  --hl-pink: rgba(236, 128, 162, .40);
+  --search: rgba(255, 176, 32, .38);
+  --search-cur: rgba(255, 128, 0, .62);
+  color-scheme: light;
+}
+
+:root[data-theme="sepia"] {
+  --bg: #f4e8d0;
+  --surface: #f9efdc;
+  --surface-2: #ecdcbd;
+  --ink: #45341f;
+  --ink-2: #5e4a32;
+  --muted: #8a7558;
+  --line: #e0cda9;
+  --accent: #8c451a;
+  --accent-ink: #fff6e8;
+  --shadow: 70 45 15;
+  --sel: rgba(140, 69, 26, .2);
+  color-scheme: light;
+}
+
+:root[data-theme="sage"] {
+  --bg: #e9eee4;
+  --surface: #f2f5ee;
+  --surface-2: #dde5d6;
+  --ink: #232d26;
+  --ink-2: #3c4a40;
+  --muted: #66746a;
+  --line: #cfd9c8;
+  --accent: #476b4c;
+  --accent-ink: #f4f8f1;
+  --shadow: 25 40 28;
+  --sel: rgba(71, 107, 76, .2);
+  color-scheme: light;
+}
+
+:root[data-theme="dusk"] {
+  --bg: #29282c;
+  --surface: #323136;
+  --surface-2: #3a393f;
+  --ink: #e6e0d6;
+  --ink-2: #cfc8bc;
+  --muted: #9d968b;
+  --line: #45434a;
+  --accent: #dcaa6e;
+  --accent-ink: #29282c;
+  --shadow: 0 0 0;
+  --sel: rgba(220, 170, 110, .25);
+  --hl-yellow: rgba(214, 176, 60, .38);
+  --hl-green: rgba(110, 170, 100, .36);
+  --hl-blue: rgba(100, 145, 210, .38);
+  --hl-pink: rgba(210, 110, 145, .36);
+  --search: rgba(230, 160, 40, .35);
+  --search-cur: rgba(240, 130, 30, .6);
+  color-scheme: dark;
+}
+
+:root[data-theme="night"] {
+  --bg: #050505;
+  --surface: #111111;
+  --surface-2: #1a1a1a;
+  --ink: #bdb6aa;
+  --ink-2: #a39d92;
+  --muted: #736d65;
+  --line: #262524;
+  --accent: #c9975a;
+  --accent-ink: #050505;
+  --shadow: 0 0 0;
+  --sel: rgba(201, 151, 90, .25);
+  --hl-yellow: rgba(190, 150, 40, .34);
+  --hl-green: rgba(90, 150, 80, .34);
+  --hl-blue: rgba(80, 125, 190, .36);
+  --hl-pink: rgba(190, 90, 125, .34);
+  --search: rgba(210, 140, 30, .32);
+  --search-cur: rgba(230, 120, 20, .55);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .45s var(--ease), color .45s var(--ease);
+}
+
+::selection { background: var(--sel); }
+
+button { font: inherit; color: inherit; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Book covers, generated from the colours in subjects.json. */
+.cover {
+  container-type: inline-size;
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 3px 10px 10px 3px;
+  background:
+    radial-gradient(120% 70% at 85% 0%, color-mix(in srgb, var(--c1) 55%, white) 0%, transparent 60%),
+    linear-gradient(165deg, var(--c1), var(--c2));
+  color: var(--cink);
+  overflow: hidden;
+  box-shadow:
+    inset 8px 0 10px -6px rgba(0, 0, 0, .5),
+    inset -1px 0 0 rgba(255, 255, 255, .14),
+    0 1px 2px rgba(0, 0, 0, .14),
+    0 20px 34px -16px rgba(0, 0, 0, .55);
+  transition: transform .55s var(--ease), box-shadow .55s var(--ease);
+}
+
+.cover::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 7%;
+  width: 1px;
+  background: rgba(255, 255, 255, .2);
+  box-shadow: 2px 0 0 rgba(0, 0, 0, .12);
+}
+
+.cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .22;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Padding lives on an inner layer so it scales with the cover, not with the cover's container. */
+.cover-in {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 13cqi 11cqi 11cqi 17cqi;
+}
+
+.cover-no {
+  font: 600 5cqi/1 var(--font-ui);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+
+.cover-emblem {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  opacity: .92;
+}
+
+.cover-emblem svg {
+  width: 44cqi;
+  height: auto;
+  display: block;
+}
+
+.cover-rule {
+  width: 22cqi;
+  height: 1px;
+  background: currentColor;
+  opacity: .55;
+  margin-bottom: 5cqi;
+}
+
+.cover-title {
+  font-family: var(--font-display);
+  font-size: 12.5cqi;
+  line-height: 1.04;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  font-variation-settings: 'opsz' 96;
+  text-wrap: balance;
+}
+
+.cover-sub {
+  margin-top: 3.5cqi;
+  font: 500 5.4cqi/1.3 var(--font-ui);
+  opacity: .78;
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
