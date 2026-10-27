@@ -235,6 +235,7 @@ const doc = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <title>The Economics Book</title>
 </head>
 <body>
