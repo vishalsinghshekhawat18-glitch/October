@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Notes</title>
+  <meta name="description" content="Personal study notes for all subjects">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/themes/vue.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <style>
+    :root { --theme-color: #2f6f9f; }
+    .markdown-section { max-width: 860px; }
+    .markdown-section table { display: table; width: 100%; }
+    .note-meta { color: #777; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <div id="app">Loading notes…</div>
+  <script>
+    window.$docsify = {
+      name: 'My Notes',
+      repo: 'https://github.com/vishalsinghshekhawat18-glitch/October',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      search: {
+        placeholder: 'Search notes…',
+        noData: 'No matching notes',
+        depth: 3
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-katex@1.4.4/dist/docsify-katex.js"></script>
+</body>
+</html>
