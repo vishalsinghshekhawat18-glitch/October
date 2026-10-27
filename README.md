@@ -22,10 +22,19 @@ There is no build step. GitHub Pages serves the files as they are.
 2. In `subjects.json`, add or update the subject's entry and set `"status": "ready"` and `"updated"` to today's date.
 3. Commit and push. The site updates in about a minute.
 
-The reader keeps the notes' structure (headings, lists, tables, images, formulas, footnotes) and replaces their colours and fonts with the reader's own. `<h2>` headings (or whichever level is highest) become chapters in the contents.
+The reader keeps the notes' structure (headings, lists, tables, images, formulas, footnotes) and replaces their colours and fonts with the reader's own. The highest heading level becomes chapters in the contents. In a book split into parts, mark part headings with `class="rd-part"`; chapters are then the next level down, and the contents shows parts › chapters › sections.
 
 Cover emblems available in `subjects.json`: `book`, `graph`, `sigma`, `atom`, `flask`, `leaf`, `globe`, `quill`, `scales`, `compass`, `columns`, `code`.
 
 ## Privacy
 
 The site is public. Reading progress, highlights, bookmarks and settings are stored only in the reader's own browser.
+
+## Re-importing a book from its source HTML
+
+`tools/convert-economics.mjs` turns the Economics source file into `books/economics/` (content plus extracted images). It drops the editor-only "Agent Notes", unpacks the Revision File, turns callout boxes into reader callouts, and makes every exam and quick-recall question a card with a hidden answer. It needs Node.js and `cheerio`:
+
+```
+npm install cheerio@1.0.0
+node tools/convert-economics.mjs <source.html> books/economics
+```

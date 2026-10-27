@@ -117,7 +117,8 @@
         if (name.startsWith('on')) {
           el.removeAttribute(attr.name);
         } else if (name === 'style') {
-          const kept = [...el.style].filter(p => keepStyle.test(p)).map(p => `${p}:${el.style.getPropertyValue(p)}`).join(';');
+          const keep = p => keepStyle.test(p) || (el.tagName === 'IMG' && p === 'width');
+          const kept = [...el.style].filter(keep).map(p => `${p}:${el.style.getPropertyValue(p)}`).join(';');
           if (kept) el.setAttribute('style', kept); else el.removeAttribute('style');
         } else if (name === 'href' || name === 'src' || name === 'xlink:href') {
           const v = attr.value.trim();
@@ -196,9 +197,14 @@
   }
 
   // ---------- Structure: headings, blocks, word counts ----------
-  let heads = [], tocHeads = [], chapters = [], topLevel = 2;
+  let heads = [], tocHeads = [], chapters = [], parts = [], topLevel = 2, chapterLevel = 2, hasParts = false;
   let blocks = [], cum = [], words = [], totalWords = 0;
   let sectionOf = [], chapterOf = [], chapterEnd = [];
+  let tocDepth = [], tocParent = [];
+  const tocOpen = new Set();
+
+  // A heading's name in contents, bars and lists; data-toc lets a book give a cleaner label.
+  const label = h => (h.dataset.toc || h.textContent).replace(/\s+/g, ' ').trim();
 
   function slugify(s) {
     return s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
@@ -215,10 +221,14 @@
       h.id = id;
       used.add(id);
     });
+    // Books split into parts (headings marked .rd-part) have chapters one level below them.
     const levels = heads.map(h => +h.tagName[1]);
     topLevel = levels.length ? Math.min(...levels) : 2;
-    tocHeads = heads.filter(h => +h.tagName[1] <= topLevel + 1);
-    chapters = heads.filter(h => +h.tagName[1] === topLevel);
+    hasParts = heads.some(h => h.classList.contains('rd-part'));
+    chapterLevel = hasParts ? topLevel + 1 : topLevel;
+    parts = hasParts ? heads.filter(h => +h.tagName[1] === topLevel) : [];
+    tocHeads = heads.filter(h => +h.tagName[1] <= chapterLevel + 1);
+    chapters = heads.filter(h => +h.tagName[1] === chapterLevel);
     chapters.forEach(h => h.classList.add('rd-ch'));
 
     const BLOCK = 'p, li, h1, h2, h3, h4, h5, h6, pre, blockquote, figure, img, .rd-table, hr, dt, dd, .katex-display, details, aside';
@@ -256,8 +266,13 @@
       return next === -1 ? totalWords : cum[next];
     });
 
+    const mainParts = parts.filter(h => !h.classList.contains('rd-appendix'));
+    const appendices = parts.filter(h => h.classList.contains('rd-appendix'));
+    const mainChapters = chapters.filter(h => !h.classList.contains('rd-rev'));
     $('#tpMeta').innerHTML = [
-      chapters.length ? `<span>${chapters.length} ${chapters.length === 1 ? 'chapter' : 'chapters'}</span>` : '',
+      mainParts.length ? `<span>${mainParts.length} parts</span>` : '',
+      mainChapters.length ? `<span>${mainChapters.length} ${mainChapters.length === 1 ? 'chapter' : 'chapters'}</span>` : '',
+      appendices.map(h => `<span>${esc(label(h))}</span>`).join(''),
       `<span>about ${O.fmtMinutes(totalWords / WPM)} of reading</span>`,
       subject.updated ? `<span>updated ${esc(new Date(subject.updated).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</span>` : '',
     ].join('');
@@ -376,9 +391,10 @@
 
     const before = beforeContent();
     const si = before ? -1 : sectionOf[p.block];
-    const sectionName = si >= 0 ? tocHeads[si].textContent.trim() : '';
+    const sectionName = si >= 0 ? label(tocHeads[si]) : '';
+    const chIdx = before ? -1 : chapterOf[p.block];
     $('#locSection').textContent = sectionName || (before ? 'Title page' : subject.title);
-    $('#barSection').textContent = sectionName;
+    $('#barSection').textContent = chIdx >= 0 ? label(chapters[chIdx]) : sectionName;
 
     const read = before ? 0 : wordsRead(p);
     const bookLeft = Math.max(0, totalWords - read) / WPM;
@@ -390,10 +406,7 @@
     }
     $('#locTime').textContent = timeText;
 
-    $$('.rd-toc-item', drawer).forEach((b, i) => {
-      b.classList.toggle('is-current', i === si);
-      b.classList.toggle('is-read', si >= 0 && i < si);
-    });
+    if (si !== currentToc) markTocPosition(si);
     $('#dhPct') && ($('#dhPct').textContent = pctText);
     $('#dhBar') && ($('#dhBar').style.width = (pct * 100).toFixed(1) + '%');
 
@@ -443,12 +456,26 @@
   }
 
   // ---------- Contents, ticks, drawer ----------
+  // The contents is a collapsible tree: parts › chapters › sections, opened along the reader's position.
+  let currentToc = -2;
+
   function renderToc() {
     const list = $('#tocList');
     if (!tocHeads.length) {
       list.innerHTML = '<li class="rd-empty">This book has no chapters yet.</li>';
       return;
     }
+    const base = Math.min(...tocHeads.map(h => +h.tagName[1]));
+    tocDepth = tocHeads.map(h => +h.tagName[1] - base);
+    const stack = [];
+    tocParent = tocHeads.map((h, i) => {
+      while (stack.length && tocDepth[stack[stack.length - 1]] >= tocDepth[i]) stack.pop();
+      const parent = stack.length ? stack[stack.length - 1] : -1;
+      stack.push(i);
+      return parent;
+    });
+    const hasKids = new Set(tocParent.filter(p => p >= 0));
+
     const blockIndex = new Map(blocks.map((b, i) => [b, i]));
     const startOf = h => {
       if (blockIndex.has(h)) return cum[blockIndex.get(h)];
@@ -456,16 +483,56 @@
       return i >= 0 ? cum[i] : 0;
     };
     const starts = chapters.map(startOf);
+    const chapterMins = new Map(chapters.map((h, ci) => [h, ((ci + 1 < starts.length ? starts[ci + 1] : totalWords) - starts[ci]) / WPM]));
+    const chev = icon('<path d="m9 6 6 6-6 6"/>', 16);
+
     list.innerHTML = tocHeads.map((h, i) => {
-      const lvl = Math.min(1, +h.tagName[1] - topLevel);
-      const ci = chapters.indexOf(h);
-      const mins = ci >= 0 ? O.fmtMinutes(((ci + 1 < starts.length ? starts[ci + 1] : totalWords) - starts[ci]) / WPM) : '';
-      return `<li><button class="rd-toc-item lvl-${lvl}" data-i="${i}"><span class="rd-toc-text">${esc(h.textContent.trim())}</span>${mins ? `<span class="rd-toc-min">${mins}</span>` : ''}</button></li>`;
+      let meta = '';
+      if (chapterMins.has(h)) meta = O.fmtMinutes(chapterMins.get(h));
+      else if (parts.includes(h)) {
+        const n = tocParent.filter(p => p === i).length;
+        meta = `${n} ${n === 1 ? 'chapter' : 'chapters'}`;
+      }
+      return `<li data-i="${i}"${tocDepth[i] > 0 ? ' hidden' : ''}>
+        <div class="rd-toc-row" style="--d:${tocDepth[i]}">
+          ${hasKids.has(i) ? `<button class="rd-toc-tog" data-tog="${i}" aria-expanded="false" aria-label="Show contents of ${esc(label(h))}">${chev}</button>` : '<span class="rd-toc-tog"></span>'}
+          <button class="rd-toc-item lvl-${Math.min(2, tocDepth[i])}${parts.includes(h) ? ' is-part' : ''}" data-i="${i}"><span class="rd-toc-text">${esc(label(h))}</span>${meta ? `<span class="rd-toc-min">${meta}</span>` : ''}</button>
+        </div>
+      </li>`;
     }).join('');
   }
 
+  function applyTocOpen() {
+    const visible = [];
+    $$('#tocList > li[data-i]').forEach(li => {
+      const i = +li.dataset.i;
+      const p = tocParent[i];
+      visible[i] = p < 0 || (visible[p] && tocOpen.has(p));
+      li.hidden = !visible[i];
+      const tog = li.querySelector('[data-tog]');
+      if (tog) tog.setAttribute('aria-expanded', String(tocOpen.has(i)));
+    });
+  }
+
+  function openTocTo(si) {
+    for (let p = si; p >= 0; p = tocParent[p]) tocOpen.add(p);
+    applyTocOpen();
+  }
+
+  function markTocPosition(si) {
+    currentToc = si;
+    const path = new Set();
+    for (let p = si; p >= 0; p = tocParent[p]) path.add(p);
+    $$('#tocList .rd-toc-item').forEach(b => {
+      const i = +b.dataset.i;
+      b.classList.toggle('is-current', i === si);
+      b.classList.toggle('is-path', path.has(i) && i !== si);
+      b.classList.toggle('is-read', si >= 0 && i < si && !path.has(i));
+    });
+  }
+
   function renderTicks() {
-    $('#ticks').innerHTML = chapters.slice(1).map(h => {
+    $('#ticks').innerHTML = (hasParts ? parts : chapters).slice(1).map(h => {
       const i = blocks.findIndex(b => b === h || b.contains(h));
       return i >= 0 ? `<i style="left:${(cum[i] / totalWords * 100).toFixed(2)}%"></i>` : '';
     }).join('');
@@ -483,8 +550,13 @@
     drawer.classList.add('is-open');
     drawer.setAttribute('aria-hidden', 'false');
     scrim.classList.add('is-on');
+    if (currentToc >= 0) openTocTo(currentToc);
+    // Scroll only the list (scrollIntoView would also move the page and the drawer sideways).
     const cur = $('.rd-toc-item.is-current', drawer);
-    if (cur) cur.scrollIntoView({ block: 'center' });
+    const list = $('.rd-drawer-body', drawer);
+    if (cur && !$('#tocList').hidden) {
+      list.scrollTop += cur.getBoundingClientRect().top - list.getBoundingClientRect().top - list.clientHeight / 2;
+    }
   }
 
   function closeDrawer() {
@@ -525,7 +597,7 @@
         block: p.block,
         frac: +p.frac.toFixed(4),
         pct: +currentPct(p).toFixed(4),
-        section: si >= 0 ? tocHeads[si].textContent.trim() : subject.title,
+        section: si >= 0 ? label(tocHeads[si]) : subject.title,
         snippet: blocks[p.block].textContent.trim().replace(/\s+/g, ' ').slice(0, 140),
         created: Date.now(),
       });
@@ -649,7 +721,7 @@
     const si = bi >= 0 ? sectionOf[bi] : -1;
     B.highlights.push({
       id: Date.now().toString(36), start, end, text: TM.text.slice(start, end), color,
-      section: si >= 0 ? tocHeads[si].textContent.trim() : '', created: Date.now(),
+      section: si >= 0 ? label(tocHeads[si]) : '', created: Date.now(),
     });
     O.save();
     renderHighlights();
@@ -1042,6 +1114,13 @@
     drawer.addEventListener('click', e => {
       const tab = e.target.closest('.rd-tab');
       if (tab) return selectTab(tab.dataset.tab);
+      const tog = e.target.closest('[data-tog]');
+      if (tog) {
+        const i = +tog.dataset.tog;
+        if (tocOpen.has(i)) tocOpen.delete(i); else tocOpen.add(i);
+        applyTocOpen();
+        return;
+      }
       const item = e.target.closest('.rd-toc-item');
       if (item) {
         closeDrawer();
@@ -1135,7 +1214,7 @@
       const p = posFromPct(pct);
       const si = sectionOf[p.block];
       const tip = $('#trackTip');
-      tip.textContent = `${Math.round(pct * 100)}%${si >= 0 ? ' · ' + tocHeads[si].textContent.trim() : ''}`;
+      tip.textContent = `${Math.round(pct * 100)}%${si >= 0 ? ' · ' + label(tocHeads[si]) : ''}`;
       tip.style.left = (pct * 100) + '%';
       if (dragging) restorePos(p);
     });
@@ -1242,7 +1321,7 @@
         const si = beforeContent() ? -1 : sectionOf[p.block];
         B.pos = {
           block: p.block, frac: +p.frac.toFixed(4), pct: +pct.toFixed(4),
-          section: si >= 0 ? tocHeads[si].textContent.trim() : '',
+          section: si >= 0 ? label(tocHeads[si]) : '',
           minutesLeft: Math.round(Math.max(0, totalWords - (beforeContent() ? 0 : wordsRead(p))) / WPM), at: Date.now(),
         };
       }

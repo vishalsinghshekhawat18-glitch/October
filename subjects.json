@@ -19,9 +19,9 @@
       "slug": "economics",
       "title": "Economics",
       "subtitle": "Markets, money and choices",
-      "status": "soon",
+      "status": "ready",
       "file": "books/economics/content.html",
-      "updated": "",
+      "updated": "2026-10-27",
       "cover": { "from": "#2f5f58", "to": "#15302d", "ink": "#efe5cc", "emblem": "graph" }
     }
   ]
