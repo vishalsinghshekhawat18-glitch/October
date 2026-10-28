@@ -30,7 +30,7 @@
   const prefs = O.data.prefs;
   const DEFAULTS = {
     font: 'literata', size: 19, leading: 'comfy', measure: 'medium', align: 'left', para: 'spaced',
-    brightness: 100, tapTurn: true, dropcaps: true, showTime: true,
+    brightness: 100, tapTurn: true, dropcaps: true, showTime: true, mustOnly: false,
   };
   const FONTS = {
     literata: { label: 'Book', stack: "'Literata', Georgia, serif" },
@@ -52,6 +52,7 @@
     root.dataset.align = prefs.align;
     root.dataset.para = prefs.para;
     root.dataset.dropcaps = prefs.dropcaps ? 'on' : 'off';
+    root.dataset.mustonly = prefs.mustOnly ? 'on' : 'off';
     $('#dim').style.opacity = ((100 - prefs.brightness) / 100 * .78).toFixed(3);
     $('#locTime').hidden = !prefs.showTime;
     O.applyTheme();
@@ -140,7 +141,7 @@
     // The title page already shows the subject's name, so drop a single leading h1.
     const h1s = src.querySelectorAll('h1');
     const firstHeading = src.querySelector('h1, h2, h3, h4, h5, h6');
-    if (h1s.length === 1 && firstHeading === h1s[0]) h1s[0].remove();
+    if (h1s.length === 1 && firstHeading === h1s[0] && !h1s[0].classList.contains('rd-part')) h1s[0].remove();
 
     content.replaceChildren(...src.childNodes);
 
@@ -199,12 +200,16 @@
   // ---------- Structure: headings, blocks, word counts ----------
   let heads = [], tocHeads = [], chapters = [], parts = [], topLevel = 2, chapterLevel = 2, hasParts = false;
   let blocks = [], cum = [], words = [], totalWords = 0;
+  let rawWords = [], hideable = [], vis = [], hasStars = false;
   let sectionOf = [], chapterOf = [], chapterEnd = [];
   let tocDepth = [], tocParent = [];
   const tocOpen = new Set();
+  const tocUserOpen = new Set();
 
   // A heading's name in contents, bars and lists; data-toc lets a book give a cleaner label.
   const label = h => (h.dataset.toc || h.textContent).replace(/\s+/g, ' ').trim();
+  // What a book calls its chapters ("unit" in subjects.json, e.g. "section").
+  const units = n => `${n} ${subject.unit || 'chapter'}${n === 1 ? '' : 's'}`;
 
   function slugify(s) {
     return s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
@@ -241,13 +246,9 @@
     if (!blocks.length) blocks = [...content.children];
     if (!blocks.length) blocks = [content];
 
-    totalWords = 0;
-    blocks.forEach((b, i) => {
-      cum[i] = totalWords;
-      words[i] = (b.textContent.match(/\S+/g) || []).length;
-      totalWords += words[i];
-    });
-    totalWords = Math.max(totalWords, 1);
+    rawWords = blocks.map(b => (b.textContent.match(/\S+/g) || []).length);
+    hideable = blocks.map(b => !!b.closest('.rd-card.is-good'));
+    hasStars = !!content.querySelector('.rd-card');
 
     let s = -1, c = -1;
     const tocSet = new Map(tocHeads.map((h, i) => [h, i]));
@@ -261,17 +262,14 @@
       sectionOf[i] = s;
       chapterOf[i] = c;
     });
-    chapterEnd = chapters.map((h, ci) => {
-      const next = blocks.findIndex(( _, i) => chapterOf[i] === ci + 1);
-      return next === -1 ? totalWords : cum[next];
-    });
+    measure();
 
     const mainParts = parts.filter(h => !h.classList.contains('rd-appendix'));
     const appendices = parts.filter(h => h.classList.contains('rd-appendix'));
     const mainChapters = chapters.filter(h => !h.classList.contains('rd-rev'));
     $('#tpMeta').innerHTML = [
-      mainParts.length ? `<span>${mainParts.length} parts</span>` : '',
-      mainChapters.length ? `<span>${mainChapters.length} ${mainChapters.length === 1 ? 'chapter' : 'chapters'}</span>` : '',
+      mainParts.length > 1 ? `<span>${mainParts.length} parts</span>` : '',
+      mainChapters.length ? `<span>${units(mainChapters.length)}</span>` : '',
       appendices.map(h => `<span>${esc(label(h))}</span>`).join(''),
       `<span>about ${O.fmtMinutes(totalWords / WPM)} of reading</span>`,
       subject.updated ? `<span>updated ${esc(new Date(subject.updated).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</span>` : '',
@@ -299,14 +297,37 @@
     });
   }
 
+  // Word counts and the list of visible blocks. With "must-learn only" on, good-to-know
+  // cards are hidden: they count as zero words and are skipped when finding the reader's place.
+  function isHidden(i) {
+    return prefs.mustOnly && hasStars && hideable[i];
+  }
+
+  function measure() {
+    vis = [];
+    totalWords = 0;
+    blocks.forEach((b, i) => {
+      cum[i] = totalWords;
+      words[i] = isHidden(i) ? 0 : rawWords[i];
+      totalWords += words[i];
+      if (!isHidden(i)) vis.push(i);
+    });
+    totalWords = Math.max(totalWords, 1);
+    if (!vis.length) vis = blocks.map((b, i) => i);
+    chapterEnd = chapters.map((h, ci) => {
+      const next = blocks.findIndex((b, i) => chapterOf[i] === ci + 1);
+      return next === -1 ? totalWords : cum[next];
+    });
+  }
+
   // ---------- Positions ----------
   function blockAt(y) {
-    let lo = 0, hi = blocks.length - 1, ans = blocks.length - 1;
+    let lo = 0, hi = vis.length - 1, ans = vis.length - 1;
     while (lo <= hi) {
       const mid = (lo + hi) >> 1;
-      if (blocks[mid].getBoundingClientRect().bottom > y) { ans = mid; hi = mid - 1; } else lo = mid + 1;
+      if (blocks[vis[mid]].getBoundingClientRect().bottom > y) { ans = mid; hi = mid - 1; } else lo = mid + 1;
     }
-    return ans;
+    return vis[ans];
   }
 
   function capturePos() {
@@ -318,10 +339,14 @@
   }
 
   function restorePos(p, smooth) {
-    const el = blocks[p.block];
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    window.scrollTo({ top: scrollY + r.top + p.frac * r.height - READ_TOP(), behavior: smooth && !reduceMotion ? 'smooth' : 'instant' });
+    if (!blocks[p.block]) return;
+    let i = p.block, frac = p.frac;
+    if (isHidden(i)) {
+      i = vis.find(v => v >= i) ?? vis[vis.length - 1];
+      frac = 0;
+    }
+    const r = blocks[i].getBoundingClientRect();
+    window.scrollTo({ top: scrollY + r.top + frac * r.height - READ_TOP(), behavior: smooth && !reduceMotion ? 'smooth' : 'instant' });
   }
 
   function atEnd() {
@@ -490,8 +515,7 @@
       let meta = '';
       if (chapterMins.has(h)) meta = O.fmtMinutes(chapterMins.get(h));
       else if (parts.includes(h)) {
-        const n = tocParent.filter(p => p === i).length;
-        meta = `${n} ${n === 1 ? 'chapter' : 'chapters'}`;
+        meta = units(tocParent.filter(p => p === i).length);
       }
       return `<li data-i="${i}"${tocDepth[i] > 0 ? ' hidden' : ''}>
         <div class="rd-toc-row" style="--d:${tocDepth[i]}">
@@ -514,7 +538,10 @@
     });
   }
 
+  // Open the branches leading to the reader's place, plus any the reader opened by hand.
   function openTocTo(si) {
+    tocOpen.clear();
+    tocUserOpen.forEach(i => tocOpen.add(i));
     for (let p = si; p >= 0; p = tocParent[p]) tocOpen.add(p);
     applyTocOpen();
   }
@@ -894,6 +921,7 @@
     if (q.length >= 2) {
       TM.lower = TM.lower || TM.text.toLowerCase();
       for (let i = TM.lower.indexOf(q); i !== -1 && hits.length < 1000; i = TM.lower.indexOf(q, i + q.length)) hits.push([i, i + q.length]);
+      if (prefs.mustOnly && hasStars) hits = hits.filter(h => !offsetToPoint(h[0], false)[0].parentElement.closest('.rd-card.is-good'));
       if (hits.length) {
         const here = beforeContent() ? 0 : pointToOffset(...firstTextAt(capturePos()));
         hitIdx = Math.max(0, hits.findIndex(h => h[0] >= here));
@@ -1017,6 +1045,7 @@
           { v: 'indented', label: 'Indented paragraphs', html: icon('<path d="M8 5h12M4 9h16M4 13h12M8 17h12M4 21h14"/>') }])}</div>
       </div>
       <div class="rd-set">
+        ${hasStars ? '<label class="rd-toggle rd-toggle-star">★ Must-learn only<input type="checkbox" data-toggle="mustOnly"></label>' : ''}
         <label class="rd-toggle">Tap page edges to turn pages<input type="checkbox" data-toggle="tapTurn"></label>
         <label class="rd-toggle">Drop caps at chapter openings<input type="checkbox" data-toggle="dropcaps"></label>
         <label class="rd-toggle">Show time left<input type="checkbox" data-toggle="showTime"></label>
@@ -1045,9 +1074,16 @@
     keepPlace(() => {
       prefs[key] = val;
       applyPrefs();
+      if (key === 'mustOnly') {
+        measure();
+        renderToc();
+        renderTicks();
+        currentToc = -2;
+      }
     });
     O.save();
     refreshSettings();
+    if (key === 'mustOnly') toast(val ? 'Showing ★ must-learn items only' : 'Showing all items');
   }
 
   function stepSize(dir) {
@@ -1117,7 +1153,7 @@
       const tog = e.target.closest('[data-tog]');
       if (tog) {
         const i = +tog.dataset.tog;
-        if (tocOpen.has(i)) tocOpen.delete(i); else tocOpen.add(i);
+        if (tocOpen.has(i)) { tocOpen.delete(i); tocUserOpen.delete(i); } else { tocOpen.add(i); tocUserOpen.add(i); }
         applyTocOpen();
         return;
       }

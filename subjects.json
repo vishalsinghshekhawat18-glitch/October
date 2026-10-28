@@ -12,7 +12,12 @@
     "status": "ready",
     "file": "books/guide/content.html",
     "updated": "2026-10-27",
-    "cover": { "from": "#8a5530", "to": "#3d2314", "ink": "#f7e9d5", "emblem": "book" }
+    "cover": {
+      "from": "#8a5530",
+      "to": "#3d2314",
+      "ink": "#f7e9d5",
+      "emblem": "book"
+    }
   },
   "subjects": [
     {
@@ -22,7 +27,27 @@
       "status": "ready",
       "file": "books/economics/content.html",
       "updated": "2026-10-27",
-      "cover": { "from": "#2f5f58", "to": "#15302d", "ink": "#efe5cc", "emblem": "graph" }
+      "cover": {
+        "from": "#2f5f58",
+        "to": "#15302d",
+        "ink": "#efe5cc",
+        "emblem": "graph"
+      }
+    },
+    {
+      "slug": "current-affairs",
+      "title": "Current Affairs",
+      "subtitle": "News, facts and revision",
+      "unit": "section",
+      "status": "ready",
+      "file": "books/current-affairs/content.html",
+      "updated": "2026-10-28",
+      "cover": {
+        "from": "#3a4f7a",
+        "to": "#1a2440",
+        "ink": "#efe7d6",
+        "emblem": "globe"
+      }
     }
   ]
 }

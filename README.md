@@ -38,3 +38,9 @@ The site is public. Reading progress, highlights, bookmarks and settings are sto
 npm install cheerio@1.0.0
 node tools/convert-economics.mjs <source.html> books/economics
 ```
+
+`tools/convert-ca.mjs` builds the Current Affairs book from any set of its source files (Static Bank and monthly compilations). Pass every file that should be in the book; Static Bank goes first and months are ordered newest first by the month named in each file's heading:
+
+```
+node tools/convert-ca.mjs books/current-affairs CA_Jan-Mar_2026.html [more files…]
+```
