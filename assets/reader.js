@@ -581,7 +581,8 @@
       let meta = '';
       if (chapterMins.has(h)) meta = O.fmtMinutes(chapterMins.get(h));
       else if (parts.includes(h)) {
-        meta = units(tocParent.filter(p => p === i).length);
+        const n = tocParent.filter(p => p === i).length;
+        if (n) meta = units(n);
       }
       // Books that count their items (Current Affairs) show the tally too; in must-learn mode, the ★ count.
       const count = prefs.mustOnly && hasStars ? h.dataset.countMust : h.dataset.count;

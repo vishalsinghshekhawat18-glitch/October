@@ -52,8 +52,20 @@ const out = [];
 
 // ---------- Main parts ----------
 let chapterNo = 0;
+let index = '';
 $('div.partwrap').each((pi, pw) => {
   const part = $(pw);
+
+  // The Term Index (a grid of terms with chapter links) goes at the very end, as an A–Z list.
+  if (part.find('.ixgrid').length) {
+    const lead = text(part.find('div.cover p.lead'));
+    const items = part.find('.ix').map((i, ix) => `<li><b>${$(ix).children('b').html()}</b> <span class="rd-index-refs">${$(ix).children('span').html()}</span></li>`).get();
+    index = `<h1 class="rd-part rd-appendix" id="${part.attr('id') || 'termindex'}" data-toc="Term Index"><span class="rd-part-no">Index</span>Term Index</h1>`
+      + (lead ? `<p class="rd-part-lead">${esc(lead.replace(/;\s*click a chapter to jump to it\.?/i, '. Tap a chapter to go there.'))}</p>` : '')
+      + `<ul class="rd-index">${items.join('')}</ul>`;
+    stats.indexTerms = items.length;
+    return;
+  }
 
   // Drop the editor-only "Agent Notes" and everything after it in this part.
   const agent = part.find('h1.unlisted');
@@ -228,6 +240,7 @@ R('div.ch').each((i, ch) => {
   out.push(`<section class="rd-rev-ch">${c.html()}</section>`);
   stats.revisionChapters++;
 });
+if (index) out.push(index);
 
 // Typographic arrows in text (not inside code).
 const body = out.join('\n').replace(/(>[^<]*)/g, seg => seg.replace(/ -&gt; /g, ' → ').replace(/ &lt;- /g, ' ← ').replace(/ -> /g, ' → '));
@@ -261,5 +274,6 @@ stats.duplicateIds = (() => {
   check('[id]').each((i, e) => seen.set(e.attribs.id, (seen.get(e.attribs.id) || 0) + 1));
   return [...seen].filter(([, n]) => n > 1).map(([k]) => k);
 })();
-stats.questionsWithoutAnswer = check('.rd-q').filter((i, e) => !check(e).find('details').length).length;
+stats.brokenLinks = check('a[href^="#"]').filter((i, a) => !check(`[id="${check(a).attr('href').slice(1)}"]`).length).length;
+stats.questionsWithoutAnswer =check('.rd-q').filter((i, e) => !check(e).find('details').length).length;
 console.log(JSON.stringify(stats, null, 2));
