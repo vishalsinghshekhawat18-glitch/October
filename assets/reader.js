@@ -517,6 +517,9 @@
       else if (parts.includes(h)) {
         meta = units(tocParent.filter(p => p === i).length);
       }
+      // Books that count their items (Current Affairs) show the tally too; in must-learn mode, the ★ count.
+      const count = prefs.mustOnly && hasStars ? h.dataset.countMust : h.dataset.count;
+      if (count) meta = meta ? `${count} · ${meta}` : count;
       return `<li data-i="${i}"${tocDepth[i] > 0 ? ' hidden' : ''}>
         <div class="rd-toc-row" style="--d:${tocDepth[i]}">
           ${hasKids.has(i) ? `<button class="rd-toc-tog" data-tog="${i}" aria-expanded="false" aria-label="Show contents of ${esc(label(h))}">${chev}</button>` : '<span class="rd-toc-tog"></span>'}

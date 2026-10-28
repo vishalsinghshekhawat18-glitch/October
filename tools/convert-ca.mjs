@@ -59,6 +59,19 @@ for (const { $, info } of parts) {
 
   const main = $('main').length ? $('main') : $('body');
 
+  // Counts, as the source shows them: cards numbered within each section, and each section's totals.
+  const isMust = d => /^\s*★/.test(t($(d).children('summary'))) && !$(d).hasClass('opt');
+  main.find('h1.sec').each((i, h) => {
+    // A section, plus anything left between it and the next one (some files have stray Q&A there).
+    const own = $(h).closest('section');
+    const sec = own.length ? own.add(own.nextUntil('section, h1.sec, :has(h1.sec)')) : $(h).nextUntil('h1.sec').addBack();
+    const details = sec.find('details').add(sec.filter('details'));
+    const cards = details.filter('.card').toArray();
+    cards.forEach((d, j) => $(d).attr({ 'data-no': j + 1, 'data-of': cards.length }));
+    const questions = details.not('.card').filter((j, d) => $(d).parent().is('.rev') || $(d).find('.ans').length).length;
+    $(h).attr({ 'data-n': cards.length, 'data-m': cards.filter(isMust).length, 'data-q': questions });
+  });
+
   // Revision quizzes: group headings stay as sections; each Q&A becomes a recall item with a hidden answer.
   main.find('.rev').each((i, rev) => {
     const html = [];
@@ -103,7 +116,11 @@ for (const { $, info } of parts) {
     const m = raw.match(/^(\d+)\.\s*(.*)$/);
     const num = m ? m[1] : String(i + 1);
     const name = titleCase(m ? m[2] : raw);
-    $(h).replaceWith(`<h2 class="rd-chapter" id="${id}" data-toc="${esc(`${num}. ${name}`)}"><span class="rd-ch-no">${esc(info.title)} · Section ${num}</span>${esc(name)}</h2>`);
+    const [n, mu, q] = ['data-n', 'data-m', 'data-q'].map(a => +$(h).attr(a) || 0);
+    const count = [n && `${n} item${n === 1 ? '' : 's'}`, q && `${q} question${q === 1 ? '' : 's'}`].filter(Boolean).join(' · ');
+    const mustCount = [n && `${mu} ★`, q && `${q} question${q === 1 ? '' : 's'}`].filter(Boolean).join(' · ');
+    const tally = n ? `<span class="rd-ch-count">${n} items · ${mu} ★ must-learn · ${n - mu} ☆ good to know</span>` : q ? `<span class="rd-ch-count">${q} questions</span>` : '';
+    $(h).replaceWith(`<h2 class="rd-chapter" id="${id}" data-toc="${esc(`${num}. ${name}`)}"${count ? ` data-count="${count}" data-count-must="${mustCount}"` : ''}><span class="rd-ch-no">${esc(info.title)} · Section ${num}</span>${esc(name)}${tally}</h2>`);
     pstat.sections++;
   });
 
@@ -111,10 +128,11 @@ for (const { $, info } of parts) {
   main.find('details.card').each((i, d) => {
     const sum = $(d).children('summary');
     const title = (sum.html() || '').trim();
-    const must = /^\s*★/.test(t(sum)) && !$(d).hasClass('opt');
+    const must = isMust(d);
     const clean = title.replace(/^\s*[★☆]\s*/, '');
     const body = $(d).children('.body').length ? $(d).children('.body').html() : $(d).children(':not(summary)').toArray().map(e => $.html(e)).join('');
-    $(d).replaceWith(`<article class="rd-card ${must ? 'is-must' : 'is-good'}"><h4 class="rd-card-title"><span class="rd-star">${must ? '★ Must-learn' : '☆ Good to know'}</span>${clean}</h4>${body}</article>`);
+    const no = $(d).attr('data-no') ? `<span class="rd-card-no" title="Item ${$(d).attr('data-no')} of ${$(d).attr('data-of')} in this section">${$(d).attr('data-no')}<small>/${$(d).attr('data-of')}</small></span>` : '';
+    $(d).replaceWith(`<article class="rd-card ${must ? 'is-must' : 'is-good'}"><h4 class="rd-card-title">${no}<span class="rd-star">${must ? '★ Must-learn' : '☆ Good to know'}</span>${clean}</h4>${body}</article>`);
     pstat.cards++;
     if (must) pstat.must++;
   });
@@ -132,8 +150,11 @@ for (const { $, info } of parts) {
 
   main.find('div.tw').each((i, w) => { $(w).replaceWith($(w).html()); });
 
-  out.push(`<h1 class="rd-part" id="${P}" data-toc="${esc(info.title)}"><span class="rd-part-no">${esc(info.kicker)}</span>${esc(info.title)}</h1>`);
+  const total = [pstat.cards && `${pstat.cards} items`, pstat.recall && `${pstat.recall} questions`].filter(Boolean).join(' · ');
+  const totalMust = [pstat.cards && `${pstat.must} ★`, pstat.recall && `${pstat.recall} questions`].filter(Boolean).join(' · ');
+  out.push(`<h1 class="rd-part" id="${P}" data-toc="${esc(info.title)}"${total ? ` data-count="${total}" data-count-must="${totalMust}"` : ''}><span class="rd-part-no">${esc(info.kicker)}</span>${esc(info.title)}</h1>`);
   if (info.lead) out.push(`<p class="rd-part-lead">${esc(info.lead)}</p>`);
+  if (pstat.cards) out.push(`<p class="rd-part-tally"><span><b>${pstat.cards}</b> items</span><span><b>${pstat.must}</b> ★ must-learn</span><span><b>${pstat.cards - pstat.must}</b> ☆ good to know</span>${pstat.recall ? `<span><b>${pstat.recall}</b> revision questions</span>` : ''}</p>`);
   out.push(main.html());
 
   stats.sections += pstat.sections;
