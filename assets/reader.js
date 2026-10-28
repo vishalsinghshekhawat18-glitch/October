@@ -203,6 +203,11 @@
   let rawWords = [], hideable = [], vis = [], hasStars = false;
   let sectionOf = [], chapterOf = [], chapterEnd = [];
   let tocDepth = [], tocParent = [];
+  // Books with "partPages" in subjects.json show one part at a time: each part scrolls on its own and ends with a link to the next.
+  let partPages = false, partOf = [], pageEls = [], partStart = [], curPart = -1, bookEnd = '';
+  const partNav = document.createElement('nav');
+  partNav.className = 'rd-partnav';
+  partNav.hidden = true;
   const tocOpen = new Set();
   const tocUserOpen = new Set();
 
@@ -262,7 +267,25 @@
       sectionOf[i] = s;
       chapterOf[i] = c;
     });
+
+    partPages = !!subject.partPages && parts.length > 1;
+    if (partPages) {
+      let k = 0;
+      partOf = blocks.map(b => {
+        const h = parts.find(p => p === b || b.contains(p));
+        if (h) k = parts.indexOf(h);
+        return k;
+      });
+      k = 0;
+      pageEls = [...content.children].map(el => {
+        if (parts.includes(el)) k = parts.indexOf(el);
+        return [el, k];
+      });
+      root.dataset.partpages = 'on';
+      content.before(partNav);
+    }
     measure();
+    partStart = parts.map(h => cum[Math.max(0, blocks.indexOf(h))]);
 
     const mainParts = parts.filter(h => !h.classList.contains('rd-appendix'));
     const appendices = parts.filter(h => h.classList.contains('rd-appendix'));
@@ -275,11 +298,13 @@
       subject.updated ? `<span>updated ${esc(new Date(subject.updated).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</span>` : '',
     ].join('');
 
-    endmatter.innerHTML = `
+    bookEnd = `
       <div class="rd-ornament" aria-hidden="true">❦</div>
       <h2>The end of ${esc(subject.title)}</h2>
       <p>You've reached the last page. Your highlights and bookmarks are waiting in the contents panel whenever you want to revisit them.</p>
       <a class="rd-cta" href="./">Back to the library</a>`;
+    endmatter.innerHTML = bookEnd;
+    if (partPages) showPart(0);
 
     buildTextMap();
     renderToc();
@@ -310,7 +335,7 @@
       cum[i] = totalWords;
       words[i] = isHidden(i) ? 0 : rawWords[i];
       totalWords += words[i];
-      if (!isHidden(i)) vis.push(i);
+      if (!isHidden(i) && !(partPages && partOf[i] !== curPart)) vis.push(i);
     });
     totalWords = Math.max(totalWords, 1);
     if (!vis.length) vis = blocks.map((b, i) => i);
@@ -318,6 +343,43 @@
       const next = blocks.findIndex((b, i) => chapterOf[i] === ci + 1);
       return next === -1 ? totalWords : cum[next];
     });
+  }
+
+  // ---------- One part per page ----------
+  // Shows part k alone (title page only with the first). Returns true if the page changed.
+  function showPart(k) {
+    if (!partPages || k === curPart || k < 0 || k >= parts.length) return false;
+    curPart = k;
+    pageEls.forEach(([el, p]) => { el.hidden = p !== k; });
+    titlepage.hidden = k > 0;
+    measure();
+    const prev = parts[k - 1], next = parts[k + 1], here = parts[k];
+    partNav.hidden = !prev;
+    partNav.innerHTML = prev ? `<button class="rd-partnav-btn" data-go-part="${k - 1}">‹ ${esc(label(prev))}</button>` : '';
+    endmatter.innerHTML = next ? `
+      <div class="rd-ornament" aria-hidden="true">❦</div>
+      <p class="rd-end-kicker">End of</p>
+      <h2>${esc(label(here))}</h2>
+      ${here.dataset.count ? `<p>${esc(here.dataset.count)}</p>` : ''}
+      <button class="rd-cta" data-go-part="${k + 1}">Continue to ${esc(label(next))} ›</button>` : bookEnd;
+    return true;
+  }
+
+  // Which part an element or text node is in.
+  function partOfNode(n) {
+    let k = 0;
+    parts.forEach((h, i) => { if (h === n || h.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_FOLLOWING) k = i; });
+    return k;
+  }
+
+  function showPartOf(n) {
+    return partPages && showPart(partOfNode(n));
+  }
+
+  function openPart(k) {
+    if (showPart(k)) window.scrollTo({ top: 0, behavior: 'instant' });
+    else goToEl(parts[k]);
+    update();
   }
 
   // ---------- Positions ----------
@@ -340,6 +402,7 @@
 
   function restorePos(p, smooth) {
     if (!blocks[p.block]) return;
+    if (partPages && showPart(partOf[p.block])) smooth = false;
     let i = p.block, frac = p.frac;
     if (isHidden(i)) {
       i = vis.find(v => v >= i) ?? vis[vis.length - 1];
@@ -365,16 +428,18 @@
   }
 
   function beforeContent() {
+    if (partPages && curPart > 0) return false;
     return content.getBoundingClientRect().top > READ_TOP() + 1;
   }
 
   function currentPct(p = capturePos()) {
-    if (atEnd()) return 1;
+    if (atEnd()) return partPages && curPart < parts.length - 1 ? partStart[curPart + 1] / totalWords : 1;
     if (beforeContent()) return 0;
     return Math.min(1, wordsRead(p) / totalWords);
   }
 
   function goToEl(el, smooth = true) {
+    if (showPartOf(el)) smooth = false;
     const r = el.getBoundingClientRect();
     window.scrollTo({ top: scrollY + r.top - READ_TOP() - 8, behavior: smooth && !reduceMotion ? 'smooth' : 'instant' });
   }
@@ -396,6 +461,7 @@
     restorePos(pos);
     if (pos.pct < .995) {
       toast(`Resumed at ${Math.round(pos.pct * 100)}%`, 'Start over', () => {
+        if (partPages && curPart !== 0) return openPart(0);
         window.scrollTo({ top: 0, behavior: reduceMotion ? 'instant' : 'smooth' });
       });
     }
@@ -954,12 +1020,13 @@
       CSS.highlights.set('rd-search-cur', hitIdx >= 0 ? new Highlight(rangeFor(...hits[hitIdx])) : new Highlight());
     }
     if (scroll && hitIdx >= 0) {
+      const switched = showPartOf(rangeFor(...hits[hitIdx]).startContainer);
       const r = rangeFor(...hits[hitIdx]);
       const rect = r.getBoundingClientRect();
       const details = r.startContainer.parentElement.closest('details');
       if (details && !details.open) details.open = true;
       if (rect.top < 120 || rect.bottom > innerHeight - 120) {
-        window.scrollTo({ top: scrollY + rect.top - innerHeight / 3, behavior: reduceMotion ? 'instant' : 'smooth' });
+        window.scrollTo({ top: scrollY + rect.top - innerHeight / 3, behavior: reduceMotion || switched ? 'instant' : 'smooth' });
       }
       if (!hasHighlightApi) {
         const sel = getSelection();
@@ -1149,6 +1216,10 @@
     };
     document.addEventListener('fullscreenchange', () => $('#btnFull').classList.toggle('is-on', !!document.fullscreenElement));
     scrim.onclick = closeAll;
+    [partNav, endmatter].forEach(el => el.addEventListener('click', e => {
+      const b = e.target.closest('[data-go-part]');
+      if (b) openPart(+b.dataset.goPart);
+    }));
 
     drawer.addEventListener('click', e => {
       const tab = e.target.closest('.rd-tab');
@@ -1193,8 +1264,9 @@
         const h = B.highlights.find(x => x.id === hl.dataset.hl);
         closeDrawer();
         if (h && h.found !== false) {
+          const switched = showPartOf(rangeFor(h.start, h.end).startContainer);
           const rect = rangeFor(h.start, h.end).getBoundingClientRect();
-          window.scrollTo({ top: scrollY + rect.top - innerHeight / 3, behavior: reduceMotion ? 'instant' : 'smooth' });
+          window.scrollTo({ top: scrollY + rect.top - innerHeight / 3, behavior: reduceMotion || switched ? 'instant' : 'smooth' });
         }
       }
     });

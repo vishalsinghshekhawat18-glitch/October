@@ -1589,3 +1589,30 @@ button.rd-toc-tog:hover { background: var(--surface-2); color: var(--ink); }
   .rd-bar, .rd-thin, .rd-dim, .rd-drawer, .rd-scrim, .rd-panel, .rd-pop, .rd-toast { display: none !important; }
   .rd-main { padding: 0; }
 }
+
+/* One part per page (Current Affairs): each part opens like the start of a book and ends with a link onward. */
+[data-partpages="on"] .rd-content > .rd-part { margin-top: 1em; padding-top: 0; border-top: 0; }
+
+.rd-partnav { margin: 0 0 1.5em; font-family: var(--font-ui); }
+
+.rd-partnav-btn {
+  padding: 6px 12px 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: 500 .8rem/1.2 var(--font-ui);
+  cursor: pointer;
+}
+
+.rd-partnav-btn:hover { color: var(--ink); border-color: var(--muted); }
+
+.rd-end-kicker {
+  margin: 0 !important;
+  font: 600 .72rem/1.2 var(--font-ui) !important;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--accent) !important;
+}
+
+button.rd-cta { border: 0; cursor: pointer; font-family: var(--font-ui); }

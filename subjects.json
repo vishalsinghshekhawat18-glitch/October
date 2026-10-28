@@ -39,6 +39,7 @@
       "title": "Current Affairs",
       "subtitle": "News, facts and revision",
       "unit": "section",
+    "partPages": true,
       "status": "ready",
       "file": "books/current-affairs/content.html",
       "updated": "2026-10-28",
