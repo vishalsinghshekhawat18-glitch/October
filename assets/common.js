@@ -115,7 +115,8 @@ const October = (() => {
 
   function cover(s, number) {
     const c = s.cover || {};
-    const no = number != null ? `No. ${String(number).padStart(2, '0')}` : (s.kind === 'guide' ? 'Start here' : '');
+    // Papers in an exam series are labelled by paper ("Paper 1") rather than by shelf number.
+    const no = s.paper ? `Paper ${s.paper}` : number != null ?`No. ${String(number).padStart(2, '0')}` : (s.kind === 'guide' ? 'Start here' : '');
     return `<div class="cover" style="--c1:${c.from || '#3b5570'};--c2:${c.to || '#1c2b3b'};--cink:${c.ink || '#f3ead8'}"><div class="cover-in">
       <span class="cover-no">${esc(no)}</span>
       <span class="cover-emblem">${emblem(c.emblem)}</span>

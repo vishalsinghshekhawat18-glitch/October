@@ -49,37 +49,64 @@
     return `${Math.round(pct * 100)}% read`;
   }
 
-  // Shelf
-  const cards = subjects.map((s, i) => {
+  // Shelf: general subjects first, then one labelled row per exam series (subjects.json "series").
+  let delay = 0;
+  const card = (s, number) => {
     const pct = progressOf(s.slug) || 0;
-    return `<a class="book${isReady(s) ? '' : ' is-soon'}" href="reader.html?book=${encodeURIComponent(s.slug)}" style="animation-delay:${i * 60}ms">
-      <div class="book-cover-wrap">${isReady(s) ? '' : '<span class="tag">Soon</span>'}${O.cover(s, i + 1)}</div>
+    return `<a class="book${isReady(s) ? '' : ' is-soon'}" href="reader.html?book=${encodeURIComponent(s.slug)}" style="animation-delay:${delay++ * 60}ms">
+      <div class="book-cover-wrap">${isReady(s) ? '' : '<span class="tag">Soon</span>'}${O.cover(s, number)}</div>
       <div class="book-meta">
         <span class="book-title">${O.esc(s.title)}</span>
         ${isReady(s) ? `<div class="bar"><span style="width:${(pct * 100).toFixed(1)}%"></span></div>` : ''}
         <span class="book-state">${stateText(s)}</span>
       </div>
     </a>`;
-  });
-  // Empty slots fill out the last row of the shelf, so it never ends with a lone gap.
+  };
+  const slot = (html, extra = '') => `<div class="book is-empty${extra}" aria-hidden="true" style="animation-delay:${delay++ * 60}ms"><div class="empty-slot">${html}</div></div>`;
+
+  const series = (lib.library && lib.library.series) || [];
+  const general = subjects.filter(s => !s.series || !series.some(x => x.id === s.series));
+  const groups = [{ books: general }, ...series.map(x => ({ series: x, books: subjects.filter(s => s.series === x.id) }))];
+  const grouped = groups.length > 1;
+
+  function seriesHead(x, books) {
+    const total = (x.papers || []).length || books.length;
+    const pct = books.reduce((a, s) => a + (progressOf(s.slug) || 0), 0) / Math.max(total, 1);
+    return `<div class="shelf-group-head">
+      <h3>${O.esc(x.name)}${x.full ? ` <span>${O.esc(x.full)}</span>` : ''}</h3>
+      <p>${books.length} of ${total} ${total === 1 ? 'paper' : 'papers'} added${pct >= .005 ? ` · ${Math.round(pct * 100)}% of the exam read` : ''}</p>
+    </div>`;
+  }
+
+  // Empty slots fill out the last row of the general shelf, so it never ends with a lone gap;
+  // a series shows a slot for each paper still to come.
   const shelf = $('#shelf');
   function renderShelf() {
-    shelf.innerHTML = cards.join('');
-    const cols = getComputedStyle(shelf).gridTemplateColumns.split(' ').length;
-    const n = subjects.length;
+    delay = 0;
+    shelf.classList.toggle('is-grouped', grouped);
+    const html = groups.map((g, gi) => {
+      if (!g.series) return `<div class="shelf">${g.books.map((s, i) => card(s, i + 1)).join('')}</div>`;
+      const papers = g.series.papers || [];
+      const have = new Set(g.books.map(s => s.paper));
+      const missing = papers.map((name, i) => [i + 1, name]).filter(([n]) => !have.has(n));
+      return `<section class="shelf-group">${seriesHead(g.series, g.books)}<div class="shelf">${
+        g.books.sort((a, b) => (a.paper || 0) - (b.paper || 0)).map(s => card(s)).join('')
+      }${missing.map(([n, name]) => slot(`<b>${n}</b>Paper ${n}<br>${O.esc(name)}<small>Not added yet</small>`, ' is-paper')).join('')}</div></section>`;
+    });
+    shelf.innerHTML = grouped ? html.join('') : html[0].replace(/^<div class="shelf">|<\/div>$/g, '');
+    const first = grouped ? shelf.querySelector('.shelf') : shelf;
+    const cols = getComputedStyle(first).gridTemplateColumns.split(' ').length;
+    const n = general.length;
     let empty = (cols - (n % cols)) % cols;
     if (n < cols) empty = cols - n;
-    empty = Math.min(empty, Math.max(0, capacity - n));
-    for (let i = 0; i < empty; i++) {
-      shelf.insertAdjacentHTML('beforeend', `<div class="book is-empty" aria-hidden="true" style="animation-delay:${(n + i) * 60}ms">
-        <div class="empty-slot"><b>+</b>Room for a new subject</div>
-      </div>`);
-    }
+    empty = Math.min(empty, grouped ? 1 : Infinity, Math.max(0, capacity - subjects.length));
+    for (let i = 0; i < empty; i++) first.insertAdjacentHTML('beforeend', slot('<b>+</b>Room for a new subject'));
     shelf.dataset.cols = cols;
   }
   renderShelf();
   addEventListener('resize', () => {
-    if (+shelf.dataset.cols !== getComputedStyle(shelf).gridTemplateColumns.split(' ').length) renderShelf();
+    const first = shelf.classList.contains('is-grouped') ? shelf.querySelector('.shelf') : shelf;
+    if (+shelf.dataset.cols !== getComputedStyle(first).gridTemplateColumns.split(' ').length) renderShelf();
   });
   const readyCount = subjects.filter(isReady).length;
   $('#shelfCount').textContent = `${subjects.length} ${subjects.length === 1 ? 'subject' : 'subjects'} · ${readyCount} ready to read`;
@@ -93,7 +120,7 @@
     const left = lastBook.pos.minutesLeft;
     const el = $('#continue');
     el.outerHTML = `<a class="continue" id="continue" href="reader.html?book=${encodeURIComponent(last.slug)}">
-      ${O.cover(last, last.kind === 'guide' ? null : subjects.indexOf(last) + 1)}
+      ${O.cover(last, last.kind === 'guide' ? null : general.indexOf(last) + 1)}
       <div>
         <p class="eyebrow">Continue reading</p>
         <h2 class="continue-title">${O.esc(last.title)}</h2>

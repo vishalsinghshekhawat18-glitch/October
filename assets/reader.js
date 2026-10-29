@@ -72,13 +72,14 @@
   if (!subject) return fail('This book isn’t on the shelf', 'It may have been renamed or moved.');
 
   const B = O.book(slug);
-  const number = subject.kind === 'guide' ? null : subjects.indexOf(subject) + 1;
+  const number = subject.kind === 'guide' ? null : subjects.filter(s => !s.series).indexOf(subject) + 1;
+  const series = ((lib.library && lib.library.series) || []).find(x => x.id === subject.series);
   document.title = `${subject.title} · October Library`;
   $('#barTitle').textContent = subject.title;
 
   titlepage.innerHTML = `
     <div class="rd-tp-cover">${O.cover(subject, number)}</div>
-    <p class="rd-tp-eyebrow">${subject.kind === 'guide' ? 'Start here' : `Subject ${number ? 'No. ' + String(number).padStart(2, '0') : ''}`}</p>
+    <p class="rd-tp-eyebrow">${subject.kind === 'guide' ? 'Start here' : series ? `${esc(series.name)} · Paper ${subject.paper}` : `Subject ${number ? 'No. ' + String(number).padStart(2, '0') : ''}`}</p>
     <h1 class="rd-tp-title">${esc(subject.title)}</h1>
     ${subject.subtitle ? `<p class="rd-tp-sub">${esc(subject.subtitle)}</p>` : ''}
     <p class="rd-tp-meta" id="tpMeta"></p>
@@ -291,7 +292,7 @@
     const appendices = parts.filter(h => h.classList.contains('rd-appendix'));
     const mainChapters = chapters.filter(h => !h.classList.contains('rd-rev'));
     $('#tpMeta').innerHTML = [
-      mainParts.length > 1 ? `<span>${mainParts.length} parts</span>` : '',
+      mainParts.length > 1 ? `<span>${mainParts.length} ${subject.partUnit || 'part'}s</span>` : '',
       mainChapters.length ? `<span>${units(mainChapters.length)}</span>` : '',
       appendices.map(h => `<span>${esc(label(h))}</span>`).join(''),
       `<span>about ${O.fmtMinutes(totalWords / WPM)} of reading</span>`,
@@ -602,7 +603,8 @@
       const i = +li.dataset.i;
       const p = tocParent[i];
       visible[i] = p < 0 || (visible[p] && tocOpen.has(p));
-      li.hidden = !visible[i];
+      // In must-learn mode, good-to-know topics are hidden from the contents too.
+      li.hidden = !visible[i] || (prefs.mustOnly && hasStars && !!tocHeads[i].closest('.rd-card.is-good'));
       const tog = li.querySelector('[data-tog]');
       if (tog) tog.setAttribute('aria-expanded', String(tocOpen.has(i)));
     });

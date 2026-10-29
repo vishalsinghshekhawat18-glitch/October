@@ -442,3 +442,36 @@ body.lib::before {
 
   .guide { margin-top: 56px; }
 }
+
+/* Exam series: a labelled row of papers under the general shelf. */
+.shelf.is-grouped { display: block; }
+
+.shelf-group { margin-top: 64px; }
+
+.shelf-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-bottom: 26px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.shelf-group-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 450;
+  font-size: 1.35rem;
+}
+
+.shelf-group-head h3 span { margin-left: .4em; color: var(--muted); font-family: var(--font-ui); font-size: .82rem; font-weight: 500; }
+
+.shelf-group-head p { margin: 0; color: var(--muted); font-size: .85rem; }
+
+.book.is-paper .empty-slot { font-size: .76rem; }
+
+.book.is-paper .empty-slot b { font-family: var(--font-display); }
+
+.book.is-paper .empty-slot small { display: block; margin-top: 4px; opacity: .75; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }

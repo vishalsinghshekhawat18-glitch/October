@@ -24,6 +24,10 @@ There is no build step. GitHub Pages serves the files as they are.
 
 The reader keeps the notes' structure (headings, lists, tables, images, formulas, footnotes) and replaces their colours and fonts with the reader's own. The highest heading level becomes chapters in the contents. In a book split into parts, mark part headings with `class="rd-part"`; chapters are then the next level down, and the contents shows parts › chapters › sections.
 
+### Exam series
+
+Papers for one exam sit together in their own labelled row on the shelf. The series is listed under `library.series` in `subjects.json` (id, name, full name and the list of paper names); each paper's entry adds `"series": "<id>"` and `"paper": <n>`. Papers not yet added show as empty slots with their names, and the row shows how much of the exam has been read.
+
 Cover emblems available in `subjects.json`: `book`, `graph`, `sigma`, `atom`, `flask`, `leaf`, `globe`, `quill`, `scales`, `compass`, `columns`, `code`.
 
 ## Privacy
@@ -43,4 +47,10 @@ node tools/convert-economics.mjs <source.html> books/economics
 
 ```
 node tools/convert-ca.mjs books/current-affairs CA_Jan-Mar_2026.html [more files…]
+```
+
+`tools/convert-dbf.mjs` builds an IIBF DBF paper from its notes file: modules become parts, units become chapters, and each ★/☆ topic becomes a numbered card with its MCQ and Remember notes. Editor notes are left out:
+
+```
+node tools/convert-dbf.mjs Paper1_IE_IFS.html books/dbf-paper-1
 ```

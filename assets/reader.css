@@ -1651,3 +1651,6 @@ button.rd-cta { border: 0; cursor: pointer; font-family: var(--font-ui); }
 .rd-index-refs { color: var(--muted); white-space: nowrap; }
 
 .rd-index-refs a { font-family: var(--font-ui); font-size: .85em; }
+
+/* Inline SVG figures (DBF papers) draw in the text colour; keep them at their intended size. */
+.rd-content figure.fig svg { display: block; width: 100%; max-width: 440px; height: auto; margin: 0 auto; }
