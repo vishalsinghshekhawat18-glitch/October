@@ -294,7 +294,7 @@
     $('#tpMeta').innerHTML = [
       mainParts.length > 1 ? `<span>${mainParts.length} ${subject.partUnit || 'part'}s</span>` : '',
       mainChapters.length ? `<span>${units(mainChapters.length)}</span>` : '',
-      appendices.map(h => `<span>${esc(label(h))}</span>`).join(''),
+      appendices.length > 2 ? `<span>${appendices.length} extra sections</span>` : appendices.map(h => `<span>${esc(label(h))}</span>`).join(''),
       `<span>about ${O.fmtMinutes(totalWords / WPM)} of reading</span>`,
       subject.updated ? `<span>updated ${esc(new Date(subject.updated).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</span>` : '',
     ].join('');
@@ -582,7 +582,7 @@
       let meta = '';
       if (chapterMins.has(h)) meta = O.fmtMinutes(chapterMins.get(h));
       else if (parts.includes(h)) {
-        const n = tocParent.filter(p => p === i).length;
+        const n = tocParent.filter((p, j) => p === i && chapters.includes(tocHeads[j])).length;
         if (n) meta = units(n);
       }
       // Books that count their items (Current Affairs) show the tally too; in must-learn mode, the ★ count.
