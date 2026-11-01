@@ -13,6 +13,33 @@
           "Accounting & Financial Management for Bankers",
           "Retail Banking & Wealth Management"
         ]
+      },
+      {
+        "id": "ras",
+        "name": "RAS",
+        "full": "RPSC RAS/RTS — Prelims & Mains",
+        "item": "subject",
+        "papers": [
+          "Rajasthan History",
+          "Indian History",
+          "Rajasthan Art, Culture & Heritage",
+          "Modern World History",
+          "Indian & World Geography",
+          "Rajasthan Geography",
+          "Indian Polity, Governance & World Affairs",
+          "Rajasthan Polity & Administration",
+          "Indian Economy",
+          "Rajasthan Economy",
+          "Science & Technology",
+          "Reasoning & Mental Ability",
+          "Current Affairs",
+          "Sociology, Management & Accounting",
+          "Administrative Ethics & Behaviour",
+          "Public Administration & Law",
+          "Sports & Yoga",
+          "General Hindi & English"
+        ],
+        "slots": "next"
       }
     ]
   },
@@ -80,6 +107,42 @@
         "ink": "#f5e6e0",
         "emblem": "columns"
       }
+    },
+    {
+      "slug": "ras-rajasthan-history",
+      "series": "ras",
+      "paper": 1,
+      "title": "Rajasthan History",
+      "subtitle": "RAS · 22 units",
+      "unit": "unit",
+      "status": "ready",
+      "file": "books/ras-rajasthan-history/content.html",
+      "updated": "2026-11-01",
+      "cover": {
+        "from": "#a8642a",
+        "to": "#4a2510",
+        "ink": "#fbeedd",
+        "emblem": "quill"
+      },
+      "coverLabel": "Subject 1"
+    },
+    {
+      "slug": "ras-indian-history",
+      "series": "ras",
+      "paper": 2,
+      "title": "Indian History",
+      "subtitle": "RAS · 46 units",
+      "unit": "unit",
+      "status": "ready",
+      "file": "books/ras-indian-history/content.html",
+      "updated": "2026-11-01",
+      "cover": {
+        "from": "#3d5a7a",
+        "to": "#1a2a3d",
+        "ink": "#eef1f5",
+        "emblem": "compass"
+      },
+      "coverLabel": "Subject 2"
     }
   ]
 }

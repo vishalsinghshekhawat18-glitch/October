@@ -28,6 +28,10 @@ The reader keeps the notes' structure (headings, lists, tables, images, formulas
 
 Papers for one exam sit together in their own labelled row on the shelf. The series is listed under `library.series` in `subjects.json` (id, name, full name and the list of paper names); each paper's entry adds `"series": "<id>"` and `"paper": <n>`. Papers not yet added show as empty slots with their names, and the row shows how much of the exam has been read.
 
+Under each row a coverage bar shows how much of the syllabus has notes: one segment per paper, filled when its book is ready, with a list of what is still to create. Optional settings: on the series, `"item": "subject"` renames the slots and `"slots": "next"` shows only the next empty slot (for long syllabi); on a book, `"coverage": 0.5` marks notes that are half written and `"coverLabel"` replaces the "Paper n" label on its cover.
+
+The RAS history books are exported from the notebooks in the main repo: `node notebooks/export-october.cjs`.
+
 Cover emblems available in `subjects.json`: `book`, `graph`, `sigma`, `atom`, `flask`, `leaf`, `globe`, `quill`, `scales`, `compass`, `columns`, `code`.
 
 ## Privacy

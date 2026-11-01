@@ -475,3 +475,47 @@ body.lib::before {
 .book.is-paper .empty-slot b { font-family: var(--font-display); }
 
 .book.is-paper .empty-slot small { display: block; margin-top: 4px; opacity: .75; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+
+/* Syllabus coverage under a series: one segment per paper or subject. */
+.coverage {
+  margin-top: 30px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.cov-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: .85rem;
+  color: var(--ink-2);
+}
+
+.cov-head b { font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; color: var(--ink); }
+
+.cov-bar { display: flex; gap: 3px; height: 8px; }
+
+.cov-seg {
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--accent) var(--fill, 0%), var(--surface-2) var(--fill, 0%));
+}
+
+.cov-note { margin: 10px 0 0; font-size: .82rem; color: var(--muted); }
+
+.cov-todo { margin-top: 6px; font-size: .82rem; color: var(--muted); }
+
+.cov-todo summary { cursor: pointer; width: max-content; color: var(--ink-2); }
+
+.cov-todo summary:hover { color: var(--accent); }
+
+.cov-todo ul { margin: 8px 0 0; padding: 0; list-style: none; columns: 2 220px; column-gap: 24px; }
+
+.cov-todo li { padding: 3px 0; break-inside: avoid; }
+
+.cov-todo small { margin-left: .3em; color: var(--accent); }

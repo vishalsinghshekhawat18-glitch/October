@@ -69,12 +69,48 @@
   const groups = [{ books: general }, ...series.map(x => ({ series: x, books: subjects.filter(s => s.series === x.id) }))];
   const grouped = groups.length > 1;
 
+  // What a series calls its slots ("item" in subjects.json, e.g. "subject"); papers by default.
+  const itemOf = x => x.item || 'paper';
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
   function seriesHead(x, books) {
     const total = (x.papers || []).length || books.length;
     const pct = books.reduce((a, s) => a + (progressOf(s.slug) || 0), 0) / Math.max(total, 1);
     return `<div class="shelf-group-head">
       <h3>${O.esc(x.name)}${x.full ? ` <span>${O.esc(x.full)}</span>` : ''}</h3>
-      <p>${books.length} of ${total} ${total === 1 ? 'paper' : 'papers'} added${pct >= .005 ? ` · ${Math.round(pct * 100)}% of the exam read` : ''}</p>
+      <p>${books.length} of ${plural(total, itemOf(x))} added${pct >= .005 ? ` · ${Math.round(pct * 100)}% of the exam read` : ''}</p>
+    </div>`;
+  }
+
+  // Syllabus coverage under a series: one segment per paper or subject. A ready book counts in full,
+  // or by its "coverage" (0–1) in subjects.json while its notes are still being written.
+  function coverageBar(x, books) {
+    const papers = x.papers || [];
+    if (!papers.length) return '';
+    const byPaper = new Map(books.map(s => [s.paper, s]));
+    const share = n => {
+      const s = byPaper.get(n);
+      if (!s) return 0;
+      if (typeof s.coverage === 'number') return Math.max(0, Math.min(1, s.coverage));
+      return isReady(s) ? 1 : 0;
+    };
+    const shares = papers.map((_, i) => share(i + 1));
+    const pct = shares.reduce((a, v) => a + v, 0) / papers.length;
+    const done = shares.filter(v => v >= 1).length;
+    const todo = papers.filter((_, i) => shares[i] < 1);
+    const segs = papers.map((name, i) => {
+      const v = shares[i];
+      const state = v >= 1 ? 'notes ready' : v > 0 ? `notes ${Math.round(v * 100)}% written` : 'notes not created yet';
+      return `<span class="cov-seg${v >= 1 ? ' is-done' : v > 0 ? ' is-part' : ''}" style="--fill:${(v * 100).toFixed(0)}%" title="${O.esc(name)}: ${state}"></span>`;
+    }).join('');
+    return `<div class="coverage">
+      <div class="cov-head"><span>Syllabus covered by notes</span><b>${Math.round(pct * 100)}%</b></div>
+      <div class="cov-bar" role="img" aria-label="${done} of ${plural(papers.length, itemOf(x))} have notes">${segs}</div>
+      <p class="cov-note">${done} of ${plural(papers.length, itemOf(x))} have notes${todo.length ? '' : ' — the whole syllabus is covered'}</p>
+      ${todo.length ? `<details class="cov-todo"><summary>Still to create (${todo.length})</summary><ul>${todo.map(name => {
+        const v = shares[papers.indexOf(name)];
+        return `<li>${O.esc(name)}${v > 0 ? ` <small>${Math.round(v * 100)}% written</small>` : ''}</li>`;
+      }).join('')}</ul></details>` : ''}
     </div>`;
   }
 
@@ -88,10 +124,13 @@
       if (!g.series) return `<div class="shelf">${g.books.map((s, i) => card(s, i + 1)).join('')}</div>`;
       const papers = g.series.papers || [];
       const have = new Set(g.books.map(s => s.paper));
-      const missing = papers.map((name, i) => [i + 1, name]).filter(([n]) => !have.has(n));
+      // A long syllabus shows only its next empty slot; the coverage bar lists the rest.
+      let missing = papers.map((name, i) => [i + 1, name]).filter(([n]) => !have.has(n));
+      if (g.series.slots === 'next') missing = missing.slice(0, 1);
+      const word = itemOf(g.series).replace(/^./, c => c.toUpperCase());
       return `<section class="shelf-group">${seriesHead(g.series, g.books)}<div class="shelf">${
         g.books.sort((a, b) => (a.paper || 0) - (b.paper || 0)).map(s => card(s)).join('')
-      }${missing.map(([n, name]) => slot(`<b>${n}</b>Paper ${n}<br>${O.esc(name)}<small>Not added yet</small>`, ' is-paper')).join('')}</div></section>`;
+      }${missing.map(([n, name]) => slot(`<b>${n}</b>${word} ${n}<br>${O.esc(name)}<small>Not added yet</small>`, ' is-paper')).join('')}</div>${coverageBar(g.series, g.books)}</section>`;
     });
     shelf.innerHTML = grouped ? html.join('') : html[0].replace(/^<div class="shelf">|<\/div>$/g, '');
     const first = grouped ? shelf.querySelector('.shelf') : shelf;
