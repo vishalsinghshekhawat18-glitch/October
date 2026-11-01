@@ -137,6 +137,12 @@ for (const { $, info } of parts) {
     if (must) pstat.must++;
   });
 
+  // Memory tricks: a closed bar under the topic; its lines stay plain (the bar is the label).
+  main.find('details.trick').each((i, d) => {
+    $(d).find('p.mn').each((j, p) => { $(p).replaceWith(`<p>${$(p).html()}</p>`); });
+    $(d).replaceWith(`<details class="rd-trick"><summary>Memory tricks</summary>${$(d).children(':not(summary)').toArray().map(e => $.html(e)).join('')}</details>`);
+  });
+
   // Study notes: exam angles, memory hooks and mnemonics become labelled callouts.
   const box = (sel, kind, label, prefix) => main.find(sel).each((i, el) => {
     let html = $(el).html().trim().replace(prefix, '').trim();
