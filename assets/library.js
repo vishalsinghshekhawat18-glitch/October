@@ -22,7 +22,7 @@
   if (totalSec >= 60) stats.push(`${O.fmtMinutes(totalSec / 60)} in the library`);
   $('#stats').innerHTML = stats.map(s => `<span>${O.esc(s)}</span>`).join('');
 
-  setupThemeMenu();
+  O.themeMenu();
 
   let lib;
   try {
@@ -36,32 +36,10 @@
   const capacity = (lib.library && lib.library.capacity) || 12;
   const isReady = s => s.status === 'ready';
 
-  function progressOf(slug) {
-    const b = data.books[slug];
-    return b && b.pos ? b.pos.pct : null;
-  }
-
-  function stateText(s) {
-    if (!isReady(s)) return 'Arriving soon';
-    const pct = progressOf(s.slug);
-    if (pct == null || pct < .005) return 'Not started';
-    if (pct >= .995) return 'Finished';
-    return `${Math.round(pct * 100)}% read`;
-  }
-
   // Shelf: general subjects first, then one labelled row per exam series (subjects.json "series").
   let delay = 0;
-  const card = (s, number) => {
-    const pct = progressOf(s.slug) || 0;
-    return `<a class="book${isReady(s) ? '' : ' is-soon'}" href="reader.html?book=${encodeURIComponent(s.slug)}" style="animation-delay:${delay++ * 60}ms">
-      <div class="book-cover-wrap">${isReady(s) ? '' : '<span class="tag">Soon</span>'}${O.cover(s, number)}</div>
-      <div class="book-meta">
-        <span class="book-title">${O.esc(s.title)}</span>
-        ${isReady(s) ? `<div class="bar"><span style="width:${(pct * 100).toFixed(1)}%"></span></div>` : ''}
-        <span class="book-state">${stateText(s)}</span>
-      </div>
-    </a>`;
-  };
+  const progressOf = O.progress;
+  const card = (s, number) => O.bookCard(s, number, delay++);
   const slot = (html, extra = '') => `<div class="book is-empty${extra}" aria-hidden="true" style="animation-delay:${delay++ * 60}ms"><div class="empty-slot">${html}</div></div>`;
 
   const series = (lib.library && lib.library.series) || [];
@@ -76,46 +54,14 @@
   function seriesHead(x, books) {
     const total = (x.papers || []).length || books.length;
     const pct = books.reduce((a, s) => a + (progressOf(s.slug) || 0), 0) / Math.max(total, 1);
-    return `<div class="shelf-group-head">
+    return `<a class="shelf-group-head" href="exam.html?exam=${encodeURIComponent(x.id)}">
       <h3>${O.esc(x.name)}${x.full ? ` <span>${O.esc(x.full)}</span>` : ''}</h3>
-      <p>${books.length} of ${plural(total, itemOf(x))} added${pct >= .005 ? ` · ${Math.round(pct * 100)}% of the exam read` : ''}</p>
-    </div>`;
+      <p>${books.length} of ${plural(total, itemOf(x))} added${pct >= .005 ? ` · ${Math.round(pct * 100)}% of the exam read` : ''}<b>Syllabus ›</b></p>
+    </a>`;
   }
 
-  // Syllabus coverage under a series: one segment per paper or subject. A ready book counts in full,
-  // or by its "coverage" (0–1) in subjects.json while its notes are still being written.
-  function coverageBar(x, books) {
-    const papers = x.papers || [];
-    if (!papers.length) return '';
-    const byPaper = new Map(books.map(s => [s.paper, s]));
-    const share = n => {
-      const s = byPaper.get(n);
-      if (!s) return 0;
-      if (typeof s.coverage === 'number') return Math.max(0, Math.min(1, s.coverage));
-      return isReady(s) ? 1 : 0;
-    };
-    const shares = papers.map((_, i) => share(i + 1));
-    const pct = shares.reduce((a, v) => a + v, 0) / papers.length;
-    const done = shares.filter(v => v >= 1).length;
-    const todo = papers.filter((_, i) => shares[i] < 1);
-    const segs = papers.map((name, i) => {
-      const v = shares[i];
-      const state = v >= 1 ? 'notes ready' : v > 0 ? `notes ${Math.round(v * 100)}% written` : 'notes not created yet';
-      return `<span class="cov-seg${v >= 1 ? ' is-done' : v > 0 ? ' is-part' : ''}" style="--fill:${(v * 100).toFixed(0)}%" title="${O.esc(name)}: ${state}"></span>`;
-    }).join('');
-    return `<div class="coverage">
-      <div class="cov-head"><span>Syllabus covered by notes</span><b>${Math.round(pct * 100)}%</b></div>
-      <div class="cov-bar" role="img" aria-label="${done} of ${plural(papers.length, itemOf(x))} have notes">${segs}</div>
-      ${todo.length ? '' : '<p class="cov-note">The whole syllabus is covered.</p>'}
-      ${todo.length ? `<details class="cov-todo${x.slots === 'next' ? '' : ' is-slotted'}"><summary>Still to create (${todo.length})</summary><ul>${todo.map(name => {
-        const v = shares[papers.indexOf(name)];
-        return `<li>${O.esc(name)}${v > 0 ? ` <small>${Math.round(v * 100)}% written</small>` : ''}</li>`;
-      }).join('')}</ul></details>` : ''}
-    </div>`;
-  }
-
-  // Empty slots fill out the last row of the general shelf, so it never ends with a lone gap;
-  // a series shows a slot for each paper still to come.
+  // Empty slots fill out the last row of the general shelf, so it never ends with a lone gap.
+  // Each exam row links to its own page with the syllabus and coverage.
   const shelf = $('#shelf');
   // Tabs above a grouped shelf: All, the general subjects, or one exam. The choice is remembered.
   const keyOf = g => g.series ? g.series.id : 'general';
@@ -141,15 +87,9 @@
     const shown = groups.filter(g => tab === 'all' || keyOf(g) === tab);
     const html = shown.map((g, gi) => {
       if (!g.series) return `<div class="shelf">${g.books.map((s, i) => card(s, i + 1)).join('')}</div>`;
-      const papers = g.series.papers || [];
-      const have = new Set(g.books.map(s => s.paper));
-      // A long syllabus shows only its next empty slot; the coverage bar lists the rest.
-      let missing = papers.map((name, i) => [i + 1, name]).filter(([n]) => !have.has(n));
-      if (g.series.slots === 'next') missing = missing.slice(0, 1);
-      const word = itemOf(g.series).replace(/^./, c => c.toUpperCase());
       return `<section class="shelf-group">${seriesHead(g.series, g.books)}<div class="shelf">${
         g.books.sort((a, b) => (a.paper || 0) - (b.paper || 0)).map(s => card(s)).join('')
-      }${missing.map(([n, name]) => slot(`<b>${n}</b>${word} ${n}<br>${O.esc(name)}<small>Not added yet</small>`, ' is-paper')).join('')}</div>${coverageBar(g.series, g.books)}</section>`;
+      }</div></section>`;
     });
     shelf.innerHTML = grouped ? html.join('') : html[0].replace(/^<div class="shelf">|<\/div>$/g, '');
     const first = grouped ? shelf.querySelector('.shelf') : shelf;
@@ -213,41 +153,5 @@
       <span class="guide-text"><b>${O.esc(lib.guide.title)}</b><span>${O.esc(lib.guide.blurb || 'How to get the most out of this library')}</span></span>
       <svg class="guide-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>`;
-  }
-
-  function setupThemeMenu() {
-    const btn = $('#themeBtn');
-    const pop = $('#themePop');
-    const label = $('#themeLabel');
-    const current = () => data.prefs.theme || 'auto';
-
-    function render() {
-      const cur = current();
-      label.textContent = O.THEMES.find(t => t.id === cur).label;
-      pop.innerHTML = O.THEMES.map(t => `<button class="theme-opt" data-theme-id="${t.id}" aria-pressed="${t.id === cur}">
-        <span class="swatch" data-swatch="${t.id}">Aa</span>${t.label}</button>`).join('');
-    }
-
-    function close() {
-      pop.hidden = true;
-      btn.setAttribute('aria-expanded', 'false');
-    }
-
-    render();
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      pop.hidden = !pop.hidden;
-      btn.setAttribute('aria-expanded', String(!pop.hidden));
-    });
-    pop.addEventListener('click', e => {
-      const opt = e.target.closest('[data-theme-id]');
-      if (!opt) return;
-      data.prefs.theme = opt.dataset.themeId;
-      O.save();
-      O.applyTheme();
-      render();
-    });
-    document.addEventListener('click', e => { if (!e.target.closest('.theme-menu')) close(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
   }
 })();

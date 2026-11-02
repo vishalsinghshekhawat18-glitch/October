@@ -126,8 +126,73 @@ const October = (() => {
     </div></div>`;
   }
 
+  const isReady = s => s.status === 'ready';
+
+  function progress(slug) {
+    const b = data.books[slug];
+    return b && b.pos ? b.pos.pct : null;
+  }
+
+  function stateText(s) {
+    if (!isReady(s)) return 'Arriving soon';
+    const pct = progress(s.slug);
+    if (pct == null || pct < .005) return 'Not started';
+    if (pct >= .995) return 'Finished';
+    return `${Math.round(pct * 100)}% read`;
+  }
+
+  // A book on a shelf: cover, title, progress bar and state. i staggers the entrance animation.
+  function bookCard(s, number, i = 0) {
+    const pct = progress(s.slug) || 0;
+    return `<a class="book${isReady(s) ? '' : ' is-soon'}" href="reader.html?book=${encodeURIComponent(s.slug)}" style="animation-delay:${i * 60}ms">
+      <div class="book-cover-wrap">${isReady(s) ? '' : '<span class="tag">Soon</span>'}${cover(s, number)}</div>
+      <div class="book-meta">
+        <span class="book-title">${esc(s.title)}</span>
+        ${isReady(s) ? `<div class="bar"><span style="width:${(pct * 100).toFixed(1)}%"></span></div>` : ''}
+        <span class="book-state">${stateText(s)}</span>
+      </div>
+    </a>`;
+  }
+
+  function themeMenu() {
+    const btn = document.getElementById('themeBtn');
+    const pop = document.getElementById('themePop');
+    const label = document.getElementById('themeLabel');
+    const current = () => data.prefs.theme || 'auto';
+
+    function render() {
+      const cur = current();
+      label.textContent = THEMES.find(t => t.id === cur).label;
+      pop.innerHTML = THEMES.map(t => `<button class="theme-opt" data-theme-id="${t.id}" aria-pressed="${t.id === cur}">
+        <span class="swatch" data-swatch="${t.id}">Aa</span>${t.label}</button>`).join('');
+    }
+
+    function close() {
+      pop.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+
+    render();
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      pop.hidden = !pop.hidden;
+      btn.setAttribute('aria-expanded', String(!pop.hidden));
+    });
+    pop.addEventListener('click', e => {
+      const opt = e.target.closest('[data-theme-id]');
+      if (!opt) return;
+      data.prefs.theme = opt.dataset.themeId;
+      save();
+      applyTheme();
+      render();
+    });
+    document.addEventListener('click', e => { if (!e.target.closest('.theme-menu')) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  }
+
   return {
     get data() { return data; },
     save, book, THEMES, resolveTheme, applyTheme, library, dayKey, addTime, streak, fmtMinutes, esc, emblem, cover,
+    isReady, progress, stateText, bookCard, themeMenu,
   };
 })();

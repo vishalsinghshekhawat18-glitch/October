@@ -308,6 +308,30 @@ body.lib::before {
 .section-head p { margin: 0; color: var(--muted); font-size: .88rem; }
 
 /* Tabs: All, my subjects, or one exam. */
+/* Exam page */
+.exam-back { display: inline-block; margin-top: 8px; color: var(--muted); font-size: .88rem; text-decoration: none; }
+.exam-back:hover { color: var(--accent); }
+.exam-hero { padding-top: 28px; }
+.exam-full { margin: 12px 0 0; font-family: var(--font-display); font-style: italic; font-size: 1.15rem; color: var(--ink-2); }
+#examBody > .coverage { margin-top: 0; }
+.exam-sec { margin-top: 64px; }
+.syl { margin: 0; padding: 0; list-style: none; columns: 2 340px; column-gap: 28px; }
+.syl li { break-inside: avoid; }
+.syl-row { display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center; padding: 12px 6px; border-bottom: 1px solid var(--line); color: inherit; text-decoration: none; }
+.syl-no { font-family: var(--font-display); font-size: 1.05rem; color: var(--muted); text-align: right; }
+.syl-text { min-width: 0; display: grid; gap: 2px; }
+.syl-text b { font-family: var(--font-display); font-weight: 450; font-size: 1.02rem; line-height: 1.25; }
+.syl-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: var(--muted); }
+.syl-row:not(.is-ready) .syl-text b { color: var(--ink-2); }
+.syl-row.is-ready .syl-no, .syl-row.is-ready .syl-text small { color: var(--accent); }
+.syl-go { color: var(--muted); font-size: 1.2rem; }
+a.syl-row:hover .syl-text b, a.syl-row:hover .syl-go { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .exam-sec { margin-top: 48px; }
+  a.shelf-group-head p b { display: block; margin: 4px 0 0; }
+}
+
 .shelf-tabs { display: flex; gap: 8px; margin: -12px 0 34px; overflow-x: auto; scrollbar-width: none; }
 .shelf-tabs::-webkit-scrollbar { display: none; }
 .shelf-tab {
@@ -517,6 +541,10 @@ body.lib::before {
   border-bottom: 1px solid var(--line);
 }
 
+a.shelf-group-head { color: inherit; text-decoration: none; }
+a.shelf-group-head:hover h3 { color: var(--accent); }
+.shelf-group-head p b { margin-left: 12px; font-weight: 600; color: var(--accent); }
+
 .shelf-group-head h3 {
   margin: 0;
   font-family: var(--font-display);
@@ -527,12 +555,6 @@ body.lib::before {
 .shelf-group-head h3 span { margin-left: .4em; color: var(--muted); font-family: var(--font-ui); font-size: .82rem; font-weight: 500; }
 
 .shelf-group-head p { margin: 0; color: var(--muted); font-size: .85rem; }
-
-.book.is-paper .empty-slot { font-size: .76rem; }
-
-.book.is-paper .empty-slot b { font-family: var(--font-display); }
-
-.book.is-paper .empty-slot small { display: block; margin-top: 4px; opacity: .75; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
 
 /* Syllabus coverage under a series: one segment per paper or subject. */
 .coverage {
@@ -564,28 +586,3 @@ body.lib::before {
   background: linear-gradient(to right, var(--accent) var(--fill, 0%), var(--surface-2) var(--fill, 0%));
 }
 
-.cov-note { margin: 10px 0 0; font-size: .82rem; color: var(--muted); }
-
-.cov-todo { margin-top: 10px; font-size: .82rem; color: var(--muted); }
-
-.cov-todo summary { cursor: pointer; width: max-content; color: var(--ink-2); }
-
-.cov-todo summary:hover { color: var(--accent); }
-
-.cov-todo ul { margin: 8px 0 0; padding: 0; list-style: none; columns: 2 220px; column-gap: 24px; }
-
-.cov-todo li { padding: 3px 0; break-inside: avoid; }
-
-.cov-todo small { margin-left: .3em; color: var(--accent); }
-
-/* Wide screens name missing papers in their empty slots, so the list would repeat them.
-   On a phone the slots would fill the screen, so the list takes their place. */
-.cov-todo.is-slotted { display: none; }
-
-@media (max-width: 640px) {
-  .shelf-group .book.is-paper { display: none; }
-  .cov-todo.is-slotted { display: block; }
-  .shelf-group { margin-top: 48px; }
-  .shelf-group-head { margin-bottom: 20px; }
-  .coverage { margin-top: 22px; }
-}
