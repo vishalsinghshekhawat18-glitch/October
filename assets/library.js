@@ -106,8 +106,8 @@
     return `<div class="coverage">
       <div class="cov-head"><span>Syllabus covered by notes</span><b>${Math.round(pct * 100)}%</b></div>
       <div class="cov-bar" role="img" aria-label="${done} of ${plural(papers.length, itemOf(x))} have notes">${segs}</div>
-      <p class="cov-note">${done} of ${plural(papers.length, itemOf(x))} have notes${todo.length ? '' : ' — the whole syllabus is covered'}</p>
-      ${todo.length ? `<details class="cov-todo"><summary>Still to create (${todo.length})</summary><ul>${todo.map(name => {
+      ${todo.length ? '' : '<p class="cov-note">The whole syllabus is covered.</p>'}
+      ${todo.length ? `<details class="cov-todo${x.slots === 'next' ? '' : ' is-slotted'}"><summary>Still to create (${todo.length})</summary><ul>${todo.map(name => {
         const v = shares[papers.indexOf(name)];
         return `<li>${O.esc(name)}${v > 0 ? ` <small>${Math.round(v * 100)}% written</small>` : ''}</li>`;
       }).join('')}</ul></details>` : ''}

@@ -79,9 +79,9 @@
 
   titlepage.innerHTML = `
     <div class="rd-tp-cover">${O.cover(subject, number)}</div>
-    <p class="rd-tp-eyebrow">${subject.kind === 'guide' ? 'Start here' : series ? `${esc(series.name)} · Paper ${subject.paper}` : `Subject ${number ? 'No. ' + String(number).padStart(2, '0') : ''}`}</p>
+    <p class="rd-tp-eyebrow">${subject.kind === 'guide' ? 'Start here' : series ? `${esc(series.name)} · ${esc(subject.coverLabel || `${(series.item || 'paper').replace(/^./, c => c.toUpperCase())} ${subject.paper}`)}` : `Subject ${number ? 'No. ' + String(number).padStart(2, '0') : ''}`}</p>
     <h1 class="rd-tp-title">${esc(subject.title)}</h1>
-    ${subject.subtitle ? `<p class="rd-tp-sub">${esc(subject.subtitle)}</p>` : ''}
+    ${subject.subtitle && !series ? `<p class="rd-tp-sub">${esc(subject.subtitle)}</p>` : ''}
     <p class="rd-tp-meta" id="tpMeta"></p>
     <div class="rd-ornament" aria-hidden="true">❦</div>`;
 
@@ -153,6 +153,17 @@
       t.before(wrap);
       wrap.append(t);
     });
+    // Italic suits a short aside; a long note in a plain box is set upright.
+    $$('.rd-box-plain', content).forEach(b => b.classList.toggle('is-long', b.textContent.trim().length > 220));
+    // Wide tables scroll sideways: shade the edge that has more to show.
+    const tableEdges = w => {
+      const max = w.scrollWidth - w.clientWidth;
+      w.classList.toggle('more-right', max > 2 && w.scrollLeft < max - 2);
+      w.classList.toggle('more-left', max > 2 && w.scrollLeft > 2);
+    };
+    $$('.rd-table', content).forEach(w => w.addEventListener('scroll', () => tableEdges(w), { passive: true }));
+    const tableObs = new ResizeObserver(es => es.forEach(e => tableEdges(e.target)));
+    $$('.rd-table', content).forEach(w => tableObs.observe(w));
     $$('img', content).forEach(img => {
       img.loading = 'lazy';
       img.decoding = 'async';
@@ -587,7 +598,7 @@
       }
       // Books that count their items (Current Affairs) show the tally too; in must-learn mode, the ★ count.
       const count = prefs.mustOnly && hasStars ? h.dataset.countMust : h.dataset.count;
-      if (count) meta = meta ? `${count} · ${meta}` : count;
+      if (count) meta = meta && meta !== count ? `${count} · ${meta}` : count;
       return `<li data-i="${i}"${tocDepth[i] > 0 ? ' hidden' : ''}>
         <div class="rd-toc-row" style="--d:${tocDepth[i]}">
           ${hasKids.has(i) ? `<button class="rd-toc-tog" data-tog="${i}" aria-expanded="false" aria-label="Show contents of ${esc(label(h))}">${chev}</button>` : '<span class="rd-toc-tog"></span>'}
@@ -640,7 +651,9 @@
   function renderDrawerHead() {
     $('#drawerHead').innerHTML = `${O.cover(subject, number)}
       <div><p class="rd-dh-title">${esc(subject.title)}</p>
-      <div class="rd-dh-meta"><div class="rd-dh-bar"><span id="dhBar"></span></div><span id="dhPct">0%</span></div></div>`;
+      <div class="rd-dh-meta"><div class="rd-dh-bar"><span id="dhBar"></span></div><span id="dhPct">0%</span></div></div>
+      <button class="rd-btn rd-sm rd-dh-close" id="drawerClose" aria-label="Close contents">${icon('<path d="M6 6l12 12M18 6 6 18"/>', 18)}</button>`;
+    $('#drawerClose').onclick = closeDrawer;
   }
 
   function openDrawer(tab) {
@@ -1374,7 +1387,7 @@
         }
         return;
       }
-      if (e.target.closest('a, button, input, summary, .rd-table, pre, .katex, .rd-cta')) return;
+      if (e.target.closest('a, button, input, summary, pre, .katex, .rd-cta')) return;
       const img = e.target.closest('.rd-content img');
       if (img) return openLightbox(img);
       if (hadSelection || !getSelection().isCollapsed) return;

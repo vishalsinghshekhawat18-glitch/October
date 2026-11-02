@@ -508,7 +508,7 @@ body.lib::before {
 
 .cov-note { margin: 10px 0 0; font-size: .82rem; color: var(--muted); }
 
-.cov-todo { margin-top: 6px; font-size: .82rem; color: var(--muted); }
+.cov-todo { margin-top: 10px; font-size: .82rem; color: var(--muted); }
 
 .cov-todo summary { cursor: pointer; width: max-content; color: var(--ink-2); }
 
@@ -519,3 +519,15 @@ body.lib::before {
 .cov-todo li { padding: 3px 0; break-inside: avoid; }
 
 .cov-todo small { margin-left: .3em; color: var(--accent); }
+
+/* Wide screens name missing papers in their empty slots, so the list would repeat them.
+   On a phone the slots would fill the screen, so the list takes their place. */
+.cov-todo.is-slotted { display: none; }
+
+@media (max-width: 640px) {
+  .shelf-group .book.is-paper { display: none; }
+  .cov-todo.is-slotted { display: block; }
+  .shelf-group { margin-top: 48px; }
+  .shelf-group-head { margin-bottom: 20px; }
+  .coverage { margin-top: 22px; }
+}
