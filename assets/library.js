@@ -150,16 +150,28 @@
   const readyCount = subjects.filter(isReady).length;
   $('#shelfCount').textContent = `${subjects.length} ${subjects.length === 1 ? 'subject' : 'subjects'} · ${readyCount} ready to read`;
 
-  // Continue reading
+  // Jump back in: the book read last as a large card, then up to two other books in progress, newest first.
   const all = [...subjects, ...(lib.guide ? [lib.guide] : [])];
-  const last = all.find(s => s.slug === data.last && isReady(s));
-  const lastBook = last && data.books[last.slug];
-  if (lastBook && lastBook.pos && lastBook.pos.pct > .005 && lastBook.pos.pct < .995) {
+  const coverNo = s => s.kind === 'guide' ? null : general.indexOf(s) + 1 || null;
+  const reading = all
+    .filter(s => isReady(s) && data.books[s.slug] && data.books[s.slug].pos && data.books[s.slug].pos.pct > .005 && data.books[s.slug].pos.pct < .995)
+    .sort((a, b) => (b.slug === data.last) - (a.slug === data.last) || (data.books[b.slug].pos.at || 0) - (data.books[a.slug].pos.at || 0));
+  const last = reading[0];
+  if (last) {
+    const lastBook = data.books[last.slug];
     const pct = lastBook.pos.pct;
     const left = lastBook.pos.minutesLeft;
+    const also = reading.slice(1, 3).map(s => {
+      const p = data.books[s.slug].pos;
+      return `<a class="also-row" href="reader.html?book=${encodeURIComponent(s.slug)}">
+        ${O.cover(s, coverNo(s))}
+        <span class="also-text"><b>${O.esc(s.title)}</b><span>${O.esc(p.section || 'Where you left off')}</span></span>
+        <span class="also-pct">${Math.round(p.pct * 100)}%</span>
+      </a>`;
+    }).join('');
     const el = $('#continue');
-    el.outerHTML = `<a class="continue" id="continue" href="reader.html?book=${encodeURIComponent(last.slug)}">
-      ${O.cover(last, last.kind === 'guide' ? null : general.indexOf(last) + 1)}
+    el.outerHTML = `<div class="jump${also ? ' has-also' : ''}"><a class="continue" id="continue" href="reader.html?book=${encodeURIComponent(last.slug)}">
+      ${O.cover(last, coverNo(last))}
       <div>
         <p class="eyebrow">Continue reading</p>
         <h2 class="continue-title">${O.esc(last.title)}</h2>
@@ -170,7 +182,7 @@
           <span class="resume">Resume <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
         </div>
       </div>
-    </a>`;
+    </a>${also ? `<div class="also"><p class="eyebrow">Also reading</p>${also}</div>` : ''}</div>`;
   }
 
   // Reader's guide
