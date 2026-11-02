@@ -222,6 +222,7 @@
   partNav.hidden = true;
   const tocOpen = new Set();
   const tocUserOpen = new Set();
+  const tocUserClosed = new Set();
 
   // A heading's name in contents, bars and lists; data-toc lets a book give a cleaner label.
   const label = h => (h.dataset.toc || h.textContent).replace(/\s+/g, ' ').trim();
@@ -296,6 +297,7 @@
       root.dataset.partpages = 'on';
       content.before(partNav);
     }
+    renderTpMap();
     measure();
     partStart = parts.map(h => cum[Math.max(0, blocks.indexOf(h))]);
 
@@ -558,6 +560,31 @@
     window.scrollBy({ top: dir * step, behavior: reduceMotion ? 'instant' : 'smooth' });
   }
 
+  // A map of the book on its title page: parts with their chapters, one tap to any of them.
+  function renderTpMap() {
+    if (!chapters.length && parts.length < 2) return;
+    const go = h => `<li><button class="rd-tp-ch" data-go="${tocHeads.indexOf(h)}">${esc(label(h))}</button></li>`;
+    const after = (a, b) => !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    let html;
+    if (!parts.length) html = `<ul>${chapters.map(go).join('')}</ul>`;
+    else {
+      // Short books open every part; long ones list the parts and open on a tap. Revision sets stay folded.
+      const isRev = c => c.classList.contains('rd-rev');
+      const open = chapters.filter(c => !isRev(c)).length <= 60;
+      html = parts.map((p, k) => {
+        const next = parts[k + 1];
+        const own = chapters.filter(c => after(p, c) && (!next || after(c, next)));
+        if (!own.length) return `<ul class="rd-tp-solo">${go(p)}</ul>`;
+        return `<details class="rd-tp-part"${open && !own.every(isRev) ? ' open' : ''}><summary><span>${esc(label(p))}</span><small>${units(own.length)}</small></summary><ul>${own.map(go).join('')}</ul></details>`;
+      }).join('');
+    }
+    $('#tpMeta').insertAdjacentHTML('afterend', `<nav class="rd-tp-map" aria-label="Chapters"><p class="rd-tp-map-head">Contents</p>${html}</nav>`);
+    titlepage.addEventListener('click', e => {
+      const b = e.target.closest('[data-go]');
+      if (b && tocHeads[+b.dataset.go]) goToEl(tocHeads[+b.dataset.go], false);
+    });
+  }
+
   // ---------- Contents, ticks, drawer ----------
   // The contents is a collapsible tree: parts › chapters › sections, opened along the reader's position.
   let currentToc = -2;
@@ -625,6 +652,7 @@
   function openTocTo(si) {
     tocOpen.clear();
     tocUserOpen.forEach(i => tocOpen.add(i));
+    parts.forEach(h => { const i = tocHeads.indexOf(h); if (i >= 0 && !tocUserClosed.has(i)) tocOpen.add(i); });
     for (let p = si; p >= 0; p = tocParent[p]) tocOpen.add(p);
     applyTocOpen();
   }
@@ -662,7 +690,7 @@
     drawer.classList.add('is-open');
     drawer.setAttribute('aria-hidden', 'false');
     scrim.classList.add('is-on');
-    if (currentToc >= 0) openTocTo(currentToc);
+    openTocTo(currentToc);
     // Scroll only the list (scrollIntoView would also move the page and the drawer sideways).
     const cur = $('.rd-toc-item.is-current', drawer);
     const list = $('.rd-drawer-body', drawer);
@@ -1222,6 +1250,7 @@
     addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', () => update());
 
+    $('#locSection').onclick = () => openDrawer('toc');
     $('#btnToc').onclick = () => (drawer.classList.contains('is-open') ? closeDrawer() : openDrawer('toc'));
     $('#btnSearch').onclick = () => (searchBar.hidden ? openSearch() : closeSearch());
     $('#btnBookmark').onclick = toggleBookmark;
@@ -1243,7 +1272,7 @@
       const tog = e.target.closest('[data-tog]');
       if (tog) {
         const i = +tog.dataset.tog;
-        if (tocOpen.has(i)) { tocOpen.delete(i); tocUserOpen.delete(i); } else { tocOpen.add(i); tocUserOpen.add(i); }
+        if (tocOpen.has(i)) { tocOpen.delete(i); tocUserOpen.delete(i); tocUserClosed.add(i); } else { tocOpen.add(i); tocUserOpen.add(i); tocUserClosed.delete(i); }
         applyTocOpen();
         return;
       }
