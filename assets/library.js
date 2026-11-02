@@ -117,10 +117,29 @@
   // Empty slots fill out the last row of the general shelf, so it never ends with a lone gap;
   // a series shows a slot for each paper still to come.
   const shelf = $('#shelf');
+  // Tabs above a grouped shelf: All, the general subjects, or one exam. The choice is remembered.
+  const keyOf = g => g.series ? g.series.id : 'general';
+  let tab = groups.some(g => keyOf(g) === data.prefs.shelfTab) ? data.prefs.shelfTab : 'all';
+  const tabs = $('#shelfTabs');
+  if (grouped) {
+    tabs.innerHTML = [['all', 'All', subjects.length], ...groups.filter(g => g.books.length || g.series).map(g => [keyOf(g), g.series ? g.series.name : 'My subjects', g.books.length])]
+      .map(([k, name, n]) => `<button class="shelf-tab" role="tab" data-tab="${k}" aria-selected="${k === tab}">${O.esc(name)} <span>${n}</span></button>`).join('');
+    tabs.hidden = false;
+    tabs.addEventListener('click', e => {
+      const b = e.target.closest('[data-tab]');
+      if (!b || b.dataset.tab === tab) return;
+      tab = b.dataset.tab;
+      data.prefs.shelfTab = tab;
+      O.save();
+      tabs.querySelectorAll('[data-tab]').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
+      renderShelf();
+    });
+  }
   function renderShelf() {
     delay = 0;
     shelf.classList.toggle('is-grouped', grouped);
-    const html = groups.map((g, gi) => {
+    const shown = groups.filter(g => tab === 'all' || keyOf(g) === tab);
+    const html = shown.map((g, gi) => {
       if (!g.series) return `<div class="shelf">${g.books.map((s, i) => card(s, i + 1)).join('')}</div>`;
       const papers = g.series.papers || [];
       const have = new Set(g.books.map(s => s.paper));
@@ -135,12 +154,13 @@
     shelf.innerHTML = grouped ? html.join('') : html[0].replace(/^<div class="shelf">|<\/div>$/g, '');
     const first = grouped ? shelf.querySelector('.shelf') : shelf;
     const cols = getComputedStyle(first).gridTemplateColumns.split(' ').length;
+    shelf.dataset.cols = cols;
+    if (!shown.some(g => !g.series)) return;
     const n = general.length;
     let empty = (cols - (n % cols)) % cols;
     if (n < cols) empty = cols - n;
     empty = Math.min(empty, grouped ? 1 : Infinity, Math.max(0, capacity - subjects.length));
     for (let i = 0; i < empty; i++) first.insertAdjacentHTML('beforeend', slot('<b>+</b>Room for a new subject'));
-    shelf.dataset.cols = cols;
   }
   renderShelf();
   addEventListener('resize', () => {

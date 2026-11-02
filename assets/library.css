@@ -307,6 +307,33 @@ body.lib::before {
 
 .section-head p { margin: 0; color: var(--muted); font-size: .88rem; }
 
+/* Tabs: All, my subjects, or one exam. */
+.shelf-tabs { display: flex; gap: 8px; margin: -12px 0 34px; overflow-x: auto; scrollbar-width: none; }
+.shelf-tabs::-webkit-scrollbar { display: none; }
+.shelf-tab {
+  flex: none;
+  height: 36px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  font: 500 .86rem var(--font-ui);
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.shelf-tab span { margin-left: 3px; color: var(--muted); font-size: .78rem; }
+.shelf-tab:hover { border-color: var(--accent); }
+.shelf-tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.shelf-tab[aria-selected="true"] span { color: inherit; opacity: .7; }
+.shelf.is-grouped > .shelf-group:first-child { margin-top: 0; }
+
+@media (max-width: 640px) {
+  .shelf-tabs { gap: 6px; margin: -10px 0 28px; }
+  .shelf-tab { height: 34px; padding: 0 11px; font-size: .8rem; }
+  .shelf-tab span { font-size: .72rem; }
+}
+
 .shelf {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
