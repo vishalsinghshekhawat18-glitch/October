@@ -113,7 +113,7 @@
       "series": "ras",
       "paper": 1,
       "title": "Rajasthan History",
-      "subtitle": "RAS · 22 units",
+      "subtitle": "RAS · 23 units",
       "unit": "unit",
       "status": "ready",
       "file": "books/ras-rajasthan-history/content.html",
@@ -131,7 +131,7 @@
       "series": "ras",
       "paper": 2,
       "title": "Indian History",
-      "subtitle": "RAS · 46 units",
+      "subtitle": "RAS · 51 units",
       "unit": "unit",
       "status": "ready",
       "file": "books/ras-indian-history/content.html",
@@ -143,6 +143,24 @@
         "emblem": "compass"
       },
       "coverLabel": "Subject 2"
+    },
+    {
+      "slug": "ras-modern-world-history",
+      "series": "ras",
+      "paper": 4,
+      "title": "Modern World History",
+      "subtitle": "RAS · 10 units",
+      "unit": "unit",
+      "status": "ready",
+      "file": "books/ras-modern-world-history/content.html",
+      "updated": "2026-11-07",
+      "cover": {
+        "from": "#5a4a7a",
+        "to": "#272038",
+        "ink": "#f0ecf7",
+        "emblem": "globe"
+      },
+      "coverLabel": "Subject 4"
     }
   ]
 }
