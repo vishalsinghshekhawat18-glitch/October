@@ -8,3 +8,5 @@ To reopen a month: copy its file back into the Project, edit it there, then repu
 |---|---|---|
 | CA_Jan-Mar_2026.html | Jan–Mar 2026 | 12 Nov 2026 |
 | CA_April_2026.html | April 2026 | 12 Nov 2026 |
+| CA_September_2026.html | September 2026 | 12 Nov 2026 |
+| CA_October_2026.html | October 2026 | 12 Nov 2026 |
