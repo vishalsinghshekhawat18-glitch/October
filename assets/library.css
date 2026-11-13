@@ -588,9 +588,12 @@ a.shelf-group-head:hover h3 { color: var(--accent); }
 
 
 /* Top bar actions: Desk link + theme menu */
-.top-actions { display: flex; align-items: center; gap: 8px; }
+.top-actions { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; }
+.top-actions > * { flex: none; }
+.desk-chip { min-width: 112px; padding: 0 22px; justify-content: center; font-weight: 600; }
 a.chip { text-decoration: none; }
 .chip.is-here { border-color: var(--accent); color: var(--accent); }
 
 /* Study Desk (holding page while the system is designed) */
+@media (max-width: 640px) { .desk-chip { min-width: 96px; padding: 0 16px; } }
 .desk-soon { max-width: 560px; color: var(--ink-2); line-height: 1.6; }
