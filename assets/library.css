@@ -586,3 +586,11 @@ a.shelf-group-head:hover h3 { color: var(--accent); }
   background: linear-gradient(to right, var(--accent) var(--fill, 0%), var(--surface-2) var(--fill, 0%));
 }
 
+
+/* Top bar actions: Desk link + theme menu */
+.top-actions { display: flex; align-items: center; gap: 8px; }
+a.chip { text-decoration: none; }
+.chip.is-here { border-color: var(--accent); color: var(--accent); }
+
+/* Study Desk (holding page while the system is designed) */
+.desk-soon { max-width: 560px; color: var(--ink-2); line-height: 1.6; }
