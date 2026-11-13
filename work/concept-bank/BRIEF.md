@@ -84,9 +84,12 @@ One card per concept, exactly this shape (copy the markup; change only the text)
 - "In the news" lists every `month_refs` entry, one line each, linking to the part id (`#nov-2026`, `#oct-2026`, `#sep-2026`, `#may-2026`, `#apr-2026`, `#jan-mar-2026`). Do **not** repeat the news numbers there.
 - Omit a sub-block only if there is truly nothing for it (for example no rule changes yet); never write placeholders.
 
-### `batch-NN-sources.csv`: where every fact came from
+### Facts are copied, never written (rule from 13 Nov 2026)
 
-Columns: `concept_id,fact,url,quote`. **One row for every bullet** in Fixed facts and How it changed. `quote` = the exact words (at most 40) copied from that page that state the fact; open the page and copy, never write a quote or a URL from memory. For a dated rule change already in a month card, cite the card instead: url `month:<part>|<card title>` exactly as in month_cards.csv, quote = the card's words (preferred for How it changed). A bullet with no real source is deleted. The auditor checks a sample of quotes against the live pages; one invented link or quote rejects the whole batch. Allowed sources only: rbi.org.in, sebi.gov.in, irdai.gov.in, pfrda.org.in, pib.gov.in, indiacode.nic.in, egazette.gov.in, finmin.nic.in / dea.gov.in / financialservices.gov.in, mospi.gov.in, cga.nic.in, gstcouncil.gov.in, ibbi.gov.in, npci.org.in, the official site of the body itself (for international bodies: imf.org, worldbank.org, bis.org, wto.org, un.org and the like), and legislative.gov.in. News sites, coaching sites and Wikipedia are **not** allowed. If you cannot find an official source for a fact, leave the fact out and add a row with url `NOT FOUND` so the auditor sees the gap.
+- Every bullet in **Fixed facts** and **How it changed** must be copied word for word from the book (`books/current-affairs/content.html`: a month card or the Static Bank part). You may only add a date prefix like `27 Apr 2026: ` in How it changed. The validator checks every bullet against the book; a bullet it cannot find fails the batch.
+- If a fact you think belongs is not in the book, do not write it. List it in `out/batch-NN-wanted.csv` (columns `concept_id,wanted_fact,where_to_look`); the auditor adds it from an official source.
+- **Why it exists, How it works, Traps and In plain words** are your own explanation in plain words. They may not contain any number that is not already in the card's fact bullets (the validator checks this). Explain ideas, not figures.
+- No sources csv is needed any more; the book is the source. No HTML comments anywhere.
 
 Writing rules (the user's standing rules):
 - Plain, clear English; bullets and short phrases; arrows for processes.

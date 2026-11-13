@@ -106,7 +106,28 @@ def phase_b(nn):
             part, t = ref.split('|', 1)
             if f'href="#{part.strip()}"' not in news or t.strip() not in news:
                 warns.append(f'{cid}: In the news may be missing {ref}')
-    src = rdo(f'batch-{nn}-sources.csv')
+    import html as _h
+    def _norm(t):
+        t = _h.unescape(re.sub(r'<[^>]+>', ' ', t))
+        return re.sub(r'[\s;,.:()\-–—|]+', ' ', t).strip().lower()
+    book = open(os.path.join(HERE, '..', '..', 'books', 'current-affairs', 'content.html'), encoding='utf-8').read()
+    BOOK = _norm(book)
+    if '<!--' in html: errors.append('HTML comments are not allowed in batch files')
+    for cls, cid, star, title, body in cards:
+        facts_txt = ''
+        for lab in ('Fixed facts','How it changed'):
+            if f'<p><strong>{lab}</strong></p>' in body:
+                blk = body.split(f'<p><strong>{lab}</strong></p>')[1].split('<p><strong>')[0]
+                for li in re.findall(r'<li>(.*?)</li>', blk, re.S):
+                    facts_txt += ' ' + li
+                    t = re.sub(r'^\s*(\d{1,2} )?([A-Z][a-z]+ )?\d{4}:\s*', '', _h.unescape(re.sub(r'<[^>]+>', '', li)))
+                    if _norm(t) not in BOOK:
+                        errors.append(f'{cid}: {lab} bullet is not copied word for word from the book: {t[:90]!r}')
+        expl = body.split('<p><strong>Fixed facts</strong></p>')[0] + (body.split('<p><strong>Traps</strong></p>')[1].split('<p><strong>In the news</strong></p>')[0] if '<p><strong>Traps</strong></p>' in body else '')
+        allowed = set(re.findall(r'\d+(?:\.\d+)?', _h.unescape(re.sub(r'<[^>]+>', ' ', facts_txt))))
+        for n in re.findall(r'\d+(?:\.\d+)?', _h.unescape(re.sub(r'<[^>]+>', ' ', expl))):
+            if n not in allowed: errors.append(f'{cid}: number {n} in the explanation blocks is not in the card\'s fact bullets'); break
+    src = rdo(f'batch-{nn}-sources.csv') if os.path.exists(os.path.join(OUT, f'batch-{nn}-sources.csv')) else []
     if src and list(src[0].keys()) != ['concept_id','fact','url','quote']:
         errors.append('sources csv columns must be exactly: concept_id,fact,url,quote')
     with_src = set()
@@ -128,13 +149,11 @@ def phase_b(nn):
         if not host: errors.append(f'sources line {i}: bad url {u!r}'); continue
         if any(b in host for b in BANNED): errors.append(f'sources line {i}: banned source {host}')
         elif not host.endswith(ALLOWED): warns.append(f'sources line {i}: check source {host}')
-    for cid in ids - with_src: errors.append(f'{cid}: no rows in sources csv')
     for cls, cid, star, title, body in cards:
         need = 0
         for lab in ('Fixed facts','How it changed'):
             if f'<p><strong>{lab}</strong></p>' in body:
                 need += body.split(f'<p><strong>{lab}</strong></p>')[1].split('<p><strong>')[0].count('<li>')
-        if per.get(cid, 0) < need: errors.append(f'{cid}: {need} facts in Fixed facts + How it changed but only {per.get(cid,0)} source rows (one row per bullet)')
         txt = re.sub(r'<[^>]+>', ' ', body)
         for m in re.finditer(r'\b[A-Z][a-z]+(?:[ -][A-Za-z]+){1,6} \(([A-Z]{2,}[a-z]?)\)', txt):
             errors.append(f'{cid}: acronym expanded in the body: {m.group(0)[:60]!r} (write only the acronym)')
