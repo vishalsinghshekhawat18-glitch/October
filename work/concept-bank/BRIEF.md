@@ -86,14 +86,16 @@ One card per concept, exactly this shape (copy the markup; change only the text)
 
 ### `batch-NN-sources.csv`: where every fact came from
 
-Columns: `concept_id,fact,url`. **Every** fact in Fixed facts and How it changed needs a row. Allowed sources only: rbi.org.in, sebi.gov.in, irdai.gov.in, pfrda.org.in, pib.gov.in, indiacode.nic.in, egazette.gov.in, finmin.nic.in / dea.gov.in / financialservices.gov.in, mospi.gov.in, cga.nic.in, gstcouncil.gov.in, ibbi.gov.in, npci.org.in, the official site of the body itself (for international bodies: imf.org, worldbank.org, bis.org, wto.org, un.org and the like), and legislative.gov.in. News sites, coaching sites and Wikipedia are **not** allowed. If you cannot find an official source for a fact, leave the fact out and add a row with url `NOT FOUND` so the auditor sees the gap.
+Columns: `concept_id,fact,url,quote`. **One row for every bullet** in Fixed facts and How it changed. `quote` = the exact words (at most 40) copied from that page that state the fact; open the page and copy, never write a quote or a URL from memory. For a dated rule change already in a month card, cite the card instead: url `month:<part>|<card title>` exactly as in month_cards.csv, quote = the card's words (preferred for How it changed). A bullet with no real source is deleted. The auditor checks a sample of quotes against the live pages; one invented link or quote rejects the whole batch. Allowed sources only: rbi.org.in, sebi.gov.in, irdai.gov.in, pfrda.org.in, pib.gov.in, indiacode.nic.in, egazette.gov.in, finmin.nic.in / dea.gov.in / financialservices.gov.in, mospi.gov.in, cga.nic.in, gstcouncil.gov.in, ibbi.gov.in, npci.org.in, the official site of the body itself (for international bodies: imf.org, worldbank.org, bis.org, wto.org, un.org and the like), and legislative.gov.in. News sites, coaching sites and Wikipedia are **not** allowed. If you cannot find an official source for a fact, leave the fact out and add a row with url `NOT FOUND` so the auditor sees the gap.
 
 Writing rules (the user's standing rules):
 - Plain, clear English; bullets and short phrases; arrows for processes.
 - Do not bold numbers. Do not expand acronyms in the body (the card title may carry the full name).
 - No card IDs, source names or "per source" wording in the card text.
 - Light background design is already in the book; do not add styles or scripts.
-- Never invent a fact, date or number. Missing is better than wrong.
+- Never invent a fact, date, number, link or quote. Missing is better than wrong.
+- Never generate cards with a script from memory; read the sources, then write.
+- How it changed holds rule and framework changes only; news numbers (limits for one half-year, market shares, monthly figures) stay in the month cards.
 
 Then run `python3 work/concept-bank/validate.py B NN` and fix every error. Commit with message `Concept Bank Phase B batch NN` and **stop**. Do not start the next batch until the auditor approves.
 

@@ -107,16 +107,37 @@ def phase_b(nn):
             if f'href="#{part.strip()}"' not in news or t.strip() not in news:
                 warns.append(f'{cid}: In the news may be missing {ref}')
     src = rdo(f'batch-{nn}-sources.csv')
+    if src and list(src[0].keys()) != ['concept_id','fact','url','quote']:
+        errors.append('sources csv columns must be exactly: concept_id,fact,url,quote')
     with_src = set()
+    per = {}
     for i, r in enumerate(src, 2):
         u = r.get('url','').strip()
-        with_src.add(r.get('concept_id'))
+        cid0 = r.get('concept_id'); with_src.add(cid0); per[cid0] = per.get(cid0, 0) + 1
+        q = (r.get('quote') or '').strip()
+        if u != 'NOT FOUND':
+            if not q: errors.append(f'sources line {i}: quote missing (copy the exact words from the page)')
+            elif len(q.split()) > 40: errors.append(f'sources line {i}: quote longer than 40 words')
+        if u.startswith('month:'):
+            ref = u[6:]
+            if '|' not in ref or (ref.split('|',1)[0].strip(), ref.split('|',1)[1].strip()) not in month_keys:
+                errors.append(f'sources line {i}: month ref not found in month_cards.csv: {ref!r}')
+            continue
         if u == 'NOT FOUND': warns.append(f'sources line {i}: NOT FOUND for {r.get("concept_id")}: {r.get("fact","")[:60]}'); continue
         host = urlparse(u).netloc.lower()
         if not host: errors.append(f'sources line {i}: bad url {u!r}'); continue
         if any(b in host for b in BANNED): errors.append(f'sources line {i}: banned source {host}')
         elif not host.endswith(ALLOWED): warns.append(f'sources line {i}: check source {host}')
     for cid in ids - with_src: errors.append(f'{cid}: no rows in sources csv')
+    for cls, cid, star, title, body in cards:
+        need = 0
+        for lab in ('Fixed facts','How it changed'):
+            if f'<p><strong>{lab}</strong></p>' in body:
+                need += body.split(f'<p><strong>{lab}</strong></p>')[1].split('<p><strong>')[0].count('<li>')
+        if per.get(cid, 0) < need: errors.append(f'{cid}: {need} facts in Fixed facts + How it changed but only {per.get(cid,0)} source rows (one row per bullet)')
+        txt = re.sub(r'<[^>]+>', ' ', body)
+        for m in re.finditer(r'\b[A-Z][a-z]+(?:[ -][A-Za-z]+){1,6} \(([A-Z]{2,}[a-z]?)\)', txt):
+            errors.append(f'{cid}: acronym expanded in the body: {m.group(0)[:60]!r} (write only the acronym)')
     print(f'batch {nn}: {len(cards)} cards, {len(src)} source rows')
 
 if __name__ == '__main__':
