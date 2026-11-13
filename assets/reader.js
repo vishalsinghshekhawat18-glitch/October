@@ -1450,6 +1450,7 @@
       else if (k === '/' || k === 's' || k === 'S') { e.preventDefault(); openSearch(); }
       else if (k === 'b' || k === 'B') toggleBookmark();
       else if (k === 'a' || k === 'A') toggleSettings();
+      else if (k === 'h' || k === 'H') location.href = './';
       else if (k === 'f' || k === 'F') {
         body.classList.toggle('rd-focus');
         toast(body.classList.contains('rd-focus') ? 'Focus mode · press F to leave' : 'Focus mode off');
