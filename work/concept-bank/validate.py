@@ -66,7 +66,7 @@ def phase_a():
     for i, r in enumerate(sd, 2):
         if r.get('static_card_title','') not in static_titles: errors.append(f'static_dated.csv line {i}: unknown static card title')
         h = r.get('suggested_home','')
-        if h not in PARTS and h != 'drop': errors.append(f'static_dated.csv line {i}: suggested_home must be a part id or drop')
+        if h not in PARTS and h not in ('drop','keep','hold'): errors.append(f'static_dated.csv line {i}: suggested_home must be a part id, drop, keep or hold')
     print(f'concepts {len(rows)}; must cards covered {len(covered & must_keys)}/{len(must_keys)}; unmapped {len(unm_keys)}; static dated items {len(sd)}')
 
 ALLOWED = ('rbi.org.in','sebi.gov.in','irdai.gov.in','pfrda.org.in','pib.gov.in','indiacode.nic.in','egazette.gov.in',
