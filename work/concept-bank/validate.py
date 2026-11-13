@@ -112,6 +112,12 @@ def phase_b(nn):
         return re.sub(r'[\s;,.:()\-–—|]+', ' ', t).strip().lower()
     book = open(os.path.join(HERE, '..', '..', 'books', 'current-affairs', 'content.html'), encoding='utf-8').read()
     BOOK = _norm(book)
+    LIS = set()
+    for li in re.findall(r'<li>(.*?)(?=</li>|<ul>)', book, re.S):
+        LIS.add(_norm(li))
+        LIS.update(_norm(x) for x in re.split(r'\s;\s', _h.unescape(re.sub(r'<[^>]+>', '', li))) if len(x) > 25)
+    for td in re.findall(r'<tr>(.*?)</tr>', book, re.S):
+        LIS.add(_norm(td))
     if '<!--' in html: errors.append('HTML comments are not allowed in batch files')
     for cls, cid, star, title, body in cards:
         facts_txt = ''
@@ -123,6 +129,8 @@ def phase_b(nn):
                     t = re.sub(r'^\s*(\d{1,2} )?([A-Z][a-z]+ )?\d{4}:\s*', '', _h.unescape(re.sub(r'<[^>]+>', '', li)))
                     if _norm(t) not in BOOK:
                         errors.append(f'{cid}: {lab} bullet is not copied word for word from the book: {t[:90]!r}')
+                    elif _norm(t) not in LIS:
+                        errors.append(f'{cid}: {lab} bullet is a fragment; copy one whole bullet from the book: {t[:90]!r}')
         expl = body.split('<p><strong>Fixed facts</strong></p>')[0] + (body.split('<p><strong>Traps</strong></p>')[1].split('<p><strong>In the news</strong></p>')[0] if '<p><strong>Traps</strong></p>' in body else '')
         allowed = set(re.findall(r'\d+(?:\.\d+)?', _h.unescape(re.sub(r'<[^>]+>', ' ', facts_txt))))
         for n in re.findall(r'\d+(?:\.\d+)?', _h.unescape(re.sub(r'<[^>]+>', ' ', expl))):
@@ -157,6 +165,20 @@ def phase_b(nn):
         txt = re.sub(r'<[^>]+>', ' ', body)
         for m in re.finditer(r'\b[A-Z][a-z]+(?:[ -][A-Za-z]+){1,6} \(([A-Z]{2,}[a-z]?)\)', txt):
             errors.append(f'{cid}: acronym expanded in the body: {m.group(0)[:60]!r} (write only the acronym)')
+    rp = os.path.join(OUT, f'batch-{nn}-revision.html')
+    if not os.path.exists(rp): errors.append(f'missing out/batch-{nn}-revision.html')
+    else:
+        rv = open(rp, encoding='utf-8').read()
+        qs = re.findall(r'<details data-concept="(c-[a-z0-9-]+)"><summary>([^<]+)</summary><div class="ans">(.*?)</div></details>', rv, re.S)
+        if len(qs) != rv.count('<details'): errors.append('revision: every question must use the exact markup in BRIEF.md')
+        have = {q[0] for q in qs}
+        for cls, cid, star, title, body in cards:
+            if star == '★' and cid not in have: errors.append(f'{cid}: no revision question')
+        for cid, q, a in qs:
+            body = next((b for c_, i_, s_, t_, b in cards if i_ == cid), '')
+            facts = _norm(body)
+            for n in re.findall(r'\d+(?:\.\d+)?', _h.unescape(re.sub(r'<[^>]+>', ' ', a))):
+                if n not in facts: errors.append(f'{cid}: revision answer number {n} is not in the card'); break
     print(f'batch {nn}: {len(cards)} cards, {len(src)} source rows')
 
 if __name__ == '__main__':

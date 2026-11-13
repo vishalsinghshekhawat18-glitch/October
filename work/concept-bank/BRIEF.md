@@ -89,7 +89,20 @@ One card per concept, exactly this shape (copy the markup; change only the text)
 - Every bullet in **Fixed facts** and **How it changed** must be copied word for word from the book (`books/current-affairs/content.html`: a month card or the Static Bank part). You may only add a date prefix like `27 Apr 2026: ` in How it changed. The validator checks every bullet against the book; a bullet it cannot find fails the batch.
 - If a fact you think belongs is not in the book, do not write it. List it in `out/batch-NN-wanted.csv` (columns `concept_id,wanted_fact,where_to_look`); the auditor adds it from an official source.
 - **Why it exists, How it works, Traps and In plain words** are your own explanation in plain words. They may not contain any number that is not already in the card's fact bullets (the validator checks this). Explain ideas, not figures.
+- Copy **whole** bullets (one complete `<li>` or table row from the book, or one complete `;`-separated part of it). Fragments cut mid-sentence fail the validator.
+- **How it changed** holds rule or framework changes only, each with its date prefix. Amounts for one period (a half-year limit, a monthly figure) stay in the month cards and do not go here.
+- Pick the facts a learner needs most: for a framework, its core numbers (for example the stage floors for ECL) come before side details.
 - No sources csv is needed any more; the book is the source. No HTML comments anywhere.
+
+### `batch-NN-revision.html`: flashcards
+
+At least one question for every ★ card, in exactly this markup (one per line):
+
+```html
+<details data-concept="c-expected-credit-loss"><summary>What are the minimum Stage 1 and Stage 2 provisions under ECL?</summary><div class="ans">0.4% and 5%.</div></details>
+```
+
+Every number in an answer must appear in that card. Prefer questions that test understanding (why, which stage, what triggers) plus one number question where the card has key numbers.
 
 Writing rules (the user's standing rules):
 - Plain, clear English; bullets and short phrases; arrows for processes.
