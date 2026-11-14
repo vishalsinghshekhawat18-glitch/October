@@ -44,6 +44,7 @@ h1{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4.4vw,3.
 .room-btn[aria-current="page"] .n{background:var(--accent-ink);color:var(--accent)}
 .grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:22px;align-items:start}
 .stack{display:grid;gap:22px;min-width:0}
+.stat{background:var(--surface-2);border-radius:10px;padding:10px 12px}.big2{font-family:var(--font-display);font-size:1.4rem;line-height:1.2}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;min-width:0}
 .card h2{font-family:var(--font-display);font-weight:500;font-size:1.28rem;margin:0;letter-spacing:-.01em}
 .card h3{font-family:var(--font-display);font-weight:500;font-size:1.1rem;margin:0}
@@ -359,6 +360,7 @@ function revisionLoad(days = 14) {
 }
 
 /* ================= The coach: one verdict per exam, from your own data ================= */
+const isBase = x => !!(x.baseline || x.dateUnknown);
 const examTests = e => S.tests.filter(t => t.exam === e.name).sort((a, b) => a.date.localeCompare(b.date));
 function coach(e) {
   const t = TODAY(), books = examBooks(e);
@@ -369,7 +371,7 @@ function coach(e) {
   const weak = units.filter(u => u.weak || u.restudy);
   const ret = units.length ? Math.max(0, units.length - overdue - weak.length) / units.length : null;
   const tests = examTests(e).filter(x => x.kind !== 'sectional');
-  const dated = tests.filter(x => !x.dateUnknown); const last3 = (dated.length ? dated : tests).slice(-3);
+  const dated = tests.filter(x => !isBase(x)); const last3 = (dated.length ? dated : tests).slice(-3);
   const wa = last3.filter(x => x.att > 0 && x.cor != null && x.max);
   const attR = wa.length ? wa.reduce((s, x) => s + x.att / x.max, 0) / wa.length : null, accR = wa.length ? wa.reduce((s, x) => s + x.cor / x.att, 0) / wa.length : null;
   const avg = last3.length ? last3.reduce((s, x) => s + pct(x.score, x.max), 0) / last3.length : null;
@@ -377,7 +379,7 @@ function coach(e) {
   const cutP = e.cutoff && e.max ? pct(e.cutoff, e.max) : withCut.length ? withCut.reduce((s, x) => s + pct(x.cutoff, x.max), 0) / withCut.length : null;
   const withTop = last3.filter(x => x.topper != null);
   const topP = e.topper && e.max ? pct(e.topper, e.max) : withTop.length ? withTop.reduce((s, x) => s + pct(x.topper, x.max), 0) / withTop.length : null;
-  const mocks14 = examTests(e).filter(x => !x.dateUnknown && diff(x.date, t) <= 14).length;
+  const mocks14 = examTests(e).filter(x => !isBase(x) && diff(x.date, t) <= 14).length;
   const days = e.date ? diff(t, e.date) : null;
   const open = S.mistakes.filter(m => !m.resolved && m.exam === e.name);
   const rc = {}; open.forEach(m => rc[m.reason] = (rc[m.reason] || 0) + 1);
@@ -693,8 +695,29 @@ V.journey = () => {
 
 /* ---------- Tests ---------- */
 const testDetail = t => [t.att != null ? `attempted ${t.att}${t.cor != null ? ', correct ' + t.cor : ''}` : '', t.sec ? Object.entries({ r: 'Reasoning', q: 'Quant', e: 'English' }).filter(([k]) => t.sec[k]).map(([k, n]) => `${n} ${t.sec[k][1] ?? '—'} marks (${t.sec[k][0] ?? '—'} att)`).join(' · ') : ''].filter(Boolean).join(' · ');
+
+/* ---------- Baseline: the mocks taken before the calendar started ---------- */
+function baselineCard(name, live) {
+  const b = S.tests.filter(t => t.exam === name && isBase(t) && t.kind !== 'sectional'); if (!b.length) return '';
+  const sum = (a, f) => a.reduce((s, x) => s + f(x), 0), r1 = v => +(+v).toFixed(1);
+  const wa = b.filter(x => x.att > 0 && x.cor != null);
+  const avgP = sum(b, x => pct(x.score, x.max)) / b.length, attR = wa.length ? sum(wa, x => x.att / x.max) / wa.length : null, accR = wa.length ? sum(wa, x => x.cor / x.att) / wa.length : null;
+  const sec = k => { const z = b.filter(x => x.sec && x.sec[k]); return z.length ? { att: sum(z, x => x.sec[k][0] || 0) / z.length, mk: sum(z, x => x.sec[k][1] || 0) / z.length, n: z.length } : null; };
+  const R = sec('r'), Q = sec('q'), best = b.reduce((m, x) => pct(x.score, x.max) > pct(m.score, m.max) ? x : m, b[0]);
+  const cell = (l, v, sub) => `<div class="stat"><div class="meta">${l}</div><div class="big2">${v}</div>${sub ? `<div class="small muted">${sub}</div>` : ''}</div>`;
+  const lt = live.length ? live[live.length - 1] : null;
+  const vs = lt ? `<p class="small" style="margin-top:10px"><b>Latest live mock vs baseline:</b> ${d1(pct(lt.score, lt.max) - avgP)} points of score${lt.att != null && attR != null ? `, ${d1((lt.att / lt.max - attR) * 100)} points of attempt rate` : ''}${lt.cor != null && lt.att && accR != null ? `, ${d1((lt.cor / lt.att - accR) * 100)} points of accuracy` : ''}.</p>` : '<p class="small muted" style="margin-top:10px">Every live mock from the calendar will be compared with this line.</p>';
+  function d1(v) { return (v >= 0 ? '+' : '') + r1(v); }
+  return `<section class="card"><div class="card-head"><h2>Baseline · ${b.length} mocks before the calendar</h2></div>
+    <div class="stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
+    ${cell('Average score', r1(avgP) + '%', 'best ' + r1(pct(best.score, best.max)) + '%')}
+    ${attR != null ? cell('Paper attempted', Math.round(attR * 100) + '%', 'target 85%+') : ''}
+    ${accR != null ? cell('Accuracy', Math.round(accR * 100) + '%', 'target 90%+') : ''}
+    ${Q ? cell('Quant attempted', r1(Q.att) + ' / 40', 'avg ' + r1(Q.mk) + ' marks') : ''}
+    ${R ? cell('Reasoning attempted', r1(R.att) + ' / 40', 'avg ' + r1(R.mk) + ' marks') : ''}</div>${vs}</section>`;
+}
 function chart(arr, e) {
-  if (arr.length < 2) return '<div class="empty">Log at least two tests of this exam to see the trend.</div>';
+  if (arr.length < 2) return `<div class="empty">${arr.length ? 'One live test so far. Log one more to see the trend.' : 'The live trend starts with your first mock on the calendar. Your earlier mocks are the baseline below.'}</div>`;
   const W = 640, H = 210, p = 30, n = arr.length;
   const x = i => p + i * (W - 2 * p) / (n - 1), y = v => H - p - v / 100 * (H - 2 * p);
   const line = (vals, col, dash, w) => { const pts = vals.map((v, i) => v == null ? null : `${x(i)},${y(v)}`).filter(Boolean); return pts.length > 1 ? `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ''} stroke-linejoin="round"/>` : ''; };
@@ -707,12 +730,12 @@ function chart(arr, e) {
 V.tests = () => {
   const names = [...new Set(S.tests.map(t => t.exam))]; if (!names.includes(ui.testExam)) ui.testExam = names[0] || '';
   const e = S.exams.find(x => x.name === ui.testExam);
-  const sel = S.tests.filter(t => t.exam === ui.testExam).sort((a, b) => a.date.localeCompare(b.date));
-  const all = [...S.tests].sort((a, b) => b.date.localeCompare(a.date));
+  const sel = S.tests.filter(t => t.exam === ui.testExam && !isBase(t)).sort((a, b) => a.date.localeCompare(b.date));
+  const all = [...S.tests].sort((a, b) => isBase(a) - isBase(b) || b.date.localeCompare(a.date));
   const d2 = v => +(+v).toFixed(2);
   return `<div class="grid"><div class="stack">
-    <section class="card"><div class="card-head"><h2>Trend</h2>${names.length ? `<select class="btn sm" data-act="texam">${names.map(n => `<option ${n === ui.testExam ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}</div>${chart(sel, e)}</section>
-    <section class="card"><div class="card-head"><h2>All tests</h2></div>${all.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Date</th><th>Test</th><th>Score</th><th>vs cutoff</th><th>vs topper</th><th></th></tr></thead><tbody>${all.map(t => `<tr><td>${t.dateUnknown ? '<span class="muted" title="Date not shown by the site">?</span>' : fmt(t.date)}</td><td><b>${esc(t.exam)}</b><div class="meta">${TEST_KINDS[t.kind] || ''}${t.name ? ' · ' + esc(t.name) : ''}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</div>${testDetail(t) ? `<div class="small muted">${testDetail(t)}</div>` : ''}${t.note ? `<div class="small">${esc(t.note)}</div>` : ''}</td><td>${t.score}/${t.max}<div class="meta">${pct(t.score, t.max)}%</div></td><td>${t.cutoff != null ? `<span class="tag ${t.score >= t.cutoff ? 'good' : 'bad'}">${t.score >= t.cutoff ? '+' : ''}${d2(t.score - t.cutoff)}</span>` : '—'}</td><td>${t.topper != null ? `<span class="tag ${t.score >= t.topper ? 'good' : 'warn'}">${t.score >= t.topper ? '+' : ''}${d2(t.score - t.topper)}</span>` : '—'}</td><td><button class="x" data-act="del" data-type="tests" data-id="${t.id}">×</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No tests logged yet.</div>'}</section>
+    <section class="card"><div class="card-head"><h2>Trend</h2>${names.length ? `<select class="btn sm" data-act="texam">${names.map(n => `<option ${n === ui.testExam ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}</div>${chart(sel, e)}</section>${baselineCard(ui.testExam, sel)}
+    <section class="card"><div class="card-head"><h2>All tests</h2></div>${all.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Date</th><th>Test</th><th>Score</th><th>vs cutoff</th><th>vs topper</th><th></th></tr></thead><tbody>${all.map(t => `<tr><td>${isBase(t) ? '<span class="tag" title="Taken before the calendar started. Used as the starting point, not in the trend.">Baseline</span>' : fmt(t.date)}</td><td><b>${esc(t.exam)}</b><div class="meta">${TEST_KINDS[t.kind] || ''}${t.name ? ' · ' + esc(t.name) : ''}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</div>${testDetail(t) ? `<div class="small muted">${testDetail(t)}</div>` : ''}${t.note ? `<div class="small">${esc(t.note)}</div>` : ''}</td><td>${t.score}/${t.max}<div class="meta">${pct(t.score, t.max)}%</div></td><td>${t.cutoff != null ? `<span class="tag ${t.score >= t.cutoff ? 'good' : 'bad'}">${t.score >= t.cutoff ? '+' : ''}${d2(t.score - t.cutoff)}</span>` : '—'}</td><td>${t.topper != null ? `<span class="tag ${t.score >= t.topper ? 'good' : 'warn'}">${t.score >= t.topper ? '+' : ''}${d2(t.score - t.topper)}</span>` : '—'}</td><td><button class="x" data-act="del" data-type="tests" data-id="${t.id}">×</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No tests logged yet.</div>'}</section>
   </div><div class="stack"><section class="card"><div class="card-head"><h2>Log a test</h2></div>
     <form class="f" data-form="test"><label class="full">Exam<select name="exam" required>${examOptions('', 'Choose exam')}</select></label><label>Type<select name="kind">${Object.entries(TEST_KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label><label>Date<input type="date" name="date" value="${TODAY()}" max="${TODAY()}" required></label><label class="full">Name / source<input name="name" placeholder="e.g. Mock 4 (Testbook)"></label><label>Score<input type="number" name="score" step="0.25" required></label><label>Out of<input type="number" name="max" step="0.25" required></label><label>Cutoff<input type="number" name="cutoff" step="0.25"></label><label>Topper<input type="number" name="topper" step="0.25"></label><label>Minutes taken<input type="number" name="minutes"></label><label>Attempted (questions)<input type="number" name="att"></label><label>Correct<input type="number" name="cor"></label><label>Reasoning attempted<input type="number" name="ra"></label><label>Reasoning marks<input type="number" step="0.25" name="rm"></label><label>Quant attempted<input type="number" name="qa"></label><label>Quant marks<input type="number" step="0.25" name="qm"></label><label>English attempted<input type="number" name="ea"></label><label>English marks<input type="number" step="0.25" name="em"></label><label class="full">One-line verdict<input name="note" placeholder="Details go in the Mistake book"></label><div class="actions"><button class="btn pri">Save test</button></div></form></section></div></div>`;
 };
