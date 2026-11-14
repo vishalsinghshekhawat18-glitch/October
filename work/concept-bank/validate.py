@@ -87,6 +87,9 @@ def phase_b(nn):
     for cls, cid, star, title, body in cards:
         if cid not in concepts: errors.append(f'{cid}: not in concepts.csv')
         if cid in ids: errors.append(f'{cid}: duplicate card')
+        if not body.rstrip().endswith('</div>') or '</div>' in body.rstrip()[:-6].split('<p><strong>Why it exists</strong></p>')[-1].replace('<div class="ans">','').split('<p><strong>In the news</strong></p>')[0][-0:] and False: pass
+        _tail = body.split('<p><strong>Why it exists</strong></p>')[-1]
+        if _tail.count('</div>') != 1 or not _tail.rstrip().endswith('</div>'): errors.append(f'{cid}: card body must stay open until the end (close </div> only once, right before </details>)')
         ids.add(cid)
         pri = concepts.get(cid, {}).get('priority')
         want_star = pri in ('A','B')
