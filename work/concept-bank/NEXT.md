@@ -1,7 +1,12 @@
-# Next run (auditor, 14 Nov 2026)
+# Final run (auditor, 14 Nov 2026)
 
-Batches 06–08 are approved and merged (live). Do **batches 09, 10 and 11** the same way (the next 45 NEW or EXTEND concepts in concepts.csv order, 15 per batch, each with its revision file). Validate each, commit and push once at the end, then stop. If fewer than 45 remain, do all that remain.
+Batches 06–08 are approved and merged. Only **28 concepts** remain (NEW or EXTEND, not yet drafted). Do them **all in this one run**, without stopping between batches:
 
-Two fixes from the review:
-- Do not copy two bullets that say the same thing (the anti-defection card had the 52nd and 91st Amendments twice).
-- Traps must not state legal absolutes the notes do not support (the PESA trap said higher bodies "cannot override village consent"). A trap names a common confusion; it does not add a new legal claim.
+1. Draft them as **batches 09 and 10** (15, then the remaining 13), same method, each with its revision file.
+2. Run `python3 work/concept-bank/validate.py B 09` and `B 10` until both pass.
+3. Commit and push once at the end. Do not merge or publish; the auditor does that.
+
+Review rules from the last round still apply:
+- No two bullets that say the same thing.
+- Traps name a common confusion; they never add a legal or factual claim the notes do not make.
+- Card body stays inside `<div class="body">` until the end.
