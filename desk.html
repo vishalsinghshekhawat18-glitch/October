@@ -1,54 +1,927 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Study Desk · October Library</title>
-  <meta name="description" content="A quiet reading room for my study notes.">
-  <meta name="theme-color" content="#faf7f1">
-  <script>
-    try {
-      var p = (JSON.parse(localStorage.getItem('october:v1')) || {}).prefs || {};
-      var t = p.theme || 'auto';
-      if (t === 'auto') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dusk' : 'paper';
-      document.documentElement.dataset.theme = t;
-    } catch (e) { document.documentElement.dataset.theme = 'paper'; }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:opsz,wght@14..32,400..700&display=swap">
-  <link rel="stylesheet" href="assets/base.css">
-  <link rel="stylesheet" href="assets/library.css?v=2">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Study Desk · October Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:opsz,wght@14..32,400..700&display=swap">
+<style>
+:root{
+  --font-display:'Fraunces','Iowan Old Style',Georgia,serif;
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --bg:#faf7f1;--surface:#fffdf9;--surface-2:#f2ede3;--ink:#24201a;--ink-2:#4a443b;--muted:#877f72;
+  --line:#e5ddcf;--accent:#9b5a2c;--accent-ink:#fffaf3;--accent-soft:#f6ead9;
+  --good:#4f7a4a;--good-bg:#e9f1e4;--warn:#a87414;--warn-bg:#f8eed6;--bad:#a8432f;--bad-bg:#f6e3dd;
+  --radius:16px;color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding:0 32px}
+.top{height:76px;display:flex;align-items:center;justify-content:space-between}
+.wordmark{display:inline-flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--ink)}
+.wordmark em{font-family:var(--font-display);font-size:1.55rem;font-weight:500;letter-spacing:-.01em}
+.wordmark span{font-size:.68rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-size:.84rem;font-weight:500;text-decoration:none}
+.chip.on{border-color:var(--accent);color:var(--accent);font-weight:600;min-width:112px;justify-content:center}
+.hero{padding:22px 0 18px}
+.eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.08;letter-spacing:-.02em;margin:0}
+.hero p.sub{color:var(--ink-2);margin:10px 0 0;max-width:680px}
+.rooms{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-bottom:26px}
+.rooms nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
+.rooms nav::-webkit-scrollbar{display:none}
+.room-btn{flex:none;border:0;background:none;padding:8px 14px;border-radius:999px;color:var(--ink-2);font-size:.88rem;font-weight:500;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+.room-btn:hover{background:var(--surface-2)}
+.room-btn[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+.room-btn .n{font-size:.7rem;font-weight:700;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:1px 7px}
+.room-btn .n.bad{background:var(--bad)}
+.room-btn[aria-current="page"] .n{background:var(--accent-ink);color:var(--accent)}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:22px;align-items:start}
+.stack{display:grid;gap:22px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;min-width:0}
+.card h2{font-family:var(--font-display);font-weight:500;font-size:1.28rem;margin:0;letter-spacing:-.01em}
+.card h3{font-family:var(--font-display);font-weight:500;font-size:1.1rem;margin:0}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:.8rem}
+.muted{color:var(--muted)}.small{font-size:.82rem}
+.empty{color:var(--muted);font-size:.9rem;padding:14px 0;border-top:1px dashed var(--line)}
+.row-list{list-style:none;margin:0;padding:0}
+.row-list>li{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.row-list>li:first-child{border-top:0}
+.grow{flex:1;min-width:0}
+.meta{color:var(--muted);font-size:.78rem;margin-top:2px}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);margin-right:4px;vertical-align:1px;white-space:nowrap}
+.tag.good{background:var(--good-bg);color:var(--good)}.tag.warn{background:var(--warn-bg);color:var(--warn)}.tag.bad{background:var(--bad-bg);color:var(--bad)}.tag.acc{background:var(--accent);color:var(--accent-ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 13px;font-size:.84rem;font-weight:500;cursor:pointer;color:var(--ink-2);text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--muted);color:var(--ink)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.good{background:var(--good-bg);border-color:#c9dcc1;color:var(--good)}
+.btn.warn{background:var(--warn-bg);border-color:#ecd9ab;color:var(--warn)}
+.btn.bad{background:var(--bad-bg);border-color:#ebc6bb;color:var(--bad)}
+.btn.sm{padding:4px 10px;font-size:.78rem;border-radius:8px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1.05rem;padding:0 4px;opacity:.55;line-height:1}
+.x:hover{opacity:1;color:var(--bad)}
+details.add{margin-top:14px}
+details.add>summary{list-style:none;cursor:pointer;color:var(--accent);font-weight:600;font-size:.86rem;display:inline-block}
+details.add>summary::-webkit-details-marker{display:none}
+form.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px;padding:14px;background:var(--surface-2);border-radius:12px}
+form.f .full{grid-column:1/-1}
+form.f label{display:grid;gap:4px;font-size:.74rem;font-weight:600;color:var(--muted);letter-spacing:.02em}
+form.f input,form.f select,form.f textarea{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 10px;font-size:.9rem;font-weight:400;color:var(--ink);width:100%}
+form.f textarea{min-height:70px;resize:vertical}
+form.f .checks{display:flex;flex-wrap:wrap;gap:6px 14px}
+form.f .checks label{display:flex;align-items:center;gap:6px;font-size:.84rem;color:var(--ink-2);font-weight:500;letter-spacing:0}
+form.f .checks input{width:auto}
+form.f .actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.mit{background:var(--accent-soft);border-color:#e8d2b6;border-left:5px solid var(--accent)}
+.mit .eyebrow{color:var(--accent)}
+.mit .big{font-family:var(--font-display);font-size:1.5rem;line-height:1.2;margin:4px 0 10px}
+.call{border-left:5px solid var(--ink-2)}
+.call.bad{border-left-color:var(--bad)}.call.warn{border-left-color:var(--warn)}.call.good{border-left-color:var(--good)}
+.call .verdict{font-family:var(--font-display);font-size:1.35rem;line-height:1.25;margin:2px 0 10px}
+.call ol{margin:0;padding-left:20px}.call li{margin:4px 0}
+.count{display:flex;gap:14px;align-items:baseline}
+.count .num{font-family:var(--font-display);font-size:3rem;line-height:1}
+.signal{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:.9rem}
+.signal:first-child{border-top:0}
+.dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:7px}
+.dot.bad{background:var(--bad)}.dot.warn{background:var(--warn)}.dot.good{background:var(--good)}
+.strip{display:grid;grid-template-columns:repeat(30,1fr);gap:3px;margin-top:6px}
+.strip i{aspect-ratio:1;border-radius:3px;background:var(--surface-2)}
+.strip i[data-l="1"]{background:#e8cfb6}.strip i[data-l="2"]{background:#d4a57a}.strip i[data-l="3"]{background:#b8794a}.strip i[data-l="4"]{background:var(--accent)}
+.strip i.today{outline:1.5px solid var(--ink);outline-offset:1px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.kpi{background:var(--surface-2);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-family:var(--font-display);font-size:1.4rem;font-weight:500;line-height:1.2}
+.kpi span{font-size:.68rem;color:var(--muted);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.kpi.bad b{color:var(--bad)}.kpi.good b{color:var(--good)}.kpi.warn b{color:var(--warn)}
+.load{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:70px;margin-top:8px}
+.load div{background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;opacity:.75}
+.load-l{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;font-size:.62rem;color:var(--muted);text-align:center;margin-top:3px}
+.timer{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink-2)}
+.running{background:var(--good-bg);border-radius:10px;margin:0 -10px;padding-left:10px!important;padding-right:10px!important}
+.running .timer{color:var(--good)}
+.meter{height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.meter span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.meter.good span{background:var(--good)}.meter.bad span{background:var(--bad)}.meter.warn span{background:var(--warn)}
+.exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.exam{display:flex;flex-direction:column;gap:10px}
+.exam .days{font-family:var(--font-display);font-size:2.1rem;line-height:1}
+.parts{display:grid;gap:8px}
+.part-row{display:grid;grid-template-columns:120px 1fr 44px;gap:10px;align-items:center;font-size:.8rem}
+.ladder{list-style:none;margin:0;padding:0}
+.ladder li{display:flex;gap:14px;align-items:flex-start;padding:10px 0;position:relative}
+.ladder .step{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;font-size:.75rem;font-weight:700;color:var(--muted);z-index:1}
+.ladder li.done .step{background:var(--good);border-color:var(--good);color:#fff}
+.ladder li.now .step{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.ladder li:not(:last-child)::before{content:"";position:absolute;left:13px;top:38px;bottom:-10px;width:2px;background:var(--line)}
+.track-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.track-tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.8rem;cursor:pointer;color:var(--ink-2)}
+.track-tabs button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:600}
+table.t{width:100%;border-collapse:collapse;font-size:.86rem}
+table.t th{text-align:left;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px;border-bottom:1px solid var(--line)}
+table.t td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.table-wrap{overflow-x:auto}
+.chart{width:100%;height:auto;display:block}
+.bars{display:grid;gap:9px}
+.bar-row{display:grid;grid-template-columns:130px 1fr 34px;gap:10px;align-items:center;font-size:.86rem}
+.books{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.book-chip{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 12px;cursor:pointer;text-align:left;min-width:150px}
+.book-chip b{display:block;font-size:.86rem;font-weight:600}
+.book-chip span{font-size:.72rem;color:var(--muted)}
+.book-chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tree details>summary{list-style:none;cursor:pointer}
+.tree details>summary::-webkit-details-marker{display:none}
+.node{display:flex;gap:10px;align-items:center;padding:7px 8px;border-radius:9px;flex-wrap:wrap}
+.node:hover{background:var(--surface-2)}
+.node .tw{width:14px;flex:none;color:var(--muted);font-size:.7rem;transition:transform .15s}
+details[open]>summary .tw{transform:rotate(90deg)}
+.node .nt{flex:1;min-width:180px;font-size:.9rem}
+.lv1>.node .nt,.lv1>summary .nt{font-weight:600}
+.kids{margin-left:18px;border-left:1px solid var(--line);padding-left:6px}
+.search{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;font-size:.92rem;margin-bottom:12px}
+.letter{font-family:var(--font-display);font-size:1.04rem;line-height:1.65;white-space:pre-wrap}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:.86rem;margin-bottom:18px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.rules{margin:0;padding-left:18px;color:var(--ink-2)}.rules li{margin:5px 0}
+.foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin:44px 0 60px;padding-top:18px;border-top:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:.84rem;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;max-width:90vw}
+.toast.show{opacity:1}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.exam .card-head{flex-wrap:nowrap}.exam .card-head h3{flex:1}
+@media (max-width:640px){.wrap{padding:0 16px}.books{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px 16px;padding:0 16px}.book-chip{flex:none}.top{height:64px}.card{padding:18px}.bar-row{grid-template-columns:96px 1fr 30px}.part-row{grid-template-columns:96px 1fr 40px}.row-list>li{flex-wrap:wrap}.row-list>li>.btns{width:100%;justify-content:flex-start}}
+</style>
 </head>
-<body class="lib">
-  <header class="lib-top">
+<body>
+<div class="wrap">
+  <header class="top">
     <a class="wordmark" href="./"><em>October</em><span>Library</span></a>
-    <div class="top-actions">
-      <a class="chip desk-chip is-here" href="desk.html" aria-current="page" title="Study Desk">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18M5 9v10M19 9v10M8 5.5h8V9H8z"/></svg>
-        <span>Desk</span>
-      </a>
-    <div class="theme-menu">
-      <button class="chip" id="themeBtn" aria-haspopup="true" aria-expanded="false">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg>
-        <span id="themeLabel">Theme</span>
-      </button>
-      <div class="theme-pop" id="themePop" hidden></div>
-    </div>
-    </div>
+    <a class="chip on" href="desk.html" aria-current="page">Desk</a>
   </header>
+  <section class="hero">
+    <p class="eyebrow" id="heroDate"></p>
+    <h1 id="heroTitle">Study Desk</h1>
+    <p class="sub" id="heroSub"></p>
+  </section>
+</div>
+<div class="rooms"><div class="wrap"><nav id="rooms" aria-label="Desk rooms"></nav></div></div>
+<main class="wrap" id="view"></main>
+<div class="wrap">
+  <footer class="foot">
+    <span class="muted small" id="footNote"></span>
+    <span class="btns">
+      <button class="btn sm" data-act="sample">Fill with sample data</button>
+      <button class="btn sm" data-act="export">Export</button>
+      <label class="btn sm" style="cursor:pointer">Import<input type="file" id="importFile" accept="application/json" hidden></label>
+      <button class="btn sm" data-act="clear">Clear all</button>
+    </span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
 
-  <main class="lib-main">
-    <a class="exam-back" href="./">‹ Library</a>
-    <section class="hero exam-hero">
-      <p class="eyebrow">Study Desk</p>
-      <h1>Your desk is being set up.</h1>
-      <p class="desk-soon">This is where daily tasks, revisions, tests and scores, mentor feedback and opportunities will live, kept apart from the shelf of subjects.</p>
-    </section>
-  </main>
+<script>
+'use strict';
+/* ================= The rules of the system ================= */
+const RULES = {
+  revisionGaps: [1, 2, 4], // after studying: revise on day 1, day 3, day 7 ...
+  thenEvery: 10,           // ... then every 10 days, for good
+  realDayMinutes: 60,      // a streak day needs at least this much recorded time
+  timerCapMinutes: 180,    // one unbroken timer run longer than this is cut and flagged
+  graceDeleteMinutes: 10   // deleting a task within 10 min of adding it is a typo, not a broken promise
+};
 
-  <script src="assets/common.js"></script>
-  <script>October.applyTheme(); October.themeMenu();</script>
+/* ================= Storage ================= */
+const KEY = 'october:desk:v2';
+const blank = () => ({ v: 2, profile: {}, exams: [], attempts: [], milestones: [], tasks: [], units: {}, tests: [], mistakes: [], setbacks: [], notes: [], opps: [], journal: {}, log: [], sample: false });
+let S = blank(), memoryOnly = false;
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { memoryOnly = true; } }
+
+/* ================= Helpers ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const iso = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`; };
+const TODAY = () => iso(new Date());
+const addDays = (s, n) => { const d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n); return iso(d); };
+const diff = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 864e5);
+const fmt = s => s ? new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—';
+const fmtLong = s => new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
+const hm = m => { m = Math.round(m); return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? ' ' + (m % 60) + 'm' : ''}` : `${m}m`; };
+const clock = ms => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2400); }
+function logEvent(type, text) { S.log.push({ ts: Date.now(), day: TODAY(), type, text }); }
+const TRACKS = ['Banking', 'Regulatory', 'Rajasthan', 'Judiciary', 'Other'];
+const STAGES = ['Preparing', 'Form filled', 'Admit card', 'Prelims done', 'Prelims cleared', 'Mains done', 'Mains cleared', 'Interview', 'Selected', 'Not cleared'];
+const REASONS = { concept: 'Concept gap', silly: 'Silly mistake', time: 'Ran out of time', unstudied: 'Never studied', recall: 'Forgot / recall' };
+const KINDS = { study: 'Study', revision: 'Revision', test: 'Test', practice: 'Practice', other: 'Other' };
+const TEST_KINDS = { mock: 'Full mock', sectional: 'Sectional', pyq: 'Previous paper', real: 'Real exam' };
+
+/* ================= The library: subjects stay in sync on their own ================= */
+const LIVE = 'https://vishalsinghshekhawat18-glitch.github.io/October/';
+const BASE = /github\.io$/.test(location.hostname) ? './' : LIVE;
+const LIB = { subjects: [], series: [], outlines: {}, loading: {}, error: null, ready: false };
+async function loadLibrary() {
+  try {
+    const r = await fetch(BASE + 'subjects.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    LIB.subjects = d.subjects.filter(s => s.status === 'ready' && s.slug !== 'guide');
+    LIB.series = d.library?.series || [];
+    LIB.ready = true;
+    S.exams.forEach(e => examBooks(e).forEach(outline));
+  } catch (e) { LIB.error = 'The library could not be reached, so subjects are not listed. Open this page with internet on, or on the site.'; }
+  render();
+}
+const subject = slug => LIB.subjects.find(s => s.slug === slug);
+const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+/* A book's headings become a tree: parts › chapters › sections › cards. Cached until the book is updated. */
+async function outline(slug) {
+  if (LIB.outlines[slug] || LIB.loading[slug]) return LIB.outlines[slug];
+  const s = subject(slug); if (!s) return null;
+  const ck = 'october:desk:outline:' + slug;
+  try { const c = JSON.parse(localStorage.getItem(ck)); if (c && c.updated === s.updated) { LIB.outlines[slug] = c.nodes; return c.nodes; } } catch (e) { }
+  LIB.loading[slug] = true;
+  try {
+    const html = await (await fetch(BASE + s.file)).text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const used = new Set([...doc.querySelectorAll('[id]')].map(e => e.id));
+    const heads = [...doc.querySelectorAll('h1, h2, h3, h4')].filter(h => h.textContent.trim());
+    const nodes = [], stack = [];
+    heads.forEach(h => {
+      if (!h.id) { const b = slugify(h.textContent) || 'section'; let id = b; for (let i = 2; used.has(id); i++) id = `${b}-${i}`; h.id = id; used.add(id); }
+      const lv = +h.tagName[1];
+      while (stack.length && stack[stack.length - 1].lv >= lv) stack.pop();
+      const n = { r: `${slug}#${h.id}`, t: (h.dataset.toc || h.textContent).replace(/\s+/g, ' ').trim(), lv, p: stack.length ? stack[stack.length - 1].i : -1, k: [] };
+      const i = nodes.push(n) - 1; if (n.p >= 0) nodes[n.p].k.push(i);
+      stack.push({ lv, i });
+    });
+    LIB.outlines[slug] = nodes;
+    try { localStorage.setItem(ck, JSON.stringify({ updated: s.updated, nodes })); } catch (e) { }
+  } catch (e) { LIB.outlines[slug] = []; }
+  delete LIB.loading[slug];
+  render();
+  return LIB.outlines[slug];
+}
+const leafCount = (nodes, i) => nodes[i].k.length ? nodes[i].k.reduce((s, k) => s + leafCount(nodes, k), 0) : 1;
+const crumbs = (nodes, i) => { const out = []; for (let p = nodes[i].p; p >= 0; p = nodes[p].p) out.unshift(nodes[p].t); return out; };
+/* A card counts as studied if it, or any heading above it, has been logged. */
+function coverage(slug) {
+  const nodes = LIB.outlines[slug]; if (!nodes || !nodes.length) return null;
+  const cov = new Array(nodes.length); let done = 0, total = 0;
+  nodes.forEach((n, i) => { cov[i] = !!S.units[n.r] || (n.p >= 0 && cov[n.p]); if (!n.k.length) { total++; if (cov[i]) done++; } });
+  return { done, total, pct: total ? done / total : 0 };
+}
+function examBooks(e) {
+  const fromSeries = e.series ? LIB.subjects.filter(s => s.series === e.series).map(s => s.slug) : [];
+  return [...new Set([...(e.books || []), ...fromSeries])].filter(subject);
+}
+
+/* ================= Reader time (measured by the reader; visible only on the site) ================= */
+function readerMinutes(day) { try { const d = JSON.parse(localStorage.getItem('october:v1')); return d && d.daily ? (d.daily[day] || 0) / 60 : null; } catch (e) { return null; } }
+const readerAvailable = () => readerMinutes(TODAY()) != null;
+
+/* ================= Tasks, timers and time ================= */
+const live = () => S.tasks.filter(t => !t.removed);
+const runMs = t => t.run ? Math.min(Date.now() - t.run, RULES.timerCapMinutes * 60000) : 0;
+const taskMs = t => (t.segs || []).reduce((s, [a, b]) => s + (b - a), 0) + runMs(t) + (t.reported ? t.reported.min * 60000 : 0);
+const segMinOn = (t, day) => (t.segs || []).filter(([a]) => iso(a) === day).reduce((s, [a, b]) => s + (b - a), 0) / 60000 + (t.run && iso(t.run) === day ? runMs(t) / 60000 : 0);
+const timedMinutes = day => live().reduce((s, t) => s + segMinOn(t, day), 0);
+/* Time you forgot to record and reported to Claude afterwards: counted, but always shown as reported. */
+const reportedMinutes = day => live().filter(t => t.reported && t.date === day).reduce((s, t) => s + (t.reported.min || 0), 0);
+/* A day's study time = timers + reader time, without counting library study twice. */
+function dayMinutes(day) {
+  const timed = timedMinutes(day) + reportedMinutes(day), rd = readerMinutes(day);
+  if (rd == null) return timed;
+  const libTimed = live().filter(t => t.ref).reduce((s, t) => s + segMinOn(t, day), 0);
+  return timed - libTimed + Math.max(libTimed, rd);
+}
+function stopTimer(t) {
+  if (!t || !t.run) return;
+  let end = Date.now(); const cap = RULES.timerCapMinutes * 60000;
+  if (end - t.run > cap) { end = t.run + cap; logEvent('capped', `Timer on “${t.text}” ran past ${RULES.timerCapMinutes / 60} hours without a pause; only ${RULES.timerCapMinutes / 60} hours counted.`); }
+  (t.segs = t.segs || []).push([t.run, end]); t.run = null;
+}
+function dayLevel(day) { const m = dayMinutes(day); return m >= 240 ? 4 : m >= 150 ? 3 : m >= RULES.realDayMinutes ? 2 : m > 0 ? 1 : 0; }
+function streak() { let n = 0, d = TODAY(); if (dayMinutes(d) < RULES.realDayMinutes) d = addDays(d, -1); while (n < 400 && dayMinutes(d) >= RULES.realDayMinutes) { n++; d = addDays(d, -1); } return n; }
+/* Promises kept: of tasks due on finished days, how many were done that same day. Dropped ones count as broken. */
+function promiseKept(days = 7) {
+  let kept = 0, total = 0;
+  for (let i = 1; i <= days; i++) {
+    const d = addDays(TODAY(), -i);
+    S.tasks.filter(t => t.date === d && !t.superseded && !(t.removed && !t.dropped)).forEach(t => { total++; if (t.done && !t.removed && iso(t.doneAt) === d) kept++; });
+  }
+  return total ? { pct: Math.round(kept / total * 100), kept, total } : null;
+}
+
+/* ================= Revision engine: day 1, 3, 7, then every 10 days ================= */
+const gap = step => step < RULES.revisionGaps.length ? RULES.revisionGaps[step] : RULES.thenEvery;
+const newTask = o => Object.assign({ id: uid(), created: Date.now(), segs: [], run: null, done: false, mit: false }, o);
+function markStudied(ref, title, book, path, date) {
+  const u = S.units[ref] || (S.units[ref] = { ref, t: title, book, path, first: date, reviews: [], studies: 0 });
+  u.studies++; u.last = date; u.step = 0; u.due = addDays(date, gap(0)); u.restudy = false;
+  S.tasks.filter(t => t.kind === 'revision' && t.ref === ref && !t.done).forEach(t => { t.done = true; t.doneAt = Date.now(); t.superseded = true; });
+}
+function gradeRevision(t, g) {
+  const u = S.units[t.ref]; const day = TODAY();
+  stopTimer(t); t.done = true; t.doneAt = Date.now(); t.grade = g;
+  if (!taskMs(t) && readerMinutes(day) == null) logEvent('notime', `Revision “${u ? u.t : t.text}” graded without any recorded time.`);
+  if (t.date < day) logEvent('late', `Revision “${u ? u.t : t.text}” was due ${fmt(t.date)}, done ${fmt(day)}.`);
+  if (!u) return;
+  u.reviews.push({ d: day, g, late: diff(t.date, day) });
+  if (g === 'solid') { u.step++; u.weak = false; u.last = day; u.due = addDays(day, gap(u.step)); toast(`Solid. Next revision ${fmt(u.due)}.`); }
+  else if (g === 'shaky') { u.step = 0; u.weak = true; u.last = day; u.due = addDays(day, 1); toast('Shaky: the cycle restarts tomorrow.'); }
+  else { u.weak = true; u.restudy = true; u.due = null; S.tasks.push(newTask({ kind: 'study', text: `Study again: ${u.t}`, ref: u.ref, book: u.book, path: u.path, date: day })); toast('Forgotten: “study again” is on today’s plan.'); }
+}
+/* Every topic that falls due gets its revision task automatically, dated the day it fell due. */
+function ensureRevisionTasks() {
+  Object.values(S.units).forEach(u => {
+    if (!u.due || u.due > TODAY()) return;
+    if (S.tasks.some(t => t.kind === 'revision' && t.ref === u.ref && !t.done && !t.removed)) return;
+    S.tasks.push(newTask({ kind: 'revision', text: u.t, ref: u.ref, book: u.book, date: u.due, auto: true }));
+  });
+}
+const openRevs = () => S.tasks.filter(t => t.kind === 'revision' && !t.done && !t.removed);
+function revisionLoad(days = 14) {
+  const out = [], units = Object.values(S.units).filter(u => u.due);
+  for (let i = 0; i < days; i++) {
+    const d = addDays(TODAY(), i); let n = 0;
+    units.forEach(u => { let due = u.due < TODAY() ? TODAY() : u.due, step = u.step; while (due < d) { step++; due = addDays(due, gap(step)); } if (due === d) n++; });
+    out.push([d, n]);
+  }
+  return out;
+}
+
+/* ================= The coach: one verdict per exam, from your own data ================= */
+const examTests = e => S.tests.filter(t => t.exam === e.name).sort((a, b) => a.date.localeCompare(b.date));
+function coach(e) {
+  const t = TODAY(), books = examBooks(e);
+  const covs = books.map(coverage).filter(Boolean);
+  const cov = covs.length ? covs.reduce((s, c) => s + c.done, 0) / Math.max(1, covs.reduce((s, c) => s + c.total, 0)) : null;
+  const units = Object.values(S.units).filter(u => books.includes(u.book));
+  const overdue = units.filter(u => u.due && u.due < t).length;
+  const weak = units.filter(u => u.weak || u.restudy);
+  const ret = units.length ? Math.max(0, units.length - overdue - weak.length) / units.length : null;
+  const tests = examTests(e).filter(x => x.kind !== 'sectional');
+  const last3 = tests.slice(-3);
+  const avg = last3.length ? last3.reduce((s, x) => s + pct(x.score, x.max), 0) / last3.length : null;
+  const withCut = last3.filter(x => x.cutoff != null);
+  const cutP = e.cutoff && e.max ? pct(e.cutoff, e.max) : withCut.length ? withCut.reduce((s, x) => s + pct(x.cutoff, x.max), 0) / withCut.length : null;
+  const withTop = last3.filter(x => x.topper != null);
+  const topP = e.topper && e.max ? pct(e.topper, e.max) : withTop.length ? withTop.reduce((s, x) => s + pct(x.topper, x.max), 0) / withTop.length : null;
+  const mocks14 = examTests(e).filter(x => diff(x.date, t) <= 14).length;
+  const days = e.date ? diff(t, e.date) : null;
+  const open = S.mistakes.filter(m => !m.resolved && m.exam === e.name);
+  const rc = {}; open.forEach(m => rc[m.reason] = (rc[m.reason] || 0) + 1);
+  const topReason = Object.entries(rc).sort((a, b) => b[1] - a[1])[0];
+  const target = topP ?? (cutP != null ? Math.min(100, cutP + 15) : null);
+  const mockPart = avg != null && target ? Math.min(1, avg / target) : 0;
+  const readiness = tests.length >= 2 ? Math.round(100 * (0.35 * (cov ?? 0) + 0.25 * (ret ?? 0) + 0.40 * mockPart)) : null;
+  const A = [], gaps = [];
+  if (cov == null) gaps.push(books.length ? 'Reading the linked books…' : 'No library books linked, so syllabus coverage can’t be measured. Link books under Exams & journey › Edit.');
+  if (topP == null) gaps.push('No topper score set, so “topper level” can’t be judged. Add it to the exam or to each test.');
+  if (!tests.length) gaps.push('No full mocks logged yet.');
+  let verdict, tone;
+  if (days != null && days >= 0 && days <= 7) {
+    verdict = `${days === 0 ? 'Exam day.' : `${days} day${days > 1 ? 's' : ''} left.`} No new topics.`; tone = 'bad';
+    A.push('Clear every overdue revision first.', 'One timed full mock a day; review every wrong answer the same day.', weak.length ? `Re-read only your ${weak.length} weak topic${weak.length > 1 ? 's' : ''}.` : 'Revise only from your own notes.');
+  } else if (overdue > 0) {
+    verdict = `Revise before anything new: ${overdue} revision${overdue > 1 ? 's are' : ' is'} overdue.`; tone = overdue > 5 ? 'bad' : 'warn';
+    A.push(`Finish the ${overdue} overdue revision${overdue > 1 ? 's' : ''} today.`, 'No new chapter until the queue is clear.');
+  } else if (units.length >= 4 && weak.length / units.length > 0.25) {
+    verdict = `Study again: ${Math.round(weak.length / units.length * 100)}% of what you studied is shaky or forgotten.`; tone = 'warn';
+    A.push(...weak.slice(0, 3).map(u => `Study again: ${u.t}`));
+  } else if (cov != null && cov < 0.4) {
+    verdict = `Build the base: only ${Math.round(cov * 100)}% of the syllabus studied.`; tone = 'warn';
+    A.push('Study new units every day; the revision engine books the rest.', 'One full mock a week only to learn the pattern.');
+  } else if (mocks14 < 2) {
+    verdict = `Take a mock. ${tests.length ? `Only ${mocks14} test${mocks14 === 1 ? '' : 's'} in the last 14 days.` : 'There is no score to plan from.'}`; tone = 'warn';
+    A.push('Sit one full mock under exam timing this week.', 'Log every lost mark in the Mistake book the same day.');
+  } else if (avg != null && cutP != null && avg < cutP) {
+    tone = 'bad'; const head = `Below cutoff: ${avg.toFixed(1)}% against ${cutP.toFixed(1)}%.`;
+    if (topReason && ['concept', 'unstudied'].includes(topReason[0])) { verdict = `${head} Most lost marks are knowledge gaps. Study again, then test.`; A.push('Study again the topics behind your open mistakes.', 'Pause full mocks for 3 days; do sectionals on those topics.'); }
+    else if (topReason && ['time', 'silly'].includes(topReason[0])) { verdict = `${head} You know enough; marks go to ${REASONS[topReason[0]].toLowerCase()}.`; A.push('Timed sectional sets every day.', 'Read all options before marking any.'); }
+    else { verdict = `${head} Log why each mark was lost; the next step depends on it.`; A.push('Log every mistake from the last mock with a reason.'); }
+  } else if (avg != null && topP != null && avg < topP) {
+    verdict = `Above cutoff but ${(topP - avg).toFixed(1)} points short of the topper. Close that gap.`; tone = 'warn';
+    A.push('Full mock every 2 days, analysed the same day.', topReason ? `Attack the biggest leak: ${REASONS[topReason[0]].toLowerCase()} (${topReason[1]} open).` : 'Drill your weakest section.');
+  } else if (avg != null && topP != null && avg >= topP && (cov ?? 1) >= 0.9 && (ret ?? 1) >= 0.85) {
+    verdict = 'Topper level. Hold it: keep the revision queue at zero and keep testing.'; tone = 'good';
+    A.push('One mock every 2 days to stay sharp.', 'Nothing new close to the exam.');
+  } else {
+    verdict = avg != null ? `Scoring ${avg.toFixed(1)}%. Keep studying new units and testing weekly.` : 'Keep studying new units; start full mocks once a third is covered.'; tone = 'warn';
+    A.push('New units daily.', 'Weekly full mock.');
+  }
+  return { verdict, tone, actions: A, gaps, readiness, cov, ret, avg, cutP, topP, overdue, weak: weak.length, units: units.length, days };
+}
+function examDates() { const out = []; S.exams.forEach(e => { if (e.date) out.push([e.date, e.name + (e.stageName ? ` (${e.stageName})` : '')]); if (e.next && e.next.date) out.push([e.next.date, `${e.name.replace(/ — .*/, '')} — ${e.next.name}`]); }); return out.filter(([d]) => d >= TODAY()); }
+function clashes() { const by = {}; examDates().forEach(([d, n]) => (by[d] = by[d] || []).push(n)); return Object.entries(by).filter(([, n]) => n.length > 1).sort(); }
+function backToBack() { const ds = examDates().sort((a, b) => a[0].localeCompare(b[0])); const out = []; for (let i = 1; i < ds.length; i++) if (diff(ds[i - 1][0], ds[i][0]) === 1) out.push([ds[i - 1], ds[i]]); return out; }
+const activeExams = () => S.exams.filter(e => !['Selected', 'Not cleared'].includes(e.stage) && !(e.date && e.date < TODAY())).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+const focusExam = () => activeExams()[0];
+
+/* ================= Integrity: what the system won't let slide ================= */
+function integrity() {
+  const since = addDays(TODAY(), -30); const flags = [];
+  const ev = S.log.filter(l => l.day >= since); const c = k => ev.filter(l => l.type === k).length;
+  if (c('notime')) flags.push(['warn', `${c('notime')} task${c('notime') > 1 ? 's' : ''} ticked done with no time recorded. They count for nothing.`]);
+  if (c('dropped')) flags.push(['bad', `${c('dropped')} planned task${c('dropped') > 1 ? 's' : ''} dropped instead of done.`]);
+  if (c('capped')) flags.push(['warn', `${c('capped')} timer${c('capped') > 1 ? 's' : ''} left running for hours. Only the cap counted.`]);
+  if (c('late')) flags.push(['warn', `${c('late')} task${c('late') > 1 ? 's' : ''} finished after the day promised.`]);
+  const rep30 = live().filter(t => t.reported && t.date >= since);
+  if (rep30.length) flags.push(['warn', `${rep30.length} session${rep30.length > 1 ? 's' : ''} (${hm(rep30.reduce((s, t) => s + t.reported.min, 0))}) reported afterwards instead of timed. Counted, but the timer is the habit to build.`]);
+  let mism = 0;
+  if (readerAvailable()) for (let i = 1; i <= 30; i++) { const d = addDays(TODAY(), -i); const lib = live().filter(t => t.ref).reduce((s, t) => s + segMinOn(t, d), 0); if (lib > (readerMinutes(d) || 0) * 1.5 + 15) mism++; }
+  if (mism) flags.push(['bad', `${mism} day${mism > 1 ? 's' : ''} where timers claimed library study the reader never saw.`]);
+  const over = openRevs().filter(t => diff(t.date, TODAY()) > 2).length;
+  if (over) flags.push(['bad', `${over} revision${over > 1 ? 's' : ''} more than 2 days late.`]);
+  return { score: Math.max(0, 100 - c('notime') * 4 - c('dropped') * 5 - c('capped') * 5 - c('late') * 2 - mism * 10 - over * 2), flags };
+}
+
+/* ================= Rooms ================= */
+const ROOMS = [['today', 'Today'], ['study', 'Library log'], ['revision', 'Revision'], ['coach', 'Coach'], ['journey', 'Exams & journey'], ['tests', 'Tests'], ['mistakes', 'Mistake book'], ['failures', 'Failures'], ['opps', 'Opportunities']];
+let room = (location.hash || '#today').slice(1); if (!ROOMS.some(r => r[0] === room)) room = 'today';
+const ui = { book: null, open: new Set(), q: '', track: 'All', testExam: '' };
+
+function nav() {
+  const due = openRevs().filter(t => t.date <= TODAY()).length;
+  const todo = live().filter(t => t.kind !== 'revision' && !t.done && t.date <= TODAY()).length;
+  const opp = S.opps.filter(o => o.status !== 'skip' && o.deadline && diff(TODAY(), o.deadline) >= 0 && diff(TODAY(), o.deadline) <= 7).length;
+  const b = { today: [todo, ''], revision: [due, openRevs().some(t => t.date < TODAY()) ? 'bad' : ''], opps: [opp, 'bad'] };
+  $('#rooms').innerHTML = ROOMS.map(([id, n]) => `<button class="room-btn" data-room="${id}" ${id === room ? 'aria-current="page"' : ''}>${n}${b[id] && b[id][0] ? `<span class="n ${b[id][1]}">${b[id][0]}</span>` : ''}</button>`).join('');
+}
+function hero() {
+  const h = new Date().getHours();
+  $('#heroDate').textContent = fmtLong(TODAY());
+  const T = { today: h < 12 ? 'Good morning.' : h < 17 ? 'Good afternoon.' : 'Good evening.', study: 'Library log', revision: 'Revision', coach: 'Coach', journey: 'Exams & journey', tests: 'Tests & scores', mistakes: 'Mistake book', failures: 'Failures', opps: 'Opportunities' };
+  const sub = {
+    today: `${hm(dayMinutes(TODAY()))} recorded today · ${openRevs().filter(t => t.date <= TODAY()).length} revisions due · ${streak()}-day streak`,
+    study: 'Pick what you studied straight from the library: a whole unit, one section, or a single card. It enters the revision cycle on its own.',
+    revision: `Every studied topic comes back on day 1, 3 and 7, then every ${RULES.thenEvery} days for good.`,
+    coach: 'For each exam: what to do next, worked out from coverage, revisions, mock scores and mistakes. No flattery.',
+    journey: 'Where you are headed, every exam on the way, and every past result.',
+    tests: 'Each mock and real exam, against the cutoff and the topper.',
+    mistakes: 'Every lost mark gets a reason. Patterns decide what to fix.',
+    failures: 'Failed exams, broken days and what each one taught. Written down so it isn’t repeated.',
+    opps: 'Notifications and deadlines worth acting on, each with its official source.'
+  };
+  $('#heroTitle').textContent = T[room]; $('#heroSub').textContent = sub[room];
+  $('#footNote').textContent = `Study Desk · saved in this browser only, never on the site · library read from ${BASE === './' ? 'this site' : 'the live site'}`;
+}
+const addForm = (label, form, open) => `<details class="add" ${open ? 'open' : ''}><summary>＋ ${label}</summary>${form}</details>`;
+const examOptions = (sel, blankLabel = '—') => `<option value="">${blankLabel}</option>` + S.exams.map(e => `<option ${e.name === sel ? 'selected' : ''}>${esc(e.name)}</option>`).join('');
+const meter = (v, cls = '') => `<div class="meter ${cls}"><span style="width:${Math.max(0, Math.min(100, (v || 0) * 100))}%"></span></div>`;
+const toneOf = v => v == null ? '' : v >= 0.75 ? 'good' : v >= 0.45 ? 'warn' : 'bad';
+const kpiTone = (v, g, w) => v == null ? '' : v >= g ? 'good' : v >= w ? 'warn' : 'bad';
+
+function taskRow(t) {
+  const ms = taskMs(t), late = !t.done && t.date < TODAY();
+  const u = t.ref ? S.units[t.ref] : null; const bk = t.book || (t.ref ? t.ref.split('#')[0] : null);
+  const where = bk && subject(bk) ? esc(subject(bk).title) + ((u ? u.path : t.path) || []).slice(-1).map(p => ' › ' + esc(p)).join('') + ' · ' : '';
+  const ctrl = t.done ? `${t.reported ? '<span class="tag warn" title="Reported to Claude afterwards, not timed">reported</span>' : ''}<span class="tag ${t.grade === 'forgot' ? 'bad' : t.grade === 'shaky' ? 'warn' : 'good'}">${t.grade ? { solid: 'Solid', shaky: 'Shaky', forgot: 'Forgot' }[t.grade] : 'Done'} · ${ms ? hm(ms / 60000) : 'no time'}</span>`
+    : `${t.run ? `<button class="btn sm" data-act="pause" data-id="${t.id}">Pause</button>` : `<button class="btn sm" data-act="start" data-id="${t.id}">${ms ? 'Resume' : 'Start'}</button>`}${t.kind === 'revision'
+      ? `<button class="btn sm good" data-act="grade" data-g="solid" data-id="${t.id}" title="Recalled it fully">Solid</button><button class="btn sm warn" data-act="grade" data-g="shaky" data-id="${t.id}" title="Partly: restart the cycle">Shaky</button><button class="btn sm bad" data-act="grade" data-g="forgot" data-id="${t.id}" title="Gone: study it again">Forgot</button>`
+      : `<button class="btn sm pri" data-act="done" data-id="${t.id}">Done</button>${t.mit ? '' : `<button class="btn sm" data-act="mit" data-id="${t.id}" title="Make this today’s most important task">★</button>`}<button class="x" data-act="drop" data-id="${t.id}" title="Drop">×</button>`}`;
+  return `<li class="${t.run ? 'running' : ''}" ${t.done ? 'style="opacity:.6"' : ''}><div class="grow">
+    <div>${t.mit ? '<span class="tag acc">★ Most important</span>' : ''}<span class="tag">${KINDS[t.kind]}</span>${esc(t.kind === 'revision' && u ? u.t : t.text)}</div>
+    <div class="meta">${where}${t.kind === 'revision' && u ? `round ${(u.step || 0) + 1} · ` : ''}${t.plan ? `plan ${hm(t.plan)} · ` : ''}${t.exam ? esc(t.exam) + ' · ' : ''}<span class="timer" data-timer="${t.id}">${ms ? clock(ms) : ''}</span>${late ? ` <span class="tag bad">${diff(t.date, TODAY())} day${diff(t.date, TODAY()) > 1 ? 's' : ''} late</span>` : ''}</div>
+  </div><div class="btns">${ctrl}</div></li>`;
+}
+const loadChart = (load, label) => { const mx = Math.max(1, ...load.map(x => x[1])); return `<div class="load">${load.map(([d, n]) => `<div style="height:${n / mx * 100}%" title="${fmt(d)}: ${n}"></div>`).join('')}</div><div class="load-l">${load.map(([d, n]) => `<span>${label(d, n)}</span>`).join('')}</div>`; };
+
+const pendingResults = () => S.exams.filter(e => e.date && e.date < TODAY() && !e.archived && !['Selected', 'Not cleared', 'Prelims cleared', 'Mains cleared'].includes(e.stage));
+const pendingCard = () => { const p = pendingResults(); return p.length ? `<section class="card call warn" style="margin-bottom:22px"><p class="eyebrow">Result to log</p>${p.map(e => `<div class="signal"><span class="dot warn"></span><span class="grow"><b>${esc(e.name)}</b> was held ${fmt(e.date)}. Log the result once it is out, so the Desk and the Coach can learn from it.</span><span class="btns"><button class="btn sm good" data-act="result" data-r="cleared" data-id="${e.id}">Cleared</button><button class="btn sm bad" data-act="result" data-r="failed" data-id="${e.id}">Not cleared</button></span></div>`).join('')}</section>` : ''; };
+const V = {};
+V.today = () => {
+  const t = TODAY();
+  const plan = live().filter(x => x.kind !== 'revision' && (x.date === t || (x.date < t && !x.done))).sort((a, b) => a.done - b.done || b.mit - a.mit || a.date.localeCompare(b.date));
+  const revs = S.tasks.filter(x => x.kind === 'revision' && !x.removed && !x.superseded && ((!x.done && x.date <= t) || (x.done && iso(x.doneAt) === t))).sort((a, b) => a.done - b.done || a.date.localeCompare(b.date));
+  const mit = plan.find(x => x.mit && !x.done);
+  const fe = focusExam(); const c = fe ? coach(fe) : null;
+  const pk = promiseKept(); const integ = integrity(); const rd = readerMinutes(t);
+  const strip = Array.from({ length: 30 }, (_, i) => { const d = addDays(t, i - 29); return `<i data-l="${dayLevel(d)}" class="${d === t ? 'today' : ''}" title="${fmt(d)} · ${hm(dayMinutes(d))}"></i>`; }).join('');
+  const j = S.journal[t] || {};
+  const cl = clashes(), b2b = backToBack();
+  const upcoming = activeExams().filter(e => e.date && e.date >= t).slice(0, 4);
+  return `${S.profile.mission ? `<div class="banner" style="background:var(--surface-2);color:var(--ink-2)"><span><b>Mission:</b> ${esc(S.profile.mission)}</span></div>` : ''}
+  ${pendingCard()}
+  ${cl.length || b2b.length ? `<section class="card call bad" style="margin-bottom:22px"><p class="eyebrow">Decide now</p>${cl.map(([d, n]) => `<div class="signal"><span class="dot bad"></span><span><b>${fmt(d)}: two exams on one day.</b> ${n.map(esc).join(' and ')}. Pick one before you prepare for both.</span></div>`).join('')}${b2b.map(([a, b]) => `<div class="signal"><span class="dot warn"></span><span><b>Back to back:</b> ${esc(a[1])} on ${fmt(a[0])}, then ${esc(b[1])} on ${fmt(b[0])}. Plan travel and sleep now.</span></div>`).join('')}</section>` : ''}
+  <div class="grid"><div class="stack">
+    ${c ? `<section class="card call ${c.tone}"><p class="eyebrow">Coach’s call · ${esc(fe.name)}</p><div class="verdict">${esc(c.verdict)}</div><ol>${c.actions.map(a => `<li>${esc(a)}</li>`).join('')}</ol><div class="small" style="margin-top:10px"><a href="#coach" data-room="coach">Full breakdown ›</a></div></section>` : ''}
+    <section class="card mit"><p class="eyebrow">Most important task</p>${mit ? `<div class="big">${esc(mit.text)}</div><div class="btns" style="justify-content:flex-start">${mit.run ? `<button class="btn sm" data-act="pause" data-id="${mit.id}">Pause</button>` : `<button class="btn sm pri" data-act="start" data-id="${mit.id}">Start timer</button>`}<button class="btn sm" data-act="done" data-id="${mit.id}">Done</button><button class="btn sm" data-act="unmit" data-id="${mit.id}">Change</button></div>` : `<div class="big">Pick the one thing that makes today count.</div><div class="meta">Tap ★ on any task.</div>`}</section>
+    <section class="card"><div class="card-head"><h2>Revisions due</h2><span class="hint">${revs.filter(x => !x.done).length} left</span></div>
+      ${revs.length ? `<ul class="row-list">${revs.map(taskRow).join('')}</ul>` : '<div class="empty">Nothing due. Topics land here on their own once you log study in the <a href="#study" data-room="study">Library log</a>.</div>'}</section>
+    <section class="card"><div class="card-head"><h2>Today’s plan</h2><span class="hint">${plan.filter(x => x.done).length}/${plan.length} done</span></div>
+      ${plan.length ? `<ul class="row-list">${plan.map(taskRow).join('')}</ul>` : '<div class="empty">No tasks yet. Plan study from the <a href="#study" data-room="study">Library log</a>, or add a task below.</div>'}
+      <p class="small muted" style="margin:10px 0 0">Time comes only from the timer. Ticking done without it counts as zero and is noted. Unfinished tasks stay here, marked late, until done or dropped; dropping is recorded.</p>
+      ${addForm('Add task', `<form class="f" data-form="task"><label class="full">Task<input name="text" required placeholder="e.g. Quant: 2 sectional sets of DI"></label><label>Type<select name="kind">${Object.entries(KINDS).filter(([k]) => k !== 'revision').map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label><label>Planned minutes<input type="number" name="plan" min="0" step="15"></label><label>For exam<select name="exam">${examOptions('')}</select></label><label>Date<input type="date" name="date" value="${t}" min="${t}"></label><div class="actions"><button class="btn pri">Add</button></div></form>`)}</section>
+    <section class="card"><div class="card-head"><h2>Close the day</h2><span class="hint">two honest lines</span></div>
+      <form class="f" data-form="journal" style="background:none;padding:0"><label class="full">What went well<textarea name="went">${esc(j.went || '')}</textarea></label><label class="full">Where I failed today<textarea name="failed" placeholder="Be specific. The coach reads this.">${esc(j.failed || '')}</textarea></label><label class="full">Tomorrow’s most important task<input name="next"></label><div class="actions"><button class="btn pri">Save</button></div></form></section>
+  </div><div class="stack">
+    ${fe && fe.date ? `<section class="card"><p class="eyebrow">Next exam</p><div class="count"><span class="num">${diff(t, fe.date)}</span><span>day${diff(t, fe.date) === 1 ? '' : 's'} to<br><b>${esc(fe.name)}</b></span></div><div class="meta" style="margin-top:6px">${fmtLong(fe.date)}${fe.last ? ' · <span class="tag bad">last attempt</span>' : ''}</div>${fe.venue ? `<div class="small" style="margin-top:6px">${esc(fe.venue)}</div>` : ''}
+      ${upcoming.slice(1).map(e => `<div class="small" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"><b>${diff(t, e.date)} days</b> · ${esc(e.name)} · ${fmt(e.date)}${e.last ? ' <span class="tag bad">last attempt</span>' : ''}</div>`).join('')}</section>` : ''}
+    <section class="card"><div class="card-head"><h2>Honest numbers</h2><span class="hint"><a href="#coach" data-room="coach">why ›</a></span></div>
+      <div class="kpis"><div class="kpi"><b>${hm(dayMinutes(t))}</b><span>Recorded today</span></div><div class="kpi"><b>${rd == null ? '—' : hm(rd)}</b><span>Reader time today</span></div>
+      <div class="kpi ${pk ? kpiTone(pk.pct, 80, 60) : ''}"><b>${pk ? pk.pct + '%' : '—'}</b><span>Promises kept · 7d</span></div><div class="kpi ${kpiTone(integ.score, 85, 65)}"><b>${integ.score}</b><span>Integrity · 30d</span></div></div>
+      ${rd == null ? '<p class="small muted" style="margin:10px 0 0">Reader time shows once the Desk is on the site, where it can see what the reader measured.</p>' : ''}</section>
+    <section class="card"><div class="card-head"><h2>Last 30 days</h2><span class="hint">${streak()}-day streak</span></div><div class="strip">${strip}</div><p class="small muted" style="margin:8px 0 0">A day counts only with ${RULES.realDayMinutes}+ minutes recorded.</p></section>
+    <section class="card"><div class="card-head"><h2>Revision load</h2><span class="hint">next 14 days</span></div>${loadChart(revisionLoad(14), (d, n) => n || '')}<p class="small muted" style="margin:8px 0 0">Already booked. Plan new study around it.</p></section>
+  </div></div>`;
+};
+
+/* ---------- Library log ---------- */
+function nodeRow(nodes, i) {
+  const n = nodes[i], u = S.units[n.r];
+  let st = '';
+  if (u) st = u.restudy ? '<span class="tag bad">study again</span>' : u.due && u.due <= TODAY() ? '<span class="tag warn">revise now</span>' : `<span class="tag ${u.weak ? 'warn' : 'good'}">${u.weak ? 'weak · ' : ''}next ${fmt(u.due)}</span>`;
+  else { let p = n.p; while (p >= 0 && !S.units[nodes[p].r]) p = nodes[p].p; if (p >= 0) st = '<span class="tag good">covered</span>'; }
+  const planned = live().some(t => t.ref === n.r && !t.done && t.kind === 'study');
+  return `<span class="tw">${n.k.length ? '▶' : ''}</span><span class="nt">${esc(n.t)}</span>${st}<span class="btns">${planned ? '<span class="tag acc">on today’s plan</span>' : `<button class="btn sm" data-act="plan" data-ref="${esc(n.r)}" data-i="${i}" title="Put on today’s plan with a timer">＋ Plan</button>`}<button class="btn sm" data-act="studied" data-ref="${esc(n.r)}" data-i="${i}" title="I studied this today">✓ Studied</button></span>`;
+}
+function renderKids(slug, nodes, idxs) {
+  return idxs.map(i => {
+    const n = nodes[i], cls = `lv${n.lv}`;
+    if (!n.k.length) return `<div class="${cls}"><div class="node">${nodeRow(nodes, i)}</div></div>`;
+    const open = ui.open.has(n.r);
+    return `<details class="${cls}" data-node="${esc(n.r)}" ${open ? 'open' : ''}><summary class="node">${nodeRow(nodes, i)}</summary><div class="kids">${open ? renderKids(slug, nodes, n.k) : ''}</div></details>`;
+  }).join('');
+}
+V.study = () => {
+  if (LIB.error) return `<div class="banner">${esc(LIB.error)}</div>`;
+  if (!LIB.ready) return '<div class="card empty">Opening the library…</div>';
+  if (!ui.book || !subject(ui.book)) ui.book = LIB.subjects[0]?.slug;
+  const slug = ui.book, sub = subject(slug); const nodes = LIB.outlines[slug]; if (!nodes) outline(slug);
+  const chips = LIB.subjects.map(s => { const c = coverage(s.slug); return `<button class="book-chip" data-act="book" data-slug="${s.slug}" aria-pressed="${s.slug === slug}"><b>${esc(s.title)}</b><span>${c ? `${Math.round(c.pct * 100)}% studied · ${c.total} ${s.slug === 'current-affairs' ? 'cards' : 'topics'}` : 'tap to open'}</span></button>`; }).join('');
+  let body = '<div class="empty">Reading the book’s contents…</div>';
+  if (nodes) {
+    if (!nodes.length) body = '<div class="empty">This book has no headings to pick from.</div>';
+    else if (ui.q.trim().length >= 2) {
+      const q = ui.q.trim().toLowerCase(); const hits = nodes.map((n, i) => [n, i]).filter(([n]) => n.t.toLowerCase().includes(q)).slice(0, 80);
+      body = hits.length ? hits.map(([n, i]) => `<div class="node" style="border-top:1px solid var(--line)">${nodeRow(nodes, i).replace('<span class="nt">', `<span class="nt"><span class="meta" style="display:block;margin:0 0 2px">${esc(crumbs(nodes, i).join(' › '))}</span>`)}</div>`).join('') : '<div class="empty">No heading matches.</div>';
+    } else body = renderKids(slug, nodes, nodes.map((n, i) => n.p < 0 ? i : -1).filter(i => i >= 0));
+  }
+  const c = coverage(slug); const studied = Object.values(S.units).filter(u => u.book === slug).sort((a, b) => b.last.localeCompare(a.last));
+  return `<div class="books">${chips}</div>
+  <div class="grid"><div class="stack"><section class="card"><div class="card-head"><h2>${esc(sub.title)}</h2><span class="hint"><a href="${BASE}reader.html?book=${slug}" target="_blank" rel="noopener">Open in reader ↗</a></span></div>
+    <input class="search" id="treeSearch" placeholder="Search a unit, section or card…" value="${esc(ui.q)}" autocomplete="off">
+    <div class="tree">${body}</div></section></div>
+  <div class="stack"><section class="card"><div class="card-head"><h2>Progress</h2></div>${c ? `<div class="small" style="display:flex;justify-content:space-between;margin-bottom:6px"><span>${c.done} of ${c.total} studied</span><b>${Math.round(c.pct * 100)}%</b></div>${meter(c.pct)}` : '<div class="empty">—</div>'}
+    <p class="small muted" style="margin:12px 0 0"><b>＋ Plan</b> puts it on today’s plan with a timer; ticking it done logs it as studied. <b>✓ Studied</b> logs it at once. Logging a unit covers everything inside it. Either way its revisions are booked: day 1, 3, 7, then every ${RULES.thenEvery} days.</p></section>
+    <section class="card"><div class="card-head"><h2>Logged in this book</h2><span class="hint">${studied.length}</span></div>${studied.length ? `<ul class="row-list">${studied.slice(0, 15).map(u => `<li><div class="grow"><div>${esc(u.t)}</div><div class="meta">first ${fmt(u.first)}${u.studies > 1 ? ` · studied ${u.studies}×` : ''} · ${u.reviews.length} revision${u.reviews.length === 1 ? '' : 's'}${u.due ? ` · next ${fmt(u.due)}` : ''}</div></div><button class="x" data-act="unlog" data-ref="${esc(u.ref)}" title="Remove from log">×</button></li>`).join('')}</ul>` : '<div class="empty">Nothing logged yet.</div>'}</section></div></div>`;
+};
+
+V.revision = () => {
+  const due = openRevs().filter(t => t.date <= TODAY()).sort((a, b) => a.date.localeCompare(b.date));
+  const units = Object.values(S.units);
+  const weak = units.filter(u => u.weak || u.restudy);
+  const later = units.filter(u => u.due && u.due > TODAY()).sort((a, b) => a.due.localeCompare(b.due));
+  const reviews = units.flatMap(u => u.reviews.filter(r => diff(r.d, TODAY()) <= 30));
+  const onTime = reviews.length ? Math.round(reviews.filter(r => r.late <= 0).length / reviews.length * 100) : null;
+  const solid = reviews.length ? Math.round(reviews.filter(r => r.g === 'solid').length / reviews.length * 100) : null;
+  return `<div class="grid"><div class="stack">
+    <section class="card"><div class="card-head"><h2>Due now</h2><span class="hint">${due.length}</span></div>${due.length ? `<ul class="row-list">${due.map(taskRow).join('')}</ul>` : '<div class="empty">Queue is clear.</div>'}
+      <p class="small muted" style="margin:10px 0 0"><b>Solid</b> moves it to the next gap. <b>Shaky</b> restarts it at day 1. <b>Forgot</b> turns it into a “study again” task today.</p></section>
+    <section class="card"><div class="card-head"><h2>Booked ahead</h2><span class="hint">${later.length}</span></div>${later.length ? `<ul class="row-list">${later.slice(0, 40).map(u => `<li><div class="grow"><div>${esc(u.t)}</div><div class="meta">${esc(subject(u.book)?.title || u.book)} · round ${u.step + 1}${u.weak ? ' · <span class="tag warn">weak</span>' : ''}</div></div><span class="tag">${fmt(u.due)} · in ${diff(TODAY(), u.due)}d</span></li>`).join('')}</ul>` : '<div class="empty">Nothing booked yet.</div>'}</section>
+  </div><div class="stack">
+    <section class="card"><div class="card-head"><h2>Retention · 30 days</h2></div><div class="kpis"><div class="kpi ${kpiTone(onTime, 85, 60)}"><b>${onTime == null ? '—' : onTime + '%'}</b><span>Done on time</span></div><div class="kpi ${kpiTone(solid, 75, 50)}"><b>${solid == null ? '—' : solid + '%'}</b><span>Recalled solid</span></div><div class="kpi"><b>${units.length}</b><span>Topics in rotation</span></div><div class="kpi ${weak.length ? 'warn' : ''}"><b>${weak.length}</b><span>Weak / study again</span></div></div></section>
+    <section class="card"><div class="card-head"><h2>Load</h2><span class="hint">next 14 days</span></div>${loadChart(revisionLoad(14), d => new Date(d + 'T00:00').getDate())}</section>
+    ${weak.length ? `<section class="card"><div class="card-head"><h2>Weak topics</h2></div><ul class="row-list">${weak.map(u => `<li><div class="grow"><div>${esc(u.t)}</div><div class="meta">${esc(subject(u.book)?.title || u.book)}</div></div><span class="tag ${u.restudy ? 'bad' : 'warn'}">${u.restudy ? 'study again' : 'shaky'}</span></li>`).join('')}</ul></section>` : ''}
+  </div></div>`;
+};
+
+V.coach = () => {
+  const ex = activeExams(); const integ = integrity(); const pk = promiseKept();
+  const notes = [...S.notes].sort((a, b) => b.date.localeCompare(a.date));
+  return `<div class="grid"><div class="stack">
+    ${ex.length ? ex.map(e => { const c = coach(e); const mv = c.avg != null && c.topP ? c.avg / c.topP : null; return `<section class="card call ${c.tone}"><div class="card-head"><h2>${esc(e.name)}</h2><span class="hint">${e.date ? `${diff(TODAY(), e.date)} days · ${fmt(e.date)}` : 'date not set'}</span></div>
+      <div class="verdict">${esc(c.verdict)}</div><ol>${c.actions.map(a => `<li>${esc(a)}</li>`).join('')}</ol>
+      <div class="parts" style="margin-top:16px">
+        <div class="part-row"><b>Readiness</b>${meter(c.readiness == null ? 0 : c.readiness / 100, c.readiness == null ? '' : toneOf(c.readiness / 100))}<b>${c.readiness == null ? '—' : c.readiness}</b></div>
+        <div class="part-row"><span>Syllabus studied</span>${meter(c.cov, toneOf(c.cov))}<b>${c.cov == null ? '—' : Math.round(c.cov * 100) + '%'}</b></div>
+        <div class="part-row"><span>Retention</span>${meter(c.ret, toneOf(c.ret))}<b>${c.ret == null ? '—' : Math.round(c.ret * 100) + '%'}</b></div>
+        <div class="part-row"><span>Mocks vs topper</span>${meter(mv, toneOf(mv))}<b>${c.avg == null ? '—' : c.avg.toFixed(0) + '%'}</b></div>
+      </div>
+      <p class="small muted" style="margin:10px 0 0">Readiness appears after 2 full mocks: 35% syllabus studied + 25% retention + 40% last-3-mock average against the topper.${c.cutP != null ? ` Cutoff ${c.cutP.toFixed(1)}%.` : ''}${c.topP != null ? ` Topper ${c.topP.toFixed(1)}%.` : ''}</p>
+      ${c.gaps.length ? `<div class="small" style="margin-top:8px;color:var(--warn)">${c.gaps.map(esc).join('<br>')}</div>` : ''}</section>`; }).join('') : '<div class="card empty">Add exams in Exams & journey.</div>'}
+    <section class="card"><div class="card-head"><h2>Weekly review</h2></div>${notes.length ? notes.map(n => `<div style="margin-bottom:18px"><div class="card-head" style="margin-bottom:6px"><h3>${esc(n.title)}</h3><span class="hint">${fmt(n.date)} <button class="x" data-act="del" data-type="notes" data-id="${n.id}">×</button></span></div><div class="letter">${esc(n.body)}</div></div>`).join('') : `<p class="letter" style="margin:0">No review yet. Once a week Claude reads everything here, including your failures, and writes a plain review: what slipped, what to cut, what next week must fix.</p>`}
+      ${addForm('Add a review', `<form class="f" data-form="note"><label class="full">Title<input name="title" required></label><label class="full">Text<textarea name="body" required></textarea></label><div class="actions"><button class="btn pri">Save</button></div></form>`)}</section>
+  </div><div class="stack">
+    <section class="card"><div class="card-head"><h2>Integrity</h2><span class="hint">last 30 days</span></div>
+      <div class="kpis"><div class="kpi ${kpiTone(integ.score, 85, 65)}"><b>${integ.score}/100</b><span>Integrity</span></div><div class="kpi ${pk ? kpiTone(pk.pct, 80, 60) : ''}"><b>${pk ? `${pk.kept}/${pk.total}` : '—'}</b><span>Promises kept · 7d</span></div></div>
+      <div style="margin-top:12px">${integ.flags.length ? integ.flags.map(([l, m]) => `<div class="signal"><span class="dot ${l}"></span><span>${esc(m)}</span></div>`).join('') : '<div class="empty">Nothing flagged.</div>'}</div></section>
+    <section class="card"><div class="card-head"><h2>Rules you can’t bend</h2></div><ul class="small rules">
+      <li>Time comes only from timers and the reader. There is no box to type hours.</li>
+      <li>A timer left running past ${RULES.timerCapMinutes / 60} hours is cut and flagged.</li>
+      <li>Tasks can’t be added to past days. Finishing late is marked late.</li>
+      <li>Dropping a task is a broken promise (unless removed within ${RULES.graceDeleteMinutes} minutes of adding it).</li>
+      <li>A streak day needs ${RULES.realDayMinutes}+ recorded minutes.</li>
+      <li>Revisions never disappear; they wait, marked late.</li>
+      <li>Tests can’t be logged for future dates.</li>
+      <li>On the site, library study claimed by a timer is checked against what the reader measured.</li></ul></section>
+  </div></div>`;
+};
+
+/* ---------- Exams & journey ---------- */
+function examForm(e = {}) {
+  const books = LIB.subjects.map(s => `<label><input type="checkbox" name="books" value="${s.slug}" ${(e.books || []).includes(s.slug) ? 'checked' : ''}>${esc(s.title)}</label>`).join('');
+  return `<form class="f" data-form="${e.id ? 'exam-edit' : 'exam'}" ${e.id ? `data-id="${e.id}"` : ''}>
+    <label class="full">Exam<input name="name" required value="${esc(e.name || '')}" placeholder="e.g. SBI PO 2027 — Prelims"></label>
+    <label>Track<select name="track">${TRACKS.map(t => `<option ${t === e.track ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+    <label>Date<input type="date" name="date" value="${e.date || ''}"></label>
+    <label>Stage<select name="stage">${STAGES.map(s => `<option ${s === e.stage ? 'selected' : ''}>${s}</option>`).join('')}</select></label>
+    <label>Total marks<input type="number" step="0.25" name="max" value="${e.max ?? ''}"></label>
+    <label>Expected cutoff<input type="number" step="0.25" name="cutoff" value="${e.cutoff ?? ''}"></label>
+    <label>Topper’s score<input type="number" step="0.25" name="topper" value="${e.topper ?? ''}"></label>
+    <label class="full">Library series<select name="series"><option value="">—</option>${LIB.series.map(s => `<option value="${s.id}" ${s.id === e.series ? 'selected' : ''}>${esc(s.name)} (all its books, now and later)</option>`).join('')}</select></label>
+    <div class="full"><div class="small muted" style="font-weight:600;margin-bottom:4px">Library books for this exam</div><div class="checks">${books || '<span class="muted small">Library not loaded</span>'}</div></div>
+    <label class="full">Note<input name="note" value="${esc(e.note || '')}"></label>
+    <div class="actions"><button class="btn pri">${e.id ? 'Save' : 'Add exam'}</button></div></form>`;
+}
+const trackTabs = () => `<div class="track-tabs">${['All', ...TRACKS].map(k => `<button data-act="track" data-k="${k}" aria-pressed="${k === ui.track}">${k}</button>`).join('')}</div>`;
+function ageOn(dob, day) { const a = new Date(dob + 'T00:00:00'), b = new Date(day + 'T00:00:00'); let y = b.getFullYear() - a.getFullYear(), m = b.getMonth() - a.getMonth(); if (b.getDate() < a.getDate()) m--; if (m < 0) { y--; m += 12; } return [y, m]; }
+function profileCard() {
+  const p = S.profile; if (!p.name) return '';
+  const [y, m] = p.dob ? ageOn(p.dob, TODAY()) : [null];
+  return `<section class="card"><div class="card-head"><h2>Candidate profile</h2><span class="hint">used for eligibility</span></div>
+    <div class="small" style="display:grid;gap:6px"><div><b>${esc(p.name)}</b></div>
+    ${p.dob ? `<div>Born ${fmt(p.dob)} ${p.dob.slice(0, 4)} · <b>${y} years ${m} months</b> today</div>` : ''}
+    ${p.category ? `<div>Category: ${esc(p.category)}${p.domicile ? ` · Domicile: ${esc(p.domicile)}` : ''}</div>` : ''}
+    ${(p.quals || []).map(q => `<div>🎓 ${esc(q)}</div>`).join('')}
+    ${p.experience ? `<div>Work experience: ${esc(p.experience)}</div>` : ''}</div>
+    ${p.eligibility ? `<div class="small" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><b>Where you still qualify</b>${p.eligibility.map(([l, t]) => `<div class="signal" style="padding:7px 0"><span class="dot ${l}"></span><span>${esc(t)}</span></div>`).join('')}</div>` : ''}</section>`;
+}
+V.journey = () => {
+  const t = TODAY();
+  const ex = S.exams.filter(e => ui.track === 'All' || e.track === ui.track).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+  const at = S.attempts.filter(a => ui.track === 'All' || a.track === ui.track).sort((a, b) => (b.year || '').localeCompare(a.year || ''));
+  return `${trackTabs()}<div class="grid"><div class="stack">
+    <section class="card"><div class="card-head"><h2>Exams on the way</h2><span class="hint">${ex.length}</span></div>
+      ${ex.length ? `<div class="exam-grid">${ex.map(e => { const d = e.date ? diff(t, e.date) : null; const ts = examTests(e); const lt = ts[ts.length - 1]; const bk = examBooks(e);
+        return `<article class="card exam" style="padding:18px"><div class="card-head" style="margin:0"><h3>${esc(e.name)}</h3><button class="x" data-act="del" data-type="exams" data-id="${e.id}">×</button></div>
+        <div><span class="tag">${esc(e.track || 'Other')}</span><span class="tag ${e.stage === 'Selected' ? 'good' : e.stage === 'Not cleared' ? 'bad' : 'acc'}">${esc(e.stage)}</span>${e.last ? '<span class="tag bad">last attempt</span>' : ''}</div>
+        <div>${d == null ? '<span class="muted small">Date not set</span>' : d < 0 ? `<span class="muted small">Held ${fmt(e.date)}</span>` : `<span class="days">${d}</span> <span class="muted">days · ${fmt(e.date)}</span>`}</div>
+        <div class="small">${lt ? `Last test <b>${lt.score}/${lt.max}</b>${lt.cutoff != null ? ` vs cutoff ${lt.cutoff}` : ''}` : '<span class="muted">No tests logged</span>'}${e.topper ? ` · topper ${e.topper}` : ''}</div>
+        <div class="small muted">${bk.length ? 'Books: ' + bk.map(b => esc(subject(b).title)).join(', ') : LIB.ready ? 'No library books linked' : ''}</div>
+        ${e.next ? `<div class="small">Next: <b>${esc(e.next.name)}</b> · ${fmt(e.next.date)}</div>` : ''}
+        ${e.venue ? `<div class="small">📍 ${esc(e.venue)}</div>` : ''}
+        ${e.note ? `<div class="small muted">${esc(e.note)}</div>` : ''}
+        ${e.reg ? `<div class="small muted">Reg. ${esc(e.reg)}</div>` : ''}
+        ${e.src ? `<div class="small"><a href="${esc(e.src)}" target="_blank" rel="noopener">Official site ↗</a>${e.checked ? ` <span class="meta">· dates checked ${fmt(e.checked)}</span>` : ''}</div>` : ''}
+        <details class="add" style="margin:0"><summary>Edit</summary>${examForm(e)}</details></article>`; }).join('')}</div>` : '<div class="empty">No exams in this track.</div>'}
+      ${addForm('Add exam', examForm())}</section>
+    <section class="card"><div class="card-head"><h2>Past attempts & results</h2><span class="hint">${at.length}</span></div>
+      ${at.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Exam</th><th>Reached</th><th>Score</th><th>Result</th><th></th></tr></thead><tbody>${at.map(a => `<tr><td><b>${esc(a.exam)}</b><div class="meta">${esc(a.year || '')} · ${esc(a.track || '')}</div>${a.lesson ? `<div class="small" style="margin-top:4px">${esc(a.lesson)}</div>` : ''}</td><td>${esc(a.stage || '')}</td><td>${a.score != null ? `${a.score}${a.cutoff != null ? ` <span class="meta">/ cutoff ${a.cutoff}</span>` : ''}` : '—'}</td><td><span class="tag ${['Selected', 'Cleared'].includes(a.result) ? 'good' : a.result === 'Not cleared' ? 'bad' : 'warn'}">${esc(a.result)}</span></td><td><button class="x" data-act="del" data-type="attempts" data-id="${a.id}">×</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No past attempts recorded.</div>'}
+      ${addForm('Add a result', `<form class="f" data-form="attempt"><label class="full">Exam<input name="exam" required placeholder="e.g. IBPS PO 2026"></label><label>Track<select name="track">${TRACKS.map(k => `<option>${k}</option>`).join('')}</select></label><label>Year / cycle<input name="year" placeholder="2026"></label><label>Stage reached<select name="stage"><option>Prelims</option><option>Mains</option><option>Interview</option><option>Final list</option></select></label><label>Result<select name="result"><option>Not cleared</option><option>Cleared</option><option>Selected</option><option>Awaited</option></select></label><label>Your score<input name="score" type="number" step="0.25"></label><label>Cutoff<input name="cutoff" type="number" step="0.25"></label><label class="full">What went wrong / what it taught<input name="lesson"></label><div class="actions"><button class="btn pri">Save</button></div></form>`)}</section>
+  </div><div class="stack">
+    ${profileCard()}
+    <section class="card"><div class="card-head"><h2>The journey</h2></div>
+      ${S.milestones.length ? `<ol class="ladder">${S.milestones.map((m, i) => `<li class="${m.status}"><span class="step">${m.status === 'done' ? '✓' : i + 1}</span><div class="grow"><div><b>${esc(m.title)}</b></div>${m.note ? `<div class="meta">${esc(m.note)}</div>` : ''}<div class="btns" style="justify-content:flex-start;margin-top:6px"><select class="btn sm" data-act="mstatus" data-id="${m.id}">${['now', 'next', 'later', 'done'].map(s => `<option value="${s}" ${s === m.status ? 'selected' : ''}>${{ now: 'Working on it', next: 'Next', later: 'Later', done: 'Achieved' }[s]}</option>`).join('')}</select><button class="btn sm" data-act="mup" data-id="${m.id}" title="Move up">↑</button><button class="x" data-act="del" data-type="milestones" data-id="${m.id}">×</button></div></div></li>`).join('')}</ol>` : '<div class="empty">No milestones yet.</div>'}
+      ${addForm('Add milestone', `<form class="f" data-form="milestone"><label class="full">Milestone<input name="title" required></label><label class="full">Why it matters<input name="note"></label><div class="actions"><button class="btn pri">Add</button></div></form>`)}</section>
+  </div></div>`;
+};
+
+/* ---------- Tests ---------- */
+function chart(arr, e) {
+  if (arr.length < 2) return '<div class="empty">Log at least two tests of this exam to see the trend.</div>';
+  const W = 640, H = 210, p = 30, n = arr.length;
+  const x = i => p + i * (W - 2 * p) / (n - 1), y = v => H - p - v / 100 * (H - 2 * p);
+  const line = (vals, col, dash, w) => { const pts = vals.map((v, i) => v == null ? null : `${x(i)},${y(v)}`).filter(Boolean); return pts.length > 1 ? `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ''} stroke-linejoin="round"/>` : ''; };
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Score trend">
+    ${[0, 25, 50, 75, 100].map(v => `<line x1="${p}" x2="${W - p}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${p - 6}" y="${y(v) + 4}" font-size="10" text-anchor="end" fill="var(--muted)">${v}</text>`).join('')}
+    ${line(arr.map(t => t.cutoff != null ? pct(t.cutoff, t.max) : null), 'var(--bad)', '5 4', 1.5)}${line(arr.map(t => t.topper != null ? pct(t.topper, t.max) : e && e.topper && e.max ? pct(e.topper, e.max) : null), 'var(--good)', '2 4', 1.5)}${line(arr.map(t => pct(t.score, t.max)), 'var(--accent)', '', 2.4)}
+    ${arr.map((t, i) => `<circle cx="${x(i)}" cy="${y(pct(t.score, t.max))}" r="4" fill="var(--surface)" stroke="var(--accent)" stroke-width="2"><title>${esc(t.name || '')} ${fmt(t.date)}: ${t.score}/${t.max}</title></circle><text x="${x(i)}" y="${H - 8}" font-size="10" text-anchor="middle" fill="var(--muted)">${fmt(t.date)}</text>`).join('')}
+  </svg><div class="small muted"><span style="color:var(--accent)">━</span> you &nbsp; <span style="color:var(--bad)">┅</span> cutoff &nbsp; <span style="color:var(--good)">┅</span> topper</div>`;
+}
+V.tests = () => {
+  const names = [...new Set(S.tests.map(t => t.exam))]; if (!names.includes(ui.testExam)) ui.testExam = names[0] || '';
+  const e = S.exams.find(x => x.name === ui.testExam);
+  const sel = S.tests.filter(t => t.exam === ui.testExam).sort((a, b) => a.date.localeCompare(b.date));
+  const all = [...S.tests].sort((a, b) => b.date.localeCompare(a.date));
+  const d2 = v => +(+v).toFixed(2);
+  return `<div class="grid"><div class="stack">
+    <section class="card"><div class="card-head"><h2>Trend</h2>${names.length ? `<select class="btn sm" data-act="texam">${names.map(n => `<option ${n === ui.testExam ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>` : ''}</div>${chart(sel, e)}</section>
+    <section class="card"><div class="card-head"><h2>All tests</h2></div>${all.length ? `<div class="table-wrap"><table class="t"><thead><tr><th>Date</th><th>Test</th><th>Score</th><th>vs cutoff</th><th>vs topper</th><th></th></tr></thead><tbody>${all.map(t => `<tr><td>${fmt(t.date)}</td><td><b>${esc(t.exam)}</b><div class="meta">${TEST_KINDS[t.kind] || ''}${t.name ? ' · ' + esc(t.name) : ''}${t.minutes ? ' · ' + t.minutes + ' min' : ''}</div>${t.note ? `<div class="small">${esc(t.note)}</div>` : ''}</td><td>${t.score}/${t.max}<div class="meta">${pct(t.score, t.max)}%</div></td><td>${t.cutoff != null ? `<span class="tag ${t.score >= t.cutoff ? 'good' : 'bad'}">${t.score >= t.cutoff ? '+' : ''}${d2(t.score - t.cutoff)}</span>` : '—'}</td><td>${t.topper != null ? `<span class="tag ${t.score >= t.topper ? 'good' : 'warn'}">${t.score >= t.topper ? '+' : ''}${d2(t.score - t.topper)}</span>` : '—'}</td><td><button class="x" data-act="del" data-type="tests" data-id="${t.id}">×</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">No tests logged yet.</div>'}</section>
+  </div><div class="stack"><section class="card"><div class="card-head"><h2>Log a test</h2></div>
+    <form class="f" data-form="test"><label class="full">Exam<select name="exam" required>${examOptions('', 'Choose exam')}</select></label><label>Type<select name="kind">${Object.entries(TEST_KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label><label>Date<input type="date" name="date" value="${TODAY()}" max="${TODAY()}" required></label><label class="full">Name / source<input name="name" placeholder="e.g. Mock 4 (Testbook)"></label><label>Score<input type="number" name="score" step="0.25" required></label><label>Out of<input type="number" name="max" step="0.25" required></label><label>Cutoff<input type="number" name="cutoff" step="0.25"></label><label>Topper<input type="number" name="topper" step="0.25"></label><label>Minutes taken<input type="number" name="minutes"></label><label class="full">One-line verdict<input name="note" placeholder="Details go in the Mistake book"></label><div class="actions"><button class="btn pri">Save test</button></div></form></section></div></div>`;
+};
+
+V.mistakes = () => {
+  const open = S.mistakes.filter(m => !m.resolved).sort((a, b) => b.date.localeCompare(a.date)), fixed = S.mistakes.filter(m => m.resolved);
+  const c = {}; open.forEach(m => c[m.reason] = (c[m.reason] || 0) + 1); const tot = open.length || 1;
+  return `<div class="grid"><div class="stack"><section class="card"><div class="card-head"><h2>Open mistakes</h2><span class="hint">${open.length} open · ${fixed.length} fixed</span></div>
+    ${open.length ? `<ul class="row-list">${open.map(m => `<li><div class="grow"><div><b>${esc(m.topic)}</b></div><div class="meta"><span class="tag ${['concept', 'unstudied'].includes(m.reason) ? 'bad' : 'warn'}">${REASONS[m.reason]}</span>${esc(m.exam || '')}${m.source ? ' · ' + esc(m.source) : ''} · ${fmt(m.date)}</div>${m.fix ? `<div class="small" style="margin-top:4px">Fix: ${esc(m.fix)}</div>` : ''}</div><div class="btns"><button class="btn sm" data-act="m2task" data-id="${m.id}">→ Study again</button><button class="btn sm" data-act="resolve" data-id="${m.id}">Fixed</button><button class="x" data-act="del" data-type="mistakes" data-id="${m.id}">×</button></div></li>`).join('')}</ul>` : '<div class="empty">No open mistakes.</div>'}
+    ${fixed.length ? `<details class="add"><summary>Fixed (${fixed.length})</summary><ul class="row-list" style="margin-top:8px">${fixed.map(m => `<li style="opacity:.6"><div class="grow">${esc(m.topic)} <span class="meta">${REASONS[m.reason]}</span></div><button class="btn sm" data-act="resolve" data-id="${m.id}">Reopen</button></li>`).join('')}</ul></details>` : ''}</section></div>
+  <div class="stack"><section class="card"><div class="card-head"><h2>Why marks are lost</h2></div>${open.length ? `<div class="bars">${Object.keys(REASONS).map(r => `<div class="bar-row"><span>${REASONS[r]}</span>${meter((c[r] || 0) / tot)}<b>${c[r] || 0}</b></div>`).join('')}</div>` : '<div class="empty">Appears once you log mistakes.</div>'}</section>
+    <section class="card"><div class="card-head"><h2>Log a mistake</h2></div><form class="f" data-form="mistake"><label class="full">Topic / question<input name="topic" required></label><label>Exam<select name="exam">${examOptions('')}</select></label><label>Reason<select name="reason">${Object.entries(REASONS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label><label>Date<input type="date" name="date" value="${TODAY()}" max="${TODAY()}"></label><label>From<input name="source" placeholder="Mock 4"></label><label class="full">How to fix<input name="fix"></label><div class="actions"><button class="btn pri">Save</button></div></form></section></div></div>`;
+};
+
+V.failures = () => {
+  const failed = S.attempts.filter(a => a.result === 'Not cleared');
+  const days = Object.entries(S.journal).filter(([, j]) => j.failed).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 20);
+  const sb = [...S.setbacks].sort((a, b) => b.date.localeCompare(a.date));
+  const belowCut = S.tests.filter(t => t.cutoff != null && t.score < t.cutoff).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
+  const drops = S.log.filter(l => l.type === 'dropped').slice(-8).reverse();
+  return `<div class="grid"><div class="stack">
+    <section class="card"><div class="card-head"><h2>Setbacks</h2><span class="hint">${sb.length}</span></div>
+      ${sb.length ? `<ul class="row-list">${sb.map(s => `<li><div class="grow"><div><b>${esc(s.what)}</b></div><div class="meta">${fmt(s.date)}${s.exam ? ' · ' + esc(s.exam) : ''}</div>${s.why ? `<div class="small" style="margin-top:4px"><b>Real reason:</b> ${esc(s.why)}</div>` : ''}${s.cost ? `<div class="small"><b>What it cost:</b> ${esc(s.cost)}</div>` : ''}${s.rule ? `<div class="small"><b>Rule from now on:</b> ${esc(s.rule)}</div>` : ''}</div><button class="x" data-act="del" data-type="setbacks" data-id="${s.id}">×</button></li>`).join('')}</ul>` : '<div class="empty">Nothing written yet.</div>'}
+      ${addForm('Write down a failure', `<form class="f" data-form="setback"><label class="full">What happened<input name="what" required placeholder="e.g. Missed the Mains cutoff by 4 marks"></label><label>Date<input type="date" name="date" value="${TODAY()}" max="${TODAY()}"></label><label>Exam<select name="exam">${examOptions('')}</select></label><label class="full">The real reason (no excuses)<textarea name="why"></textarea></label><label class="full">What it cost<input name="cost"></label><label class="full">Rule from now on<input name="rule"></label><div class="actions"><button class="btn pri">Save</button></div></form>`, !sb.length)}</section>
+    <section class="card"><div class="card-head"><h2>Where I failed, day by day</h2></div>${days.length ? `<ul class="row-list">${days.map(([d, j]) => `<li><div class="grow"><div class="meta"><b>${fmt(d)}</b></div><div class="small">${esc(j.failed)}</div></div></li>`).join('')}</ul>` : '<div class="empty">Comes from “Close the day” on Today.</div>'}</section>
+  </div><div class="stack">
+    <section class="card"><div class="card-head"><h2>Exams not cleared</h2></div>${failed.length ? `<ul class="row-list">${failed.map(a => `<li><div class="grow"><div><b>${esc(a.exam)}</b> <span class="meta">${esc(a.stage || '')} · ${esc(a.year || '')}</span></div>${a.score != null ? `<div class="small">${a.score}${a.cutoff != null ? ` vs cutoff ${a.cutoff} (${+(a.score - a.cutoff).toFixed(2)})` : ''}</div>` : ''}${a.lesson ? `<div class="small muted">${esc(a.lesson)}</div>` : ''}</div></li>`).join('')}</ul>` : '<div class="empty">Add results in Exams & journey.</div>'}</section>
+    <section class="card"><div class="card-head"><h2>Tests below cutoff</h2></div>${belowCut.length ? `<ul class="row-list">${belowCut.map(t => `<li><div class="grow"><b>${esc(t.exam)}</b> <span class="meta">${esc(t.name || '')} · ${fmt(t.date)}</span></div><span class="tag bad">${+(t.score - t.cutoff).toFixed(2)}</span></li>`).join('')}</ul>` : '<div class="empty">None.</div>'}</section>
+    <section class="card"><div class="card-head"><h2>Broken promises</h2></div>${drops.length ? `<ul class="row-list">${drops.map(l => `<li><div class="grow small">${esc(l.text)}<div class="meta">${fmt(l.day)}</div></div></li>`).join('')}</ul>` : '<div class="empty">None.</div>'}</section>
+  </div></div>`;
+};
+
+V.opps = () => {
+  const t = TODAY(); const st = { watching: 'Watching', applying: 'Applying', applied: 'Applied', skip: 'Skipped' };
+  const list = S.opps.filter(o => ui.track === 'All' || o.track === ui.track).sort((a, b) => (a.status === 'skip') - (b.status === 'skip') || (a.deadline || '9999').localeCompare(b.deadline || '9999'));
+  return `${trackTabs()}<div class="grid"><div class="stack"><section class="card"><div class="card-head"><h2>Open</h2></div>
+    ${list.length ? `<ul class="row-list">${list.map(o => { const d = o.deadline ? diff(t, o.deadline) : null; return `<li ${o.status === 'skip' ? 'style="opacity:.6"' : ''}><div class="grow"><div><b>${esc(o.title)}</b></div><div class="meta">${esc(o.track || '')}${o.org ? ' · ' + esc(o.org) : ''}${o.deadline ? ` · deadline ${fmt(o.deadline)} ${d < 0 ? '<span class="tag">closed</span>' : `<span class="tag ${d <= 7 ? 'bad' : d <= 21 ? 'warn' : ''}">${d} days left</span>`}` : ''}</div>${o.link ? `<div class="small"><a href="${esc(o.link)}" target="_blank" rel="noopener">Official source ↗</a></div>` : '<div class="small" style="color:var(--warn)">No official source linked: not verified</div>'}</div><div class="btns"><select class="btn sm" data-act="ostatus" data-id="${o.id}">${Object.entries(st).map(([k, v]) => `<option value="${k}" ${k === o.status ? 'selected' : ''}>${v}</option>`).join('')}</select><button class="btn sm" data-act="o2exam" data-id="${o.id}" title="Track it as an exam">→ Exam</button><button class="x" data-act="del" data-type="opps" data-id="${o.id}">×</button></div></li>`; }).join('')}</ul>`
+      : '<div class="empty">Nothing here yet. Claude will add verified notifications with the official link and date; you can add your own.</div>'}</section></div>
+  <div class="stack"><section class="card"><div class="card-head"><h2>Add</h2></div><form class="f" data-form="opp"><label class="full">Title<input name="title" required placeholder="e.g. RBI Grade B 2027 notification"></label><label>Track<select name="track">${TRACKS.map(k => `<option>${k}</option>`).join('')}</select></label><label>Organisation<input name="org"></label><label>Deadline<input type="date" name="deadline"></label><label class="full">Official link<input name="link" type="url" placeholder="https://"></label><div class="actions"><button class="btn pri">Add</button></div></form></section></div></div>`;
+};
+
+/* ================= Render ================= */
+function render() {
+  ensureRevisionTasks();
+  nav(); hero();
+  const y = scrollY;
+  $('#view').innerHTML = (S.sample ? `<div class="banner"><span>Sample data, made up only to preview the design.</span><button class="btn sm" data-act="clear">Clear and start fresh</button></div>` : '')
+    + (!S.profile.name && !S.exams.length && !S.sample ? '<div class="banner"><span>Empty Desk. Use <b>Import</b> at the bottom to load your private setup file. Nothing personal is stored on the site.</span></div>' : '') + (memoryOnly ? '<div class="banner">This browser is not saving data. Use Export before closing.</div>' : '') + V[room]();
+  scrollTo(0, y);
+}
+function go(r) { room = r; history.replaceState(null, '', '#' + r); render(); scrollTo({ top: 0 }); }
+setInterval(() => document.querySelectorAll('[data-timer]').forEach(el => { const t = S.tasks.find(x => x.id === el.dataset.timer); if (t && t.run) el.textContent = clock(taskMs(t)); }), 1000);
+
+/* ================= Actions ================= */
+const T = id => S.tasks.find(x => x.id === id);
+function nodeInfo(ref, i) { const slug = ref.split('#')[0]; const nodes = LIB.outlines[slug]; return { slug, title: nodes[i].t, path: crumbs(nodes, +i) }; }
+function completeTask(t) {
+  stopTimer(t); t.done = true; t.doneAt = Date.now();
+  if (!taskMs(t) && !(t.ref && readerMinutes(TODAY()) != null)) logEvent('notime', `“${t.text}” ticked done with no time recorded.`);
+  if (t.date < TODAY()) logEvent('late', `“${t.text}” promised for ${fmt(t.date)}, finished ${fmt(TODAY())}.`);
+  if (t.ref && t.kind === 'study') { const u = S.units[t.ref]; markStudied(t.ref, u ? u.t : t.text.replace(/^Study again: /, ''), t.book || t.ref.split('#')[0], u ? u.path : t.path, TODAY()); toast('Logged as studied. First revision tomorrow.'); }
+}
+document.addEventListener('click', e => {
+  const rb = e.target.closest('[data-room]'); if (rb) { e.preventDefault(); return go(rb.dataset.room); }
+  const b = e.target.closest('[data-act]'); if (!b || b.tagName === 'SELECT') return;
+  if (b.closest('summary')) e.preventDefault();
+  const { act, id } = b.dataset; const t = id ? T(id) : null;
+  if (act === 'start') { S.tasks.forEach(x => { if (x.run && x !== t) stopTimer(x); }); t.run = Date.now(); }
+  else if (act === 'pause') stopTimer(t);
+  else if (act === 'done') completeTask(t);
+  else if (act === 'grade') gradeRevision(t, b.dataset.g);
+  else if (act === 'mit') { live().forEach(x => { if (x.date <= TODAY()) x.mit = false; }); t.mit = true; }
+  else if (act === 'unmit') t.mit = false;
+  else if (act === 'drop') {
+    const grace = Date.now() - t.created < RULES.graceDeleteMinutes * 60000 && !taskMs(t);
+    if (!confirm(grace ? 'Remove this task?' : 'Drop this task? It will be recorded as a broken promise.')) return;
+    stopTimer(t);
+    if (grace) S.tasks = S.tasks.filter(x => x !== t);
+    else { t.removed = true; t.dropped = true; logEvent('dropped', `Dropped “${t.text}” (planned for ${fmt(t.date)}).`); }
+  }
+  else if (act === 'book') { ui.book = b.dataset.slug; ui.q = ''; ui.open.clear(); }
+  else if (act === 'plan' || act === 'studied') {
+    const n = nodeInfo(b.dataset.ref, +b.dataset.i);
+    if (act === 'studied') { const lc = leafCount(LIB.outlines[n.slug], +b.dataset.i); if (lc > 5 && !confirm(`This marks ${lc} cards as studied in one go. Did you really cover all of them?`)) return; if (readerMinutes(TODAY()) == null) logEvent('notime', `“${n.title}” logged as studied with no timer.`); }
+    if (act === 'plan') S.tasks.push(newTask({ kind: 'study', text: n.title, ref: b.dataset.ref, book: n.slug, path: n.path, date: TODAY() }));
+    else { markStudied(b.dataset.ref, n.title, n.slug, n.path, TODAY()); S.tasks.push(newTask({ kind: 'study', text: n.title, ref: b.dataset.ref, book: n.slug, path: n.path, date: TODAY(), done: true, doneAt: Date.now() })); }
+    toast(act === 'plan' ? 'On today’s plan. Start the timer when you begin.' : 'Logged. First revision tomorrow.');
+  }
+  else if (act === 'unlog') { if (!confirm('Remove this from your study log and its revisions?')) return; delete S.units[b.dataset.ref]; S.tasks.filter(x => x.kind === 'revision' && x.ref === b.dataset.ref && !x.done).forEach(x => x.removed = true); }
+  else if (act === 'del') { if (!confirm('Delete this?')) return; S[b.dataset.type] = S[b.dataset.type].filter(x => x.id !== id); }
+  else if (act === 'resolve') { const m = S.mistakes.find(x => x.id === id); m.resolved = !m.resolved; }
+  else if (act === 'm2task') { const m = S.mistakes.find(x => x.id === id); S.tasks.push(newTask({ kind: 'study', text: `Study again: ${m.topic}`, exam: m.exam, date: TODAY() })); toast('Added to today’s plan'); }
+  else if (act === 'result') {
+    const e = S.exams.find(x => x.id === id), yr = String(new Date().getFullYear());
+    if (b.dataset.r === 'cleared') {
+      e.stage = e.name.includes('Mains') ? 'Mains cleared' : 'Prelims cleared';
+      S.attempts.push({ id: uid(), exam: e.name, track: e.track, year: yr, stage: e.name.includes('Mains') ? 'Mains' : 'Prelims', result: 'Cleared', score: null, cutoff: null, lesson: '' });
+      if (e.next) { S.exams.push({ id: uid(), name: e.name.replace(/ — .*/, '') + ' — ' + e.next.name, track: e.track, date: e.next.date, stage: 'Preparing', books: e.books || [], series: e.series, note: 'Follows ' + e.name }); delete e.next; }
+      toast('Logged. Next stage is on your exam list.');
+    } else {
+      e.stage = 'Not cleared'; delete e.next;
+      S.attempts.push({ id: uid(), exam: e.name, track: e.track, year: yr, stage: e.name.includes('Mains') ? 'Mains' : 'Prelims', result: 'Not cleared', score: null, cutoff: null, lesson: 'Add the score, the cutoff and the real reason.' });
+      toast('Logged. Write the real reason under Failures today.');
+    }
+  }
+  else if (act === 'track') ui.track = b.dataset.k;
+  else if (act === 'mup') { const i = S.milestones.findIndex(x => x.id === id); if (i > 0) [S.milestones[i - 1], S.milestones[i]] = [S.milestones[i], S.milestones[i - 1]]; }
+  else if (act === 'o2exam') { const o = S.opps.find(x => x.id === id); S.exams.push({ id: uid(), name: o.title, track: o.track, date: '', stage: 'Preparing', books: [], note: o.org || '' }); o.status = 'applying'; toast('Added to Exams & journey'); }
+  else if (act === 'sample') { if ((Object.keys(S.units).length || S.tasks.length || S.tests.length) && !confirm('Replace your data with sample data?')) return; S = sample(); }
+  else if (act === 'clear') { if (!confirm('Delete everything on this Desk?')) return; S = starter(); }
+  else if (act === 'export') { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' })); a.download = `desk-backup-${TODAY()}.json`; a.click(); return; }
+  else return;
+  save(); render();
+});
+document.addEventListener('toggle', e => {
+  const d = e.target; if (!d.matches || !d.matches('details[data-node]')) return;
+  const r = d.dataset.node; if (d.open === ui.open.has(r)) return;
+  d.open ? ui.open.add(r) : ui.open.delete(r);
+  const slug = r.split('#')[0], nodes = LIB.outlines[slug], i = nodes.findIndex(n => n.r === r), k = d.querySelector(':scope > .kids');
+  if (d.open && k && !k.innerHTML) k.innerHTML = renderKids(slug, nodes, nodes[i].k);
+}, true);
+document.addEventListener('input', e => { if (e.target.id !== 'treeSearch') return; ui.q = e.target.value; clearTimeout(ui.qt); ui.qt = setTimeout(() => { render(); const s = $('#treeSearch'); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } }, 300); });
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.id === 'importFile' && el.files[0]) { el.files[0].text().then(x => { try { const j = JSON.parse(x); if (j.v) { if ((S.tasks.length || Object.keys(S.units).length) && !confirm('This file is a full backup and will replace everything on this Desk. Continue?')) return; S = Object.assign(blank(), j); save(); render(); toast('Imported'); } else if (MERGE_KEYS.some(k => Array.isArray(j[k])) || j.profile) { const n = mergeUpdate(j); save(); render(); toast(n ? `${n} update${n > 1 ? 's' : ''} merged` : 'Nothing new in that file'); } else toast('Not a Desk file'); } catch (err) { toast('That file could not be read'); } el.value = ''; }); return; }
+  const { act, id } = el.dataset;
+  if (act === 'ostatus') S.opps.find(x => x.id === id).status = el.value;
+  else if (act === 'mstatus') S.milestones.find(x => x.id === id).status = el.value;
+  else if (act === 'texam') ui.testExam = el.value;
+  else return;
+  save(); render();
+});
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-form]'); if (!f) return; e.preventDefault();
+  const fd = new FormData(f), d = Object.fromEntries(fd), k = f.dataset.form, t = TODAY();
+  const num = v => v === '' || v == null ? null : +v;
+  let msg = 'Saved';
+  if (k === 'task') { if ((d.date || t) < t) return toast('Tasks can’t be added to past days.'); S.tasks.push(newTask({ kind: d.kind, text: d.text, plan: num(d.plan), exam: d.exam, date: d.date || t })); }
+  else if (k === 'exam' || k === 'exam-edit') {
+    const o = { name: d.name, track: d.track, date: d.date, stage: d.stage, max: num(d.max), cutoff: num(d.cutoff), topper: num(d.topper), series: d.series, books: fd.getAll('books'), note: d.note };
+    if (k === 'exam') S.exams.push(Object.assign({ id: uid() }, o));
+    else { const ex = S.exams.find(x => x.id === f.dataset.id), old = ex.name; Object.assign(ex, o); if (old !== o.name) [S.tests, S.mistakes, S.tasks, S.setbacks].forEach(arr => arr.forEach(x => { if (x.exam === old) x.exam = o.name; })); }
+    examBooks(o).forEach(outline);
+  }
+  else if (k === 'attempt') S.attempts.push({ id: uid(), exam: d.exam, track: d.track, year: d.year, stage: d.stage, result: d.result, score: num(d.score), cutoff: num(d.cutoff), lesson: d.lesson });
+  else if (k === 'milestone') S.milestones.push({ id: uid(), title: d.title, note: d.note, status: 'next' });
+  else if (k === 'test') { if (d.date > t) return toast('A test can’t be logged for a future date.'); S.tests.push({ id: uid(), exam: d.exam, kind: d.kind, name: d.name, date: d.date, score: +d.score, max: +d.max, cutoff: num(d.cutoff), topper: num(d.topper), minutes: num(d.minutes), note: d.note }); if (num(d.cutoff) != null && +d.score < +d.cutoff) msg = 'Below cutoff. Log its mistakes in the Mistake book today.'; }
+  else if (k === 'mistake') S.mistakes.push({ id: uid(), topic: d.topic, exam: d.exam, reason: d.reason, date: d.date || t, source: d.source, fix: d.fix, resolved: false });
+  else if (k === 'setback') S.setbacks.push({ id: uid(), date: d.date || t, what: d.what, exam: d.exam, why: d.why, cost: d.cost, rule: d.rule });
+  else if (k === 'note') S.notes.push({ id: uid(), title: d.title, body: d.body, date: t });
+  else if (k === 'opp') S.opps.push({ id: uid(), title: d.title, track: d.track, org: d.org, deadline: d.deadline, link: d.link, status: 'watching' });
+  else if (k === 'journal') { S.journal[t] = { went: d.went, failed: d.failed }; if (d.next) { const tm = addDays(t, 1); live().forEach(x => { if (x.date === tm) x.mit = false; }); S.tasks.push(newTask({ kind: 'study', text: d.next, date: tm, mit: true })); } }
+  save(); render(); toast(msg);
+});
+addEventListener('hashchange', () => { const r = location.hash.slice(1); if (ROOMS.some(x => x[0] === r) && r !== room) { room = r; render(); } });
+
+/* ================= First visit: only what you have told me ================= */
+function starter() { return blank(); }
+
+/* ================= Sample data (made up, only to preview the design) ================= */
+function sample() {
+  const s = starter(), t = TODAY(), D = n => addDays(t, n); s.sample = true;
+  s.exams.push({ id: uid(), name: 'Sample: Coop Bank Manager', track: 'Banking', date: D(70), stage: 'Preparing', max: 100, cutoff: 62, topper: 84, books: ['current-affairs', 'economics'], note: 'Sample exam' });
+  s.exams.push({ id: uid(), name: 'Sample: Court Assistant Test', track: 'Judiciary', date: D(6), stage: 'Form filled', max: 100, cutoff: 70, topper: 88, books: [], note: 'Sample exam' });
+  const U = (ref, title, book, path, step, due, weak, reviews) => { s.units[ref] = { ref, t: title, book, path, first: D(due - 12), last: D(due - gap(step)), step, due: D(due), weak, reviews: reviews || [], studies: 1 }; };
+  U('economics#p1-chapter-1', '1. Economic Organisation and Systems', 'economics', ['Part 1 · Foundations'], 3, 0, false, [{ d: D(-19), g: 'solid', late: 0 }, { d: D(-17), g: 'solid', late: 0 }, { d: D(-13), g: 'solid', late: 1 }]);
+  U('dbf-paper-1#unit-1', '1. Overview of the Indian Economy', 'dbf-paper-1', ['Module A · Indian Economy'], 2, -1, false, [{ d: D(-7), g: 'solid', late: 0 }, { d: D(-5), g: 'solid', late: 0 }]);
+  U('dbf-paper-1#unit-2', '2. Sectors of the Indian Economy', 'dbf-paper-1', ['Module A · Indian Economy'], 0, 1, true, [{ d: D(-3), g: 'shaky', late: 0 }]);
+  U('current-affairs#oct-2026-s1', '1. ESI, Finance and Business', 'current-affairs', ['October 2026'], 1, -3, false, [{ d: D(-5), g: 'solid', late: 0 }]);
+  U('current-affairs#static-s1', '1. Constitution, Polity and Amendments', 'current-affairs', ['Static Bank'], 0, -1, false);
+  U('ras-indian-history#i01', 'I01 · Sources and How Historians Work', 'ras-indian-history', ['Ancient India'], 0, 0, false);
+  const seg = (dOff, h, min) => { const a = new Date(D(dOff) + 'T00:00:00').getTime() + h * 3600000; return [a, a + min * 60000]; };
+  s.tasks = [
+    newTask({ kind: 'test', text: 'Sample mock + review', exam: 'Sample: Court Assistant Test', date: t, mit: true, plan: 150, created: Date.now() - 864e5 }),
+    newTask({ kind: 'study', text: '2. Regulatory Bodies, PIB, Circulars and Notifications', ref: 'current-affairs#oct-2026-s2', book: 'current-affairs', path: ['October 2026'], date: t, plan: 60, segs: [seg(0, 7, 40)] }),
+    newTask({ kind: 'practice', text: 'Typing practice', date: t, plan: 30, done: true, doneAt: Date.now(), segs: [seg(0, 6, 32)] }),
+    newTask({ kind: 'study', text: 'SC Rules 2013 — Orders I–X', exam: 'Sample: Court Assistant Test', date: D(-1), plan: 90, created: Date.now() - 2 * 864e5 })
+  ];
+  for (let i = 1; i < 30; i++) { const m = [0, 75, 150, 200, 260, 40, 180][i % 7]; if (m) s.tasks.push(newTask({ kind: 'study', text: 'Earlier study', date: D(-i), done: true, doneAt: new Date(D(-i) + 'T20:00:00').getTime(), segs: [seg(-i, 9, m)] })); }
+  s.tests = [[-20, 61], [-15, 64], [-10, 66], [-5, 69], [-2, 74]].map(([d, sc], i) => ({ id: uid(), exam: 'Sample: Court Assistant Test', kind: 'mock', name: `Mock ${i + 1}`, date: D(d), score: sc, max: 100, cutoff: 70, topper: 88, minutes: 120 }));
+  s.tests.push({ id: uid(), exam: 'Sample: Coop Bank Manager', kind: 'mock', name: 'Mock 1', date: D(-6), score: 55, max: 100, cutoff: 62, topper: 84, minutes: 60 });
+  s.mistakes = [['Contempt of court: civil vs criminal', 'concept'], ['Art 137 vs Art 145', 'recall'], ['Reading comprehension: inference', 'time'], ['RAM vs ROM option misread', 'silly'], ['Typing speed section', 'time']]
+    .map(([topic, reason], i) => ({ id: uid(), topic, exam: 'Sample: Court Assistant Test', reason, date: D(-i * 2), source: `Mock ${5 - (i % 3)}`, fix: '', resolved: false }));
+  s.setbacks = [{ id: uid(), date: D(-9), what: 'Sample: lost two full days to phone and late nights', why: 'No fixed start time; phone in the room', cost: 'Two days of DBF Module A', rule: 'Phone outside the room until the first task is done' }];
+  s.journal[D(-1)] = { went: 'Finished all revisions', failed: 'Skipped the evening mock; told myself I was tired' };
+  s.log = [{ ts: Date.now() - 3 * 864e5, day: D(-3), type: 'dropped', text: 'Dropped “Quant sectional” (sample)' }, { ts: Date.now() - 5 * 864e5, day: D(-5), type: 'notime', text: 'sample' }];
+  s.notes = [{ id: uid(), date: D(-1), title: 'Sample weekly review', body: 'A placeholder to show the layout. A real review is written from your own week.' }];
+  s.opps = [{ id: uid(), title: 'Sample: a bank PO notification', track: 'Banking', org: 'Example', deadline: D(5), link: '', status: 'watching' }];
+  return s;
+}
+
+/* ================= Start ================= */
+try { const raw = localStorage.getItem(KEY); S = raw ? Object.assign(blank(), JSON.parse(raw)) : starter(); } catch (e) { memoryOnly = true; S = starter(); }
+S.tasks.forEach(t => { if (t.run && Date.now() - t.run > RULES.timerCapMinutes * 60000) stopTimer(t); }); save();
+render();
+loadLibrary();
+/* Updates from Claude's daily scan arrive as a private JSON file through Import; nothing is fetched from the public site.
+   An item is merged when new, or re-merged when its content changed (so corrected dates do arrive). */
+const MERGE_KEYS = ['tasks', 'exams', 'opps', 'notes', 'attempts', 'tests', 'mistakes', 'setbacks'];
+function mergeUpdate(d) {
+  S.mergedSig = S.mergedSig || {}; let n = 0; const nm = v => String(v || '').toLowerCase().trim();
+  MERGE_KEYS.forEach(k => (d[k] || []).forEach(x => {
+    if (!x || typeof x !== 'object') return;
+    const key = k + ':' + (x.id || nm(x.name || x.title || x.text)); const clean = Object.assign({}, x); delete clean.rev;
+    const sig = JSON.stringify(clean); if (S.mergedSig[key] === sig) return;
+    let i = x.id ? S[k].findIndex(y => y.id === x.id) : -1;
+    if (i < 0 && k === 'exams') i = S[k].findIndex(y => nm(y.name) === nm(x.name));
+    if (i < 0 && k === 'opps') i = S[k].findIndex(y => nm(y.title) === nm(x.title));
+    if (i >= 0) { const keep = S[k][i].id; Object.assign(S[k][i], clean, { id: keep }); }
+    else S[k].push(Object.assign({ from: 'claude' }, k === 'tasks' ? newTask(clean) : Object.assign({ id: uid() }, clean)));
+    S.mergedSig[key] = sig; n++;
+  }));
+  if (d.profile) S.profile = Object.assign(S.profile || {}, d.profile);
+  return n;
+}
+</script>
 </body>
 </html>
