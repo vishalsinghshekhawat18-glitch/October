@@ -188,7 +188,8 @@ for n, sec in enumerate(sections, 1):
     buf = []  # pending good-to-know minis
     def flush():
         if buf:
-            out.append('<div class="gtk-band">☆ Good to know</div><div class="cols">' + ''.join(buf) + '</div>')
+            cls = 'cols' if len(buf) > 1 else 'cols one'
+            out.append('<div class="gtk-band">☆ Good to know</div><div class="' + cls + '">' + ''.join(buf) + '</div>')
             buf.clear()
     skip_next_table = False
     for el in sec.children:
@@ -219,7 +220,7 @@ for n, sec in enumerate(sections, 1):
         elif name == 'p' or name == 'ul':
             flush(); out.append(str(strip_num_bold(el)))
     flush()
-    if n in selftests:
+    if False:
         t, a, b, items = selftests[n]
         out.append(f'<div class="selftest big"><div class="bar"><span>Self-test · {html.escape(t)} · Q{a}–{b}</span>'
                    f'<span>Answers at the back</span></div><ol>{"".join(items)}</ol></div>')
@@ -252,25 +253,19 @@ front = f'''
   <div class="cv-year">2026</div>
   <h1 class="cv-title">January<br>February<br>March</h1>
   <div class="cv-dek">The quarter's current affairs, edited for the exam hall: every must-learn story in plain words first, then the facts, then a question to test yourself.</div>
-  <div class="cv-stats"><div><b>{n_cards}</b>stories</div><div><b>{n_must}</b>must-learn</div><div><b>{qnum}</b>self-test questions</div><div><b>9</b>sections</div></div>
+  <div class="cv-stats"><div><b>{n_cards}</b>stories</div><div><b>{n_must}</b>must-learn</div><div><b>9</b>sections</div></div>
   <div class="cv-legend"><span class="k">★</span> must-learn &nbsp;&nbsp; <span class="k2">☆</span> good to know</div>
 </div>
 <div class="inside">
   <div class="kicker"><span>Revision tracker</span></div>
   <h2 class="ih">Read once, then come back</h2>
-  <p class="dek">Memory fades fast unless you revisit. Tick a box each time you finish a section's self-test. Aim for the full row before the exam.</p>
+  <p class="dek">Memory fades fast unless you revisit. Tick a box each time you finish revising a section. Aim for the full row before the exam.</p>
   <table class="tracker"><thead><tr><th>Section</th><th>Day 1</th><th>Day 3</th><th>Day 7</th><th>Day 21</th><th>Day 35</th><th>Exam week</th></tr></thead><tbody>{rows}</tbody></table>
   <div class="howto">
     <h3>How to read a page</h3>
     <div class="ht"><div class="star sm">★</div><p><b>Must-learn card.</b> Read the quote line first: it is the story in plain words. Then the facts. The grey box is how it is likely to be asked; the dashed box is a hook for a tricky number.</p></div>
     <div class="ht"><div class="star sm hollow">☆</div><p><b>Good to know.</b> Two-column notes. Skim them on the second pass.</p></div>
-    <div class="ht"><div class="star sm hollow">✓</div><p><b>Self-test.</b> At the end of sections 1, 2, 4, 7 and 8. Answer from memory, then check the key at the back.</p></div>
   </div>
-</div>
-<div class="contents">
-  <div class="kicker"><span>Contents</span></div>
-  <h2 class="ih">Inside this issue</h2>
-  <ol class="toc">{toc}</ol>
 </div>
 '''
 
@@ -287,7 +282,10 @@ h2.sub:after { content:""; flex:1; border-top: 2pt solid #000 }
 .card { break-inside: auto }
 .card .head { break-after: avoid }
 .plain { break-after: avoid }
-.mini { break-inside: avoid }
+.mini { break-inside: auto }
+.mini h4 { break-after: avoid }
+.mini li { break-inside: avoid }
+.cols.one { columns: 1 }
 .mini ul.f li { margin-bottom: .6mm }
 .mini .sidebox { font-size: 7.8pt; padding: 1.4mm 2mm; margin-top: 1.5mm }
 .mini { margin-bottom: 3mm !important }
@@ -348,7 +346,7 @@ a { color: inherit; text-decoration: none }
 '''
 
 doc = f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Current Affairs Q1 2026 (Jan–Mar): print edition</title>
-<style>{CSS}{EXTRA_CSS}</style></head><body>{front}{body}{"".join(ak)}</body></html>'''
+<style>{CSS}{EXTRA_CSS}</style></head><body>{front}{body}</body></html>'''
 # toc href fix: target-counter needs the attr on the span; use a:after instead
 doc += ''
 open(OUT, 'w').write(doc)
