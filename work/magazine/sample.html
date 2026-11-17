@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Q1 2026 Current Affairs — sample</title>
+<style>
+@page { size: A4; margin: 15mm 15mm 13mm 22mm;
+  @top-left { content: string(sec); font: 600 7.2pt Inter; letter-spacing: .14em; text-transform: uppercase; color:#555; }
+  @top-right { content: "Q1 · JAN–MAR 2026"; font: 600 7.2pt Inter; letter-spacing: .14em; color:#555; }
+  @bottom-right { content: counter(page); font: 800 10pt 'Inter Display'; }
+}
+@page :left { margin: 15mm 22mm 13mm 15mm;
+  @bottom-right { content: none } @bottom-left { content: counter(page); font: 800 10pt 'Inter Display'; } }
+@page :first { @top-left { content: none } @top-right { content: none } }
+* { box-sizing: border-box }
+body { margin:0; font: 9.4pt/1.42 Lora, serif; color:#111; }
+.sans { font-family: Inter, sans-serif }
+h1.sectitle { string-set: sec "01 · ESI, Finance & Business"; }
+
+/* ---------- OPENER ---------- */
+.opener { position: relative; height: 70mm; border-bottom: 3pt solid #000; margin-bottom: 5mm; }
+.bignum { position:absolute; right:-3mm; top:2mm; }
+.bignum-fill { position:absolute; right:-2mm; top:-8mm; font: 900 190pt/1 'Inter Display'; letter-spacing:-.04em;
+  color: transparent; }
+.kicker { font: 700 8pt Inter; letter-spacing:.3em; text-transform:uppercase; margin-top: 4mm; }
+.kicker span { background:#000; color:#fff; padding: 1mm 2.5mm; }
+h1.sectitle { font: 900 34pt/0.98 'Inter Display'; margin: 5mm 0 3mm; letter-spacing:-.02em; width: 105mm; }
+.dek { font: italic 11pt/1.35 Lora; width: 95mm; color:#333; }
+.inthis { position:absolute; bottom: 3mm; left:0; font: 7.6pt/1.6 Inter; }
+.inthis b { letter-spacing:.18em; text-transform:uppercase; font-size:6.8pt; display:block; margin-bottom:.6mm }
+.inthis span { display:inline-block; border:0.6pt solid #000; border-radius: 8pt; padding: 0 2.2mm; margin: 0 1mm .8mm 0 }
+
+/* ---------- HERO STAT ---------- */
+.hero { display:flex; border:1.2pt solid #000; margin-bottom: 5mm; }
+.hero .lab { width: 34mm; padding: 3mm; background: repeating-linear-gradient(45deg,#000 0 .5pt,#fff .5pt 3pt);
+   font: 800 8pt/1.2 Inter; text-transform: uppercase; letter-spacing:.12em; }
+.hero .lab span { background:#fff; padding: .6mm 1.2mm; display:inline; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hero .num { font: 900 54pt/1 'Inter Display'; padding: 2mm 4mm 0; letter-spacing:-.03em }
+.hero .num small { font-size: 18pt; }
+.hero .cap { flex:1; padding: 3.5mm 4mm 3mm 0; font: 9pt/1.4 Lora; align-self:center }
+.hero .cap .was { font: 700 8pt Inter; display:block; margin-top:1.5mm; letter-spacing:.04em }
+.hero .cap .was s { color:#777 }
+
+/* ---------- MUST-LEARN CARD ---------- */
+.card { border: 1.2pt solid #000; margin: 0 0 3.5mm; page-break-inside: avoid; position: relative; }
+.card .head { display:flex; align-items:stretch; border-bottom: 1.2pt solid #000; }
+.card .star { background:#000; color:#fff; width: 11mm; font: 16pt/1 'DejaVu Sans'; display:flex; align-items:center; justify-content:center; }
+.card .title { padding: 2mm 3mm; font: 800 12.5pt/1.15 'Inter Display'; flex:1 }
+.card .title small { display:block; font: 600 6.8pt Inter; letter-spacing:.2em; text-transform: uppercase; color:#555; margin-bottom:.6mm }
+.card .inner { padding: 2.6mm 4mm 2.8mm; }
+.plain { font: italic 10.6pt/1.36 Lora; margin: 0 0 2.4mm; padding: 0 0 0 7mm; position: relative; }
+.plain:before { content:"\201C"; position:absolute; left:-1mm; top:-3mm; font: 900 34pt/1 'Inter Display'; }
+ul.f { margin: 0; padding: 0; list-style: none }
+ul.f li { padding-left: 4.2mm; position: relative; margin: 0 0 1.1mm }
+ul.f li:before { content: "▸"; position:absolute; left:0; top:0; font-size: 8pt; }
+.split { display:flex; gap: 5mm }
+.split > * { flex:1 }
+.sidebox { border-left: 3pt solid #000; background:#eee; padding: 2mm 3mm; font: 8.4pt/1.4 Inter; margin-top: 2.5mm }
+.sidebox b { font-weight: 800; letter-spacing:.14em; text-transform:uppercase; font-size:6.8pt; display:block; margin-bottom:.4mm }
+.sidebox.hook { background: #fff; border: 1pt dashed #000; border-left: 3pt solid #000 }
+.chartlab { font: 700 6.8pt Inter; letter-spacing:.16em; text-transform:uppercase; margin: 0 0 1.5mm }
+
+/* ---------- TIMELINE ---------- */
+.tl { display:flex; align-items:flex-start; margin: 3mm 0 0; font-family: Inter }
+.tl .step { flex:1; border-top: 2pt solid #000; position:relative; padding-top: 2.5mm; }
+.tl .step:before { content:""; position:absolute; top:-2.4mm; left:0; width: 3.6mm; height:3.6mm; border-radius: 50%; background:#fff; border: 1.6pt solid #000 }
+.tl .step.on:before { background:#000 }
+.tl .v { font: 900 17pt/1 'Inter Display' }
+.tl .d { font: 600 7pt Inter; letter-spacing:.08em; text-transform: uppercase; color:#444; margin-top:.8mm }
+
+/* ---------- SCOREBOARD ---------- */
+.score { width:100%; border-collapse: collapse; font: 8.3pt Inter; margin: 1mm 0 0 }
+.score th { font: 700 6.6pt Inter; letter-spacing:.14em; text-transform:uppercase; text-align:left; border-bottom:1.2pt solid #000; padding: 1.2mm 1.5mm }
+.score td { padding: 1mm 1.5mm; border-bottom: .5pt solid #999 }
+.score tr:nth-child(even) td { background: #eee }
+.score td.big { font: 900 12pt 'Inter Display'; white-space: nowrap }
+
+/* ---------- GOOD TO KNOW ---------- */
+.gtk-band { display:flex; align-items:center; gap: 3mm; font: 800 7.4pt Inter; letter-spacing:.24em; text-transform:uppercase; margin: 0 0 1.8mm }
+.gtk-band:after { content:""; flex:1; border-top: .8pt dotted #000 }
+.cols { columns: 2; column-gap: 6mm; column-rule: .5pt solid #bbb }
+.mini { break-inside: avoid; margin: 0 0 0; font-size: 8.4pt; line-height:1.36 }
+.mini h4 { font: 800 9.6pt/1.2 'Inter Display'; margin: 0 0 1.2mm; }
+.mini h4 .hs { font-family:'DejaVu Sans'; font-weight: normal; margin-right: 1mm }
+.mini.must h4 .hs { background:#000; color:#fff; padding: 0 .8mm }
+
+/* ---------- SELF TEST ---------- */
+.selftest { border: 1.2pt solid #000; padding: 0; margin-top: 1mm; break-inside: avoid; }
+.selftest .bar { background:#000; color:#fff; font: 800 7.6pt Inter; letter-spacing:.24em; text-transform:uppercase; padding: 1mm 3mm; display:flex; justify-content:space-between }
+.selftest ol { margin: 1mm 0 1mm; padding-left: 0; list-style:none; counter-reset: q }
+.selftest li { counter-increment:q; font: 8.4pt/1.3 Lora; padding: .7mm 3mm 1mm 15mm; position:relative; border-bottom: .4pt dotted #999 }
+.selftest li:last-child { border-bottom: 0 }
+.selftest li:before { content: counter(q, decimal-leading-zero); position:absolute; left: 3mm; font: 900 9pt 'Inter Display' }
+.selftest li:after { content:""; position:absolute; left: 9.2mm; top: 1.6mm; width: 3mm; height: 3mm; border: .9pt solid #000 }
+.pagebreak { page-break-before: always }
+.tag { font: 700 6.6pt Inter; letter-spacing:.16em; text-transform:uppercase; border: .7pt solid #000; padding: .2mm 1.5mm; margin-left: 2mm; vertical-align: middle }
+</style></head><body>
+
+<!-- ================= PAGE 1 (right-hand) ================= -->
+<div class="opener">
+  <svg class="bignum" width="78mm" height="62mm" viewBox="0 0 300 240"><defs><pattern id="d" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".9" fill="#000"/></pattern></defs><text x="300" y="200" text-anchor="end" font-family="Inter Display" font-weight="900" font-size="250" letter-spacing="-10" fill="url(#d)" stroke="#000" stroke-width="2.5">01</text></svg>
+  <div class="kicker"><span>Section One</span></div>
+  <h1 class="sectitle">ESI, Finance &amp; Business</h1>
+  <div class="dek">The economy's first quarter in numbers: how fast India grew, what prices did, and who forecast what.</div>
+  <div class="inthis"><b>In this section</b>
+    <span>Growth &amp; data releases</span><span>Inflation</span><span>Forecasts</span><span>Credit</span><span>Budget</span><span>Banking</span><span>Insurance</span></div>
+</div>
+
+<div class="hero">
+  <div class="lab"><span>Number of the quarter</span></div>
+  <div class="num">7.4<small>%</small></div>
+  <div class="cap">Real GDP growth for FY2025-26, the first advance estimate released by NSO in January 2026.
+    <span class="was">FY25 &nbsp;6.5% &nbsp;→&nbsp; FY26 &nbsp;7.4%</span></div>
+</div>
+
+<div class="card">
+  <div class="head"><div class="star">★</div>
+    <div class="title"><small>Growth · Data release · Jan 2026</small>GDP First Advance Estimates FY2025-26</div></div>
+  <div class="inner">
+    <p class="plain">A first rough estimate of how much the economy grew this year, made before the year ends. It says India grew 7.4% in FY26, faster than 6.5% the year before.</p>
+    <div class="split">
+      <ul class="f">
+        <li>Released by NSO (National Statistics Office, MoSPI) at constant (2011-12) and current prices</li>
+        <li>Real GDP growth FY26: 7.4% (FY25: 6.5%)</li>
+        <li>Real GDP ₹201.90 lakh crore; nominal GDP growth 8.0% → ₹357.14 lakh crore</li>
+        <li>Real GVA growth 7.3% (₹184.50 lakh crore)</li>
+        <li>GFCF 7.8% (7.1% earlier); PFCE 7.0%</li>
+      </ul>
+      <div>
+        <p class="chartlab">Sector growth, real, FY26 (%)</p>
+        <svg style="width:100%;height:37mm;display:block" viewBox="0 0 200 92" font-family="Inter" font-size="6.2">
+          <defs><pattern id="h" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" fill="#fff"/><line x1="0" y1="0" x2="0" y2="3" stroke="#000" stroke-width="1.1"/></pattern></defs>
+          <g>
+            <text x="0" y="9">Finance, real estate, prof. + pub. admin</text>
+            <rect x="0" y="11" width="138.6" height="6" fill="#000"/><text x="141" y="16.5" font-weight="800">9.9</text>
+            <text x="0" y="27">Trade, hotels, transport</text>
+            <rect x="0" y="29" width="105" height="6" fill="#555"/><text x="108" y="34.5" font-weight="800">7.5</text>
+            <text x="0" y="45">Manufacturing and construction</text>
+            <rect x="0" y="47" width="98" height="6" fill="#999"/><text x="101" y="52.5" font-weight="800">7.0</text>
+            <text x="0" y="63">Agriculture</text>
+            <rect x="0" y="65" width="43.4" height="6" fill="url(#h)" stroke="#000" stroke-width=".5"/><text x="46" y="70.5" font-weight="800">3.1</text>
+            <text x="0" y="81">Utilities</text>
+            <rect x="0" y="83" width="29.4" height="6" fill="#fff" stroke="#000" stroke-width=".7"/><text x="32" y="88.5" font-weight="800">2.1</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="sidebox"><b>Exam angle</b>What is the first advance estimate of real GDP growth for FY2025-26?</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="head"><div class="star">★</div>
+    <div class="title"><small>Growth · Milestone</small>India becomes 4th largest economy</div></div>
+  <div class="inner">
+    <p class="plain">India's economy is now the 4th largest in the world, having passed Japan, and is expected to pass Germany by 2030.</p>
+    <div class="split">
+      <ul class="f">
+        <li>GDP USD 4.18 trillion: India passes Japan; expected to pass Germany for 3rd place by 2030 (US 1st, China 2nd)</li>
+      </ul>
+      <div>
+        <p class="chartlab">Real GDP growth, quarter by quarter</p>
+        <div class="tl">
+          <div class="step"><div class="v">7.4%</div><div class="d">Q4 FY25</div></div>
+          <div class="step"><div class="v">7.8%</div><div class="d">Q1 FY26</div></div>
+          <div class="step on"><div class="v">8.2%</div><div class="d">Q2 FY26</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PAGE 2 (left-hand) ================= -->
+<div class="card pagebreak">
+  <div class="head"><div class="star">★</div>
+    <div class="title"><small>Inflation · Base revision</small>CPI inflation Dec 2025 and the new basket</div></div>
+  <div class="inner">
+    <p class="plain">CPI measures how fast consumer prices rise. December's 1.33% was the last reading on the old basket of goods; from January a new, wider basket (base year 2024) is used, with less weight on food.</p>
+    <div class="split">
+      <div>
+        <ul class="f">
+          <li>Dec 2025 all-India CPI inflation: 1.33% (provisional), up 62 bps</li>
+          <li>Last release on old base (2012=100); new CPI series on base 2024=100 due 12 Feb 2026</li>
+          <li>New GDP series (base 2022-23) due 27 Feb 2026; new IIP series (base 2022-23) due 28 May 2026</li>
+        </ul>
+        <div class="sidebox"><b>Exam angle</b>Which base year does the revised CPI series use, and what happens to the food weight?</div>
+      </div>
+      <div>
+        <p class="chartlab">Old basket → new basket</p>
+        <svg style="width:100%;height:34mm;display:block" viewBox="0 0 200 84" font-family="Inter" font-size="6.2">
+          <defs><pattern id="h2" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" fill="#fff"/><line x1="0" y1="0" x2="0" y2="3" stroke="#000" stroke-width="1.1"/></pattern></defs>
+          <text x="0" y="7" font-weight="800" letter-spacing=".8">FOOD &amp; BEVERAGES WEIGHT</text>
+          <rect x="0" y="10" width="137.6" height="7" fill="url(#h2)" stroke="#000" stroke-width=".5"/><text x="140" y="16" >45.86% old</text>
+          <rect x="0" y="19" width="110.3" height="7" fill="#000"/><text x="113" y="25" font-weight="800">36.75% new</text>
+          <text x="0" y="37" font-weight="800" letter-spacing=".8">HOUSING WEIGHT (incl. water, electricity, gas)</text>
+          <rect x="0" y="40" width="30.2" height="7" fill="url(#h2)" stroke="#000" stroke-width=".5"/><text x="33" y="46">10.07% old</text>
+          <rect x="0" y="49" width="53" height="7" fill="#000"/><text x="56" y="55" font-weight="800">17.66% new</text>
+          <text x="0" y="67" font-weight="800" letter-spacing=".8">ITEMS IN THE BASKET</text>
+          <text x="0" y="81" font-size="13" font-weight="900" font-family="Inter Display">299</text>
+          <text x="27" y="81" font-size="11">→</text>
+          <text x="40" y="81" font-size="13" font-weight="900" font-family="Inter Display">358</text>
+          <g transform="translate(150,58)"><rect width="14" height="7" fill="url(#h2)" stroke="#000" stroke-width=".5"/><text x="17" y="6">old</text><rect y="10" width="14" height="7" fill="#000"/><text x="17" y="16">new</text></g>
+        </svg>
+        <div class="sidebox hook"><b>Remember</b>Food weight falls 45.86% → 36.75% because consumption patterns have changed since 2011-12.</div>
+      </div>
+    </div>
+    <p class="chartlab" style="margin-top:1.5mm">The first three readings around the switch</p>
+    <div class="tl">
+      <div class="step"><div class="v">1.33%</div><div class="d">Dec 2025 · old series</div></div>
+      <div class="step on"><div class="v">2.75%</div><div class="d">Jan 2026 · first on base 2024</div></div>
+      <div class="step on"><div class="v">3.21%</div><div class="d">Feb 2026 · rural 3.37 · urban 3.02<br>food 3.47</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="head"><div class="star">★</div>
+    <div class="title"><small>Forecasts · Jan 2026</small>Who said what about India's growth</div></div>
+  <div class="inner">
+    <p class="plain">Three global bodies (UN, World Bank, IMF) each forecast India's growth for the coming years. Questions usually ask India's figure from one of them.</p>
+    <table class="score">
+      <thead><tr><th>Report</th><th>India 25-26</th><th>India 26-27</th><th>India 27-28</th><th>Global (25-26 / 26-27 / 27-28)</th></tr></thead>
+      <tbody>
+        <tr><td>World Bank, Global Economic Prospects</td><td class="big">7.2</td><td>6.5</td><td>6.6</td><td>2.7 / 2.6 / 2.7</td></tr>
+        <tr><td>IMF, Global Economy: Steady amid Divergent Forces</td><td class="big">7.3</td><td>6.4</td><td>6.4</td><td>3.3 / 3.3 / 3.2</td></tr>
+        <tr><td>UN DESA</td><td>–</td><td class="big">6.6</td><td>6.8</td><td>Global inflation 3.4% (2025) → 3.1% (2026)</td></tr>
+        <tr><td>Economic Survey 2026 (FY27 only)</td><td>–</td><td class="big">6.8–7.2</td><td>–</td><td>–</td></tr>
+      </tbody>
+    </table>
+    <ul class="f" style="margin-top:2mm;font-size:8.6pt"><li>Economic Survey 2026: tabled by FM Nirmala Sitharaman in Lok Sabha; prepared under CEA V. Anantha Nageswaran</li></ul>
+  </div>
+</div>
+
+<div class="gtk-band" style="margin-top:-1mm">☆ Good to know</div>
+<div class="cols">
+  <div class="mini"><h4><span class="hs">☆</span>Bank credit crosses ₹200 lakh crore</h4>
+    <ul class="f"><li>Outstanding bank credit end-Dec 2025: ₹203.2 lakh crore (first time above ₹200 lakh crore)</li><li>Credit growth y-o-y: 14.5%; YTD expansion ₹20.78 lakh crore (₹13.18 lakh crore a year earlier)</li><li>Drivers: GST rate cuts + easier monetary policy</li></ul></div>
+  <div class="mini"><h4><span class="hs">☆</span>IIP and PLFS: December 2025</h4>
+    <ul class="f"><li>IIP Dec 2025: 7.8% (26-month high); Nov 2025: 7.2% (RE). Manufacturing 8.1%, mining 6.8%, electricity 6.3%. Base 2011-12=100</li><li>PLFS (15+ yrs) Dec 2025: unemployment 4.8% (Nov 4.7%); LFPR 56.1%; female LFPR 35.3%; WPR 53.4%</li></ul></div>
+</div>
+
+<div class="selftest">
+  <div class="bar"><span>Self-test · Growth &amp; inflation</span><span>Answers at the back</span></div>
+  <ol>
+    <li>What is the first advance estimate of real GDP growth for FY2025-26, and what was FY25's figure?</li>
+    <li>The new CPI series uses which base year, and what is the new weight of food and beverages?</li>
+    <li>India's FY25-26 growth forecast: World Bank or IMF, which is higher, and by how much?</li>
+      </ol>
+</div>
+
+</body></html>
