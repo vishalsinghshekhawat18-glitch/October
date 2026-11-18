@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Story-style sample</title>
+<style>
+@page { size: A4; margin: 15mm 15mm 14mm 22mm;
+  @top-left { content: "01 · ESI, Finance & Business"; font: 600 7.2pt Inter; letter-spacing: .14em; text-transform: uppercase; color:#555; }
+  @top-right { content: "Q1 · JAN–MAR 2026"; font: 600 7.2pt Inter; letter-spacing: .14em; color:#555; }
+  @bottom-right { content: counter(page); font: 800 10pt 'Inter Display'; } }
+@page :left { margin: 15mm 22mm 14mm 15mm; @bottom-right { content: none } @bottom-left { content: counter(page); font: 800 10pt 'Inter Display'; } }
+* { box-sizing: border-box }
+body { margin:0; font: 10.2pt/1.55 Lora, serif; color:#111; }
+
+/* chapter strip */
+.chapter { border-top: 4pt solid #000; padding-top: 2mm; margin-bottom: 5mm }
+.chapter .k { font: 800 7.4pt Inter; letter-spacing: .3em; text-transform: uppercase }
+.chapter h1 { font: 900 30pt/1.02 'Inter Display'; letter-spacing: -.02em; margin: 2mm 0 2.5mm }
+.chapter p { font: italic 11.5pt/1.5 Lora; margin: 0; width: 150mm }
+
+/* the big idea box */
+.bigidea { display:flex; border: 1.2pt solid #000; margin: 4mm 0 6mm }
+.bigidea .lab { width: 30mm; background: repeating-linear-gradient(45deg,#000 0 .5pt,#fff .5pt 3pt); padding: 3mm; font: 800 7.6pt/1.3 Inter; letter-spacing: .14em; text-transform: uppercase }
+.bigidea .lab span { background:#fff; padding: .5mm 1mm }
+.bigidea .rows { flex:1; display:flex }
+.bigidea .rows div { flex:1; padding: 2.5mm 3mm; border-left: .6pt solid #000 }
+.bigidea .rows b { display:block; font: 900 19pt/1 'Inter Display'; margin: 1mm 0 }
+.bigidea .rows span { font: 600 7.2pt/1.3 Inter; letter-spacing: .08em; text-transform: uppercase }
+
+/* story */
+.story { margin: 0 0 6mm; }
+.story .tag { font: 700 6.8pt Inter; letter-spacing: .22em; text-transform: uppercase; color:#444 }
+.story .tag .st { background:#000; color:#fff; font-family: 'DejaVu Sans'; padding: 0 1mm; margin-right: 2mm; letter-spacing: 0 }
+.story h2 { font: 900 17pt/1.12 'Inter Display'; margin: 1mm 0 .6mm; letter-spacing: -.01em }
+.story .official { font: 600 8pt Inter; color:#444; margin-bottom: 2.5mm }
+.story p.lede { margin: 0 0 3mm; }
+.story p.lede:first-line { font-weight: 600 }
+
+/* numbers strip */
+.nums { display:flex; border-top: 1.4pt solid #000; border-bottom: 1.4pt solid #000; margin: 0 0 3mm }
+.nums div { flex: 1; padding: 2mm 2.5mm 2.2mm; border-left: .5pt dotted #000 }
+.nums div:first-child { border-left: 0; padding-left: 0 }
+.nums b { display:block; font: 900 18pt/1 'Inter Display'; letter-spacing: -.01em }
+.nums b small { font-size: 10pt }
+.nums span { font: 600 7pt/1.3 Inter; letter-spacing: .06em; text-transform: uppercase; color:#333; display:block; margin-top: 1mm }
+
+.duo { display:flex; gap: 4mm; margin-top: 1mm }
+.duo > div { flex: 1 }
+.hook { border: 1pt dashed #000; padding: 2.2mm 3mm; font: 9pt/1.45 Inter }
+.trap { background:#eee; border-left: 3pt solid #000; padding: 2.2mm 3mm; font: 9pt/1.45 Inter }
+.hook b, .trap b { display:block; font: 800 6.8pt Inter; letter-spacing: .2em; text-transform: uppercase; margin-bottom: .6mm }
+.connect { font: 600 8.4pt Inter; margin-top: 2.5mm; padding-top: 1.6mm; border-top: .5pt solid #999 }
+.connect:before { content: "↳ CONNECTS TO  "; font-weight: 800; letter-spacing: .12em; font-size: 7pt }
+
+/* charts */
+.chartlab { font: 700 6.8pt Inter; letter-spacing:.16em; text-transform:uppercase; margin: 0 0 1.5mm }
+.split { display:flex; gap: 6mm } .split > * { flex: 1 }
+
+/* quick hits */
+.qh { border-top: 4pt solid #000; padding-top: 2mm; }
+.qh h3 { font: 800 7.6pt Inter; letter-spacing: .3em; text-transform: uppercase; margin: 0 0 2.5mm }
+.qh ul { columns: 2; column-gap: 7mm; margin: 0; padding: 0; list-style: none }
+.qh li { break-inside: avoid; font: 9pt/1.45 Lora; margin: 0 0 2.4mm; padding-left: 5mm; position: relative }
+.qh li:before { content: "☆"; font-family: 'DejaVu Sans'; position: absolute; left: 0 }
+.qh li b { font-family: Inter; font-weight: 800 }
+.pb { break-before: page }
+</style></head><body>
+
+<!-- ============ PAGE 1 ============ -->
+<div class="chapter">
+  <div class="k">Chapter 1 · The quarter India changed its measuring tape</div>
+  <h1>New year, new rulers for the economy</h1>
+  <p>Between February and May 2026 India re-measures its three most-asked numbers: prices, output and factory production. If a question says "new series", this is the page it comes from.</p>
+</div>
+
+<div class="bigidea">
+  <div class="lab"><span>Three new base years</span></div>
+  <div class="rows">
+    <div><span>CPI · prices</span><b>2024</b><span>from 12 Feb 2026</span></div>
+    <div><span>GDP · output</span><b>2022-23</b><span>from 27 Feb 2026</span></div>
+    <div><span>IIP · factories</span><b>2022-23</b><span>from 28 May 2026</span></div>
+  </div>
+</div>
+
+<div class="story">
+  <div class="tag"><span class="st">★</span>Inflation</div>
+  <h2>Food now counts for less in India's price index</h2>
+  <div class="official">CPI inflation, December 2025, and the new CPI series (base 2024=100)</div>
+  <p class="lede">Retail inflation is measured by pricing a fixed basket of what families buy. The old series (base 2012) reflected spending patterns that have changed since 2011-12. So the new series, first used for January 2026 data, carries more items, gives food a much smaller share and gives housing a much bigger one. December 2025 was the last month on the old basket, at just 1.33%.</p>
+
+  <div class="split">
+    <div>
+      <p class="chartlab">What's in the basket: old vs new weight</p>
+      <svg style="width:100%;height:36mm;display:block" viewBox="0 0 200 84" font-family="Inter" font-size="6.2">
+        <defs><pattern id="h2" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" fill="#fff"/><line x1="0" y1="0" x2="0" y2="3" stroke="#000" stroke-width="1.1"/></pattern></defs>
+        <text x="0" y="7" font-weight="800" letter-spacing=".8">FOOD &amp; BEVERAGES</text>
+        <rect x="0" y="10" width="137.6" height="7" fill="url(#h2)" stroke="#000" stroke-width=".5"/><text x="140" y="16">45.86% old</text>
+        <rect x="0" y="19" width="110.3" height="7" fill="#000"/><text x="113" y="25" font-weight="800">36.75% new</text>
+        <text x="0" y="37" font-weight="800" letter-spacing=".8">HOUSING (incl. water, electricity, gas)</text>
+        <rect x="0" y="40" width="30.2" height="7" fill="url(#h2)" stroke="#000" stroke-width=".5"/><text x="33" y="46">10.07% old</text>
+        <rect x="0" y="49" width="53" height="7" fill="#000"/><text x="56" y="55" font-weight="800">17.66% new</text>
+        <text x="0" y="67" font-weight="800" letter-spacing=".8">ITEMS PRICED</text>
+        <text x="0" y="81" font-size="13" font-weight="900" font-family="Inter Display">299</text><text x="27" y="81" font-size="11">→</text><text x="40" y="81" font-size="13" font-weight="900" font-family="Inter Display">358</text>
+      </svg>
+    </div>
+    <div>
+      <p class="chartlab">Inflation, month by month</p>
+      <svg style="width:100%;height:36mm;display:block" viewBox="0 0 200 84" font-family="Inter">
+        <line x1="10" y1="72" x2="190" y2="72" stroke="#000" stroke-width="1"/>
+        <rect x="18" y="52" width="38" height="20" fill="url(#h2)" stroke="#000" stroke-width=".6"/>
+        <rect x="80" y="31" width="38" height="41" fill="#000"/>
+        <rect x="142" y="24" width="38" height="48" fill="#000"/>
+        <text x="37" y="47" text-anchor="middle" font-size="11" font-weight="900" font-family="Inter Display">1.33%</text>
+        <text x="99" y="26" text-anchor="middle" font-size="11" font-weight="900" font-family="Inter Display">2.75%</text>
+        <text x="161" y="19" text-anchor="middle" font-size="11" font-weight="900" font-family="Inter Display">3.21%</text>
+        <text x="37" y="80" text-anchor="middle" font-size="6">Dec 25 · old</text>
+        <text x="99" y="80" text-anchor="middle" font-size="6">Jan 26 · new</text>
+        <text x="161" y="80" text-anchor="middle" font-size="6">Feb 26 · new</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="duo">
+    <div class="hook"><b>Remember it like this</b>"Less roti, more rent." Food's share falls from about 46% to about 37%; housing's share nearly doubles, from about 10% to about 18%.</div>
+    <div class="trap"><b>Trap</b>CPI's new base is 2024. GDP and IIP move to 2022-23, not 2024. Don't mix them up.</div>
+  </div>
+  <div class="connect">Feb 2026 split: rural 3.37%, urban 3.02%, food 3.47%</div>
+</div>
+
+<!-- ============ PAGE 2 ============ -->
+<div class="story pb">
+  <div class="tag"><span class="st">★</span>Growth</div>
+  <h2>India's first guess for the year: 7.4% growth, up from 6.5%</h2>
+  <div class="official">GDP First Advance Estimates FY2025-26 · NSO (MoSPI) · January 2026</div>
+  <p class="lede">In January 2026, before the financial year was over, the statistics office made its first estimate of how much the economy grew. For FY26 it put real growth at 7.4%, a clear step up from 6.5% the year before. Services led the way: finance, real estate and public administration grew fastest, while farming and utilities lagged far behind.</p>
+  <div class="nums">
+    <div><b>7.4<small>%</small></b><span>Real GDP growth</span></div>
+    <div><b>8.0<small>%</small></b><span>Nominal GDP growth</span></div>
+    <div><b>7.3<small>%</small></b><span>Real GVA growth</span></div>
+    <div><b>₹357.14<small> lakh cr</small></b><span>Nominal GDP size</span></div>
+  </div>
+  <div class="split">
+    <div>
+      <p class="chartlab">Who pulled growth (real, FY26, %)</p>
+      <svg style="width:100%;height:33mm;display:block" viewBox="0 0 200 92" font-family="Inter" font-size="6.2">
+        <defs><pattern id="h" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="3" fill="#fff"/><line x1="0" y1="0" x2="0" y2="3" stroke="#000" stroke-width="1.1"/></pattern></defs>
+        <text x="0" y="9">Finance, real estate, prof. + pub. admin</text><rect x="0" y="11" width="138.6" height="6" fill="#000"/><text x="141" y="16.5" font-weight="800">9.9</text>
+        <text x="0" y="27">Trade, hotels, transport</text><rect x="0" y="29" width="105" height="6" fill="#555"/><text x="108" y="34.5" font-weight="800">7.5</text>
+        <text x="0" y="45">Manufacturing and construction</text><rect x="0" y="47" width="98" height="6" fill="#999"/><text x="101" y="52.5" font-weight="800">7.0</text>
+        <text x="0" y="63">Agriculture</text><rect x="0" y="65" width="43.4" height="6" fill="url(#h)" stroke="#000" stroke-width=".5"/><text x="46" y="70.5" font-weight="800">3.1</text>
+        <text x="0" y="81">Utilities</text><rect x="0" y="83" width="29.4" height="6" fill="#fff" stroke="#000" stroke-width=".7"/><text x="32" y="88.5" font-weight="800">2.1</text>
+      </svg>
+    </div>
+    <div>
+      <div class="hook"><b>Remember it like this</b>"Seven-four beats six-five." Top sector nearly 10 (9.9, finance); bottom near 2 (2.1, utilities); farming in between at 3.1.</div>
+      <div class="trap" style="margin-top:2.5mm"><b>Trap</b>7.4% is real GDP. 8.0% is nominal GDP and 7.3% is real GVA: three different numbers for three different questions.</div>
+    </div>
+  </div>
+</div>
+
+<div class="story">
+  <div class="tag"><span class="st">★</span>Forecasts</div>
+  <h2>Forecasters agree India stays above 6%, but differ on how fast</h2>
+  <div class="official">World Bank Global Economic Prospects · IMF · UN DESA · Economic Survey 2026</div>
+  <div class="split">
+    <div>
+      <p class="chartlab">India's growth forecast: the ladder</p>
+      <svg style="width:100%;height:38mm;display:block" viewBox="0 0 200 100" font-family="Inter">
+        <g font-size="6.4">
+          <rect x="0" y="4" width="146" height="12" fill="#000"/><text x="4" y="12" fill="#fff" font-weight="700">IMF · FY25-26</text><text x="151" y="13" font-size="10" font-weight="900" font-family="Inter Display">7.3</text>
+          <rect x="0" y="20" width="144" height="12" fill="#555"/><text x="4" y="28" fill="#fff" font-weight="700">World Bank · FY25-26</text><text x="149" y="29" font-size="10" font-weight="900" font-family="Inter Display">7.2</text>
+          <rect x="0" y="40" width="136" height="12" fill="url(#h)" stroke="#000" stroke-width=".5"/><text x="4" y="48" font-weight="800"><tspan style="fill:#000">Economic Survey · FY27</tspan></text><text x="141" y="49" font-size="10" font-weight="900" font-family="Inter Display">6.8–7.2</text>
+          <rect x="0" y="56" width="132" height="12" fill="#fff" stroke="#000" stroke-width=".7"/><text x="4" y="64" font-weight="700">UN DESA · FY26-27</text><text x="137" y="65" font-size="10" font-weight="900" font-family="Inter Display">6.6</text>
+          <rect x="0" y="72" width="130" height="12" fill="#fff" stroke="#000" stroke-width=".7"/><text x="4" y="80" font-weight="700">World Bank · FY26-27</text><text x="135" y="81" font-size="10" font-weight="900" font-family="Inter Display">6.5</text>
+          <rect x="0" y="88" width="128" height="12" fill="#fff" stroke="#000" stroke-width=".7"/><text x="4" y="96" font-weight="700">IMF · FY26-27</text><text x="133" y="97" font-size="10" font-weight="900" font-family="Inter Display">6.4</text>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <p class="lede" style="margin-top:0">For this year, the IMF is a notch more hopeful than the World Bank. For next year, everyone expects growth to cool to the mid-6s, while the government's own Economic Survey, tabled by FM Nirmala Sitharaman and prepared under CEA V. Anantha Nageswaran, is the most optimistic at 6.8–7.2%.</p>
+      <div class="hook"><b>Remember it like this</b>"IMF one up": IMF 7.3 sits one notch above the World Bank's 7.2 for FY26.</div>
+    </div>
+  </div>
+</div>
+
+<div class="qh">
+  <h3>Quick hits · read once, recall twice</h3>
+  <ul>
+    <li><b>4th largest economy:</b> India (USD 4.18 trillion) passes Japan; expected to pass Germany for 3rd place by 2030. US 1st, China 2nd.</li>
+    <li><b>Quarterly growth climbing:</b> Q4 FY25 7.4% → Q1 FY26 7.8% → Q2 FY26 8.2%.</li>
+    <li><b>Bank credit crosses ₹200 lakh crore:</b> ₹203.2 lakh crore at end-Dec 2025, growing 14.5% a year, helped by GST rate cuts and easier monetary policy.</li>
+    <li><b>Factories hit a 26-month high:</b> IIP December 2025 7.8%, manufacturing 8.1%.</li>
+    <li><b>Jobs:</b> unemployment (15+ yrs) 4.8% in December 2025, up from 4.7%; female LFPR 35.3%.</li>
+  </ul>
+</div>
+
+</body></html>
