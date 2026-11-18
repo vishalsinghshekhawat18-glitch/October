@@ -1,0 +1,241 @@
+
+@page { size: A4; margin: 15mm 15mm 14mm 22mm;
+  @top-left { content: string(sec); font: 600 7.2pt Inter; letter-spacing: .14em; text-transform: uppercase; color:#555; }
+  @top-right { content: "__MONTH__"; font: 600 7.2pt Inter; letter-spacing: .14em; color:#555; }
+  @bottom-right { content: counter(page); font: 800 10pt 'Inter Display'; } }
+@page :left { margin: 15mm 22mm 14mm 15mm; @bottom-right { content: none } @bottom-left { content: counter(page); font: 800 10pt 'Inter Display'; } }
+* { box-sizing: border-box }
+body { margin:0; font: 10.2pt/1.55 Lora, serif; color:#111; }
+
+/* chapter strip */
+.chapter { border-top: 4pt solid #000; padding-top: 2mm; margin-bottom: 5mm }
+.chapter .k { font: 800 7.4pt Inter; letter-spacing: .3em; text-transform: uppercase }
+.chapter h1 { font: 900 30pt/1.02 'Inter Display'; letter-spacing: -.02em; margin: 2mm 0 2.5mm }
+.chapter p { font: italic 11.5pt/1.5 Lora; margin: 0; width: 150mm }
+
+/* the big idea box */
+.bigidea { display:flex; border: 1.2pt solid #000; margin: 4mm 0 6mm }
+.bigidea .lab { width: 30mm; background: repeating-linear-gradient(45deg,#000 0 .5pt,#fff .5pt 3pt); padding: 3mm; font: 800 7.6pt/1.3 Inter; letter-spacing: .14em; text-transform: uppercase }
+.bigidea .lab span { background:#fff; padding: .5mm 1mm }
+.bigidea .rows { flex:1; display:flex }
+.bigidea .rows div { flex:1; padding: 2.5mm 3mm; border-left: .6pt solid #000 }
+.bigidea .rows b { display:block; font: 900 19pt/1 'Inter Display'; margin: 1mm 0 }
+.bigidea .rows span { font: 600 7.2pt/1.3 Inter; letter-spacing: .08em; text-transform: uppercase }
+
+/* story */
+.story { margin: 0 0 6mm; }
+.story .tag { font: 700 6.8pt Inter; letter-spacing: .22em; text-transform: uppercase; color:#444 }
+.story .tag .st { background:#000; color:#fff; font-family: 'DejaVu Sans'; padding: 0 1mm; margin-right: 2mm; letter-spacing: 0 }
+.story h2 { font: 900 17pt/1.12 'Inter Display'; margin: 1mm 0 .6mm; letter-spacing: -.01em }
+.story .official { font: 600 8pt Inter; color:#444; margin-bottom: 2.5mm }
+.story p.lede { margin: 0 0 3mm; }
+.story p.lede:first-line { font-weight: 600 }
+
+/* numbers strip */
+.nums { display:flex; border-top: 1.4pt solid #000; border-bottom: 1.4pt solid #000; margin: 0 0 3mm }
+.nums div { flex: 1; padding: 2mm 2.5mm 2.2mm; border-left: .5pt dotted #000 }
+.nums div:first-child { border-left: 0; padding-left: 0 }
+.nums b { display:block; font: 900 18pt/1 'Inter Display'; letter-spacing: -.01em }
+.nums b small { font-size: 10pt }
+.nums span { font: 600 7pt/1.3 Inter; letter-spacing: .06em; text-transform: uppercase; color:#333; display:block; margin-top: 1mm }
+
+.duo { display:flex; gap: 4mm; margin-top: 1mm }
+.duo > div { flex: 1 }
+.hook { border: 1pt dashed #000; padding: 2.2mm 3mm; font: 9pt/1.45 Inter }
+.trap { background:#eee; border-left: 3pt solid #000; padding: 2.2mm 3mm; font: 9pt/1.45 Inter }
+.hook b, .trap b { display:block; font: 800 6.8pt Inter; letter-spacing: .2em; text-transform: uppercase; margin-bottom: .6mm }
+.connect { font: 600 8.4pt Inter; margin-top: 2.5mm; padding-top: 1.6mm; border-top: .5pt solid #999 }
+.connect:before { content: "↳ CONNECTS TO  "; font-weight: 800; letter-spacing: .12em; font-size: 7pt }
+
+/* charts */
+.chartlab { font: 700 6.8pt Inter; letter-spacing:.16em; text-transform:uppercase; margin: 0 0 1.5mm }
+.split { display:flex; gap: 6mm } .split > * { flex: 1 }
+
+/* quick hits */
+.qh { border-top: 4pt solid #000; padding-top: 2mm; }
+.qh h3 { font: 800 7.6pt Inter; letter-spacing: .3em; text-transform: uppercase; margin: 0 0 2.5mm }
+.qh ul { columns: 2; column-gap: 7mm; margin: 0; padding: 0; list-style: none }
+.qh li { break-inside: avoid; font: 9pt/1.45 Lora; margin: 0 0 2.4mm; padding-left: 5mm; position: relative }
+.qh li:before { content: "☆"; font-family: 'DejaVu Sans'; position: absolute; left: 0 }
+.qh li b { font-family: Inter; font-weight: 800 }
+.pb { break-before: page }
+
+
+.chapter { break-before: page; }
+.chapter.first { break-before: auto }
+.story { break-inside: auto; margin-bottom: 7mm; padding-bottom: 4mm; border-bottom: .6pt solid #999 }
+.story h2, .story .official, .story .tag { break-after: avoid }
+.nums { break-inside: avoid } .lede { orphans: 3; widows: 3 }
+.duo { margin: 2mm 0 0 } .duo:empty { display: none }
+.chartlab { margin-top: 2mm }
+.tl { display:flex; margin: 3mm 0 2mm; font-family: Inter }
+.tl .step { flex:1; border-top: 2pt solid #000; position:relative; padding: 2.5mm 2mm 0 0 }
+.tl .step:before { content:""; position:absolute; top:-2.3mm; left:0; width: 3.4mm; height:3.4mm; border-radius:50%; background:#fff; border:1.5pt solid #000 }
+.tl .step.on:before { background:#000 }
+.tl .v { font: 900 12pt/1.1 'Inter Display' } .tl .d { font: 600 6.8pt/1.3 Inter; letter-spacing:.06em; text-transform:uppercase; color:#444; margin-top:.8mm }
+table.score { width:100%; border-collapse: collapse; font: 8.2pt Inter; margin: 1mm 0 2mm }
+table.score th { font: 700 6.6pt Inter; letter-spacing:.14em; text-transform:uppercase; text-align:left; border-bottom:1.2pt solid #000; padding: 1.2mm 1.5mm }
+table.score td { padding: 1.1mm 1.5mm; border-bottom: .5pt solid #999; vertical-align: top }
+table.score tr:nth-child(even) td { background:#eee }
+table.score td.big { font: 900 11pt 'Inter Display' }
+table.dash td { font: 800 9pt Inter } table.dash td:first-child { font-weight: 600 } table.dash small { font: 500 6.4pt Inter; color:#555; display:block }
+table.dash { margin-bottom: 6mm }
+.ff { margin-top: 3mm; padding: 2mm 3mm 1mm; background: #f2f2f2; font: 7.9pt/1.42 Inter; color:#222 }
+.ff > b { font: 800 6.6pt Inter; letter-spacing: .22em; text-transform: uppercase; display:block; margin-bottom: 1mm }
+.ff ul { margin: 0; padding-left: 3.5mm; columns: 2; column-gap: 6mm } .ff li { margin-bottom: .9mm; break-inside: avoid }
+.ff table.ff { font-size: 7.4pt; margin-top: 1.5mm }
+.qh { margin-top: 2mm; break-before: auto }
+.hits { columns: 2; column-gap: 7mm; column-rule: .5pt solid #bbb }
+.hit { break-inside: auto; margin-bottom: 3mm }
+.hit h4 { font: 800 9pt/1.25 'Inter Display'; margin: 0 0 1mm; break-after: avoid }
+.hit ul { columns: 1 !important; list-style: disc; margin: 0; padding-left: 3.5mm; font: 8.3pt/1.4 Lora } .hit li { margin-bottom: .8mm; break-inside: avoid }
+.opener { position: relative; height: 66mm; border-bottom: 3pt solid #000; margin-bottom: 6mm }
+.opener svg { position:absolute; right:-3mm; top:2mm }
+.opener .kk { font: 700 8pt Inter; letter-spacing:.3em; text-transform:uppercase; margin-top: 4mm } .opener .kk span { background:#000; color:#fff; padding: 1mm 2.5mm }
+.opener h1 { font: 900 34pt/0.98 'Inter Display'; margin: 5mm 0 3mm; width: 105mm; letter-spacing:-.02em }
+.opener p { font: italic 11pt/1.4 Lora; width: 100mm; color:#333 }
+.howto { border: 1.2pt solid #000; padding: 3mm 4mm; margin-bottom: 4mm; font: 9pt/1.45 Inter }
+.howto b { font-weight: 800 }
+
+@page :first { @top-left { content: none } @top-right { content: none } @bottom-right { content: none } }
+@page :nth(2) { @top-left { content: "Contents" } }
+h1.stitle { string-set: sec "Section " attr(data-n) " · " content() }
+a.pg { text-decoration: none; color: #000; font: 800 8pt Inter; white-space: nowrap }
+a.pg::after { content: "p. " target-counter(attr(href), page) }
+.pg.na { font: 600 6.8pt Inter; letter-spacing: .1em; text-transform: uppercase; color: #777 }
+
+/* cover */
+.cover { height: 262mm; display: flex; flex-direction: column; break-after: page }
+.mast { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4pt solid #000; padding-bottom: 2mm }
+.mt { font: 900 30pt/1 'Inter Display'; letter-spacing: -.02em }
+.mi { font: 600 8.5pt/1.4 Inter; text-align: right } .mi b { font-weight: 900; font-size: 11pt }
+.lead { margin-top: 10mm }
+.lk { font: 800 7.4pt Inter; letter-spacing: .26em; text-transform: uppercase }
+.cv-title { font: 900 40pt/0.98 'Inter Display'; letter-spacing: -.02em; margin: 3mm 0 4mm; width: 150mm }
+.cv-dek { font: italic 12.5pt/1.45 Lora; width: 140mm; margin: 0 } .cv-dek a.pg { font-style: normal }
+.cv-stats { display: flex; border-top: 2pt solid #000; border-bottom: 2pt solid #000; margin-top: 8mm }
+.cv-stats div { flex: 1; padding: 3mm 3mm; font: 600 7.2pt Inter; letter-spacing: .12em; text-transform: uppercase; border-left: .5pt dotted #000 }
+.cv-stats div:first-child { border-left: 0; padding-left: 0 }
+.cv-stats b { display: block; font: 900 22pt 'Inter Display'; letter-spacing: -.02em; text-transform: none }
+.also { margin-top: 10mm }
+.ah { font: 800 7.4pt Inter; letter-spacing: .26em; text-transform: uppercase; border-bottom: 1.2pt solid #000; padding-bottom: 1.2mm }
+.also .grid { display: flex; flex-wrap: wrap }
+.also .grid div { width: 50%; padding: 3.5mm 5mm 3.5mm 0; border-bottom: .5pt solid #999 }
+.also .grid div:nth-child(even) { padding-left: 5mm; border-left: .5pt solid #999 }
+.also span { display: block; font: 700 6.6pt Inter; letter-spacing: .18em; text-transform: uppercase; color: #444 }
+.also b { display: block; font: 800 13pt/1.2 'Inter Display'; margin: 1mm 0 1.2mm }
+.strip { margin-top: auto; border-top: 4pt solid #000; padding-top: 2.5mm; display: flex; flex-wrap: wrap }
+.strip span { width: 25%; font: 600 7.8pt/1.3 Inter; padding: 1.2mm 2mm 1.2mm 0 }
+.strip span b { font: 900 11pt 'Inter Display'; margin-right: 1.5mm }
+
+/* contents */
+.contents { break-after: page }
+.ckick { font: 800 7.4pt Inter; letter-spacing: .26em; text-transform: uppercase }
+.ct { font: 900 22pt/1.1 'Inter Display'; letter-spacing: -.01em; margin: 1.5mm 0 4mm; border-bottom: 4pt solid #000; padding-bottom: 3mm }
+table.toc { width: 100%; border-collapse: collapse; margin-bottom: 8mm }
+table.toc td { border-bottom: .5pt solid #999; padding: 2.6mm 2mm 2.6mm 0; vertical-align: top }
+table.toc td.n { font: 900 20pt/1 'Inter Display'; width: 15mm; color: #999 }
+table.toc tr.in td.n { color: #000 }
+table.toc b { font: 800 12pt 'Inter Display'; display: block }
+table.toc small { font: 8.4pt/1.4 Lora; color: #333; display: block; margin-top: .6mm }
+table.toc td.c { font: 600 7.6pt Inter; white-space: nowrap; width: 36mm; padding-top: 3.4mm }
+table.toc td.p { text-align: right; width: 28mm; white-space: nowrap; padding-top: 3.2mm }
+.mnum .ckick { border-bottom: 1.2pt solid #000; padding-bottom: 1.2mm; margin-bottom: 1mm }
+
+/* section opener: a band, not a full page */
+.section { break-before: page; display: flex; gap: 6mm; border-bottom: 4pt solid #000; padding-bottom: 4mm; margin-bottom: 6mm }
+.cover + .contents + .section { break-before: auto }
+.sn { width: 40mm }
+.sbody { flex: 1 }
+.skick { font: 800 7.2pt Inter; letter-spacing: .26em; text-transform: uppercase }
+h1.stitle { font: 900 26pt/1.02 'Inter Display'; margin: 1.5mm 0 2mm; letter-spacing: -.02em }
+.sbody p { font: italic 10.5pt/1.45 Lora; margin: 0 0 3mm }
+.stoc { list-style: none; margin: 0; padding: 0; font: 600 8.6pt Inter; columns: 2; column-gap: 6mm }
+.stoc li { display: flex; gap: 2mm; padding: .8mm 0; border-top: .5pt dotted #000; break-inside: avoid }
+.stoc li .k { font-weight: 900; width: 7mm } .stoc li a.pg { margin-left: auto }
+
+/* chapter: flows on, no page break */
+.chapter { break-before: auto; border-top: 2pt solid #000; padding-top: 1.6mm; margin: 2mm 0 4mm; break-after: avoid }
+.chapter h1 { font: 900 21pt/1.05 'Inter Display'; margin: 1mm 0 1.5mm }
+.chapter p { font: italic 10.4pt/1.45 Lora; width: auto }
+.keep { break-inside: avoid }
+.section + .story .chapter { border-top: 0; padding-top: 0 }
+
+/* story sizes */
+.story { border-bottom: .6pt solid #999; padding-bottom: 4mm; margin-bottom: 5mm }
+.story.short h2 { font-size: 14pt }
+.story.short .ff { margin-top: 2mm }
+.split { gap: 7mm; align-items: flex-start }
+
+/* fact file: open, readable, no grey box */
+.ff { background: none; border-top: 1pt solid #000; padding: 1.6mm 0 0; margin-top: 3.5mm; font: 8.5pt/1.45 Inter; color: #111 }
+.ff > b { font-size: 6.8pt }
+.ff ul { column-gap: 7mm; padding-left: 3.5mm }
+.ff table.ff { font-size: 8pt }
+table.score { break-inside: auto } table.score tr { break-inside: avoid }
+table.score thead { display: table-header-group }
+
+/* in brief: topic once, outline box with heavy edge */
+.brief { border-top: 4pt solid #000; padding-top: 2mm; margin-top: 2mm }
+.brief h3 { font: 900 16pt 'Inter Display'; margin: 0 0 3mm } .brief h3 span { font: 700 7.2pt Inter; letter-spacing: .22em; text-transform: uppercase; margin-left: 2mm; vertical-align: middle }
+.brief .cols { columns: 2; column-gap: 8mm; column-rule: .6pt solid #000; column-fill: balance }
+.gk { break-after: avoid; margin: 1mm 0 2.4mm; font: 800 8pt Inter; letter-spacing: .24em; text-transform: uppercase; border-bottom: 1.6pt solid #000; padding-bottom: 1mm }
+.bi { margin: 0 0 4mm }
+.bi h4 { display: flex; justify-content: space-between; gap: 3mm; align-items: baseline; break-after: avoid;
+  font: 800 9.8pt/1.18 'Inter Display'; margin: 0 0 1.5mm; border: .8pt solid #000; border-left: 3.4pt solid #000; padding: 1.1mm 2mm 1.3mm 2.4mm }
+.bi h4 .dt { flex: none; font: 700 7.2pt Inter; letter-spacing: .06em; text-transform: uppercase }
+.bi ul { margin: 0; padding-left: 3.5mm; font: 9.5pt/1.46 Lora } .bi li { margin-bottom: .8mm }
+.bi ul, .bi .eb { orphans: 2; widows: 2 }
+.ent { margin: 0 0 1.2mm; padding-left: 2.4mm; border-left: 1.2pt solid #000 }
+.ent .en { font: 800 9pt/1.3 Inter; break-after: avoid } .ent .par { font: 600 7.6pt Inter }
+.ent .eb { font: 9.5pt/1.45 Lora }
+.bi table.score { font-size: 8.5pt }
+/* readability pass: bigger small text */
+.ff { font-size: 9pt } .ff table.ff, table.score, .bi table.score { font-size: 8.5pt } .ff table.score td { font-size: 8.5pt } table.score th { font-size: 7.2pt !important }
+table.score th, table.dash small, .story .tag, .story .tag .st, .chartlab, .hook b, .trap b, .ff > b, .nums span, .tl .d,
+.cv-stats div, .also span, .lk, .ah, .ckick, .skick, .pg.na, .brief h3 span, .connect:before { font-size: 7.2pt }
+table.toc td.c { font-size: 7.8pt }
+/* audit fixes */
+.ff ul.one { columns: 1 }
+.story.last { border-bottom: 0; margin-bottom: 2mm; padding-bottom: 0 }
+.tl.many .v { font-size: 10pt } .tl.many .d { font-size: 7.2pt }
+/* pure black-and-white pass: no grey fills, no grey text */
+body, .story .tag, .story .official, .nums span, .tl .d, .also span, table.toc small, .pg.na, .brief h3 span, .mi, table.dash small { color: #000 }
+.trap { background: #fff; border: .8pt solid #000; border-left: 3.4pt solid #000 }
+table.score tr:nth-child(even) td { background: none }
+table.score td { border-bottom: .4pt solid #000 }
+.story { border-bottom: .8pt solid #000 }
+.also .grid div { border-bottom: .4pt solid #000 } .also .grid div:nth-child(even) { border-left: .4pt solid #000 }
+table.toc td { border-bottom: .4pt solid #000 }
+table.toc td.n { color: #000 }
+@page { @top-left { color: #000 } @top-right { color: #000 } }
+
+/* full edition */
+.keep { break-inside: avoid; break-after: avoid }
+.story p.lede { orphans: 3; widows: 2 }
+.story .nums { break-before: avoid }
+.ffp { font: 800 8.4pt Inter; margin: 1.6mm 0 .8mm } .bi .ffp { font-size: 8.8pt }
+.bi.tight, .brief.tight .bi { margin-bottom: 3mm } .brief.tight .bi li { margin-bottom: .4mm } .brief.tight .ent { margin-bottom: .8mm }
+table.score.keept { break-inside: avoid }
+.ffg { margin: .4mm 0 1mm } .ffr { display: table; width: 100%; table-layout: fixed; break-inside: avoid }
+.ffc { display: table-cell; width: 50%; padding: 0 3.5mm .9mm 3.5mm; position: relative; vertical-align: top }
+.ffc:first-child { padding-right: 7mm }
+.ffc:not(:empty)::before { content: "•"; position: absolute; left: 0 }
+.nums.long b { font-size: 14pt }
+.tl.vmany td .v { font-size: 8.6pt }
+.tl { display: table; width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: avoid }
+.tl td.step { display: table-cell; vertical-align: top; border-top: 2pt solid #000; position: relative; padding: 2.5mm 2mm 0 0 }
+.section.flow { break-before: auto; margin-top: 8mm; border-top: 4pt solid #000; padding-top: 4mm }
+.tl .step .d:empty { display: none }
+.sumwrap { columns: 1 } .sumt { margin-bottom: 4mm } .sumt table.score { font-size: 8.3pt }
+.revh { margin-top: 5mm; border-top: 4pt solid #000; padding-top: 2mm } .revh h3 { font: 900 16pt 'Inter Display'; margin: 0 0 3mm }
+.revh h3 span { font: 700 7.2pt Inter; letter-spacing: .22em; text-transform: uppercase; margin-left: 2mm; vertical-align: middle }
+#ans { break-before: auto }
+.qcols, .acols { columns: 2; column-gap: 8mm; column-rule: .6pt solid #000 }
+.q { margin: 0 0 2.2mm; font: 9.5pt/1.42 Lora; padding-left: 7mm; text-indent: -7mm; break-inside: avoid }
+.q b, .a b { display: inline-block; width: 7mm; text-indent: 0; font: 900 9pt 'Inter Display' }
+.a { margin: 0 0 1.6mm; font: 9pt/1.4 Lora; padding-left: 7mm; text-indent: -7mm; break-inside: avoid }
+.ak { font: 800 7.6pt Inter; letter-spacing: .22em; text-transform: uppercase; border-bottom: 1.2pt solid #000; margin: 2mm 0 1.6mm; padding-bottom: .8mm; break-after: avoid }
+.revh .gk { margin-top: 2mm }
+
+.cv-stats.long b { font-size: 17pt }
