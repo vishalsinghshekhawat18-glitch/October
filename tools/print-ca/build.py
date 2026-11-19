@@ -267,7 +267,7 @@ for el in rev.find_all(['h3', 'details']):
         a = el.select_one('.ans') or el
         ans.append(f'<p class="a"><b>{qn}</b>{unbold_numbers(a.decode_contents() if a is not el else a.get_text(" ", strip=True))}</p>')
 body.append(f'''<div class="section" id="sec9">{numsvg(9)}<div class="sbody"><div class="skick">Section 9 of 9</div><h1 class="stitle" data-n="9">{SHORT[9]}</h1>
-<p>The month's key numbers and dates, then {qn} questions to test yourself. Answers follow the questions.</p>
+<p>The {C.get('UNIT', 'month')}'s key numbers and dates, then {qn} questions to test yourself. Answers follow the questions.</p>
 <ul class="stoc"><li><span class="k">9.1</span>Key numbers and dates<a class="pg" href="#sumt"></a></li><li><span class="k">9.2</span>Test yourself<a class="pg" href="#rev"></a></li><li><span class="k">9.3</span>Answers<a class="pg" href="#ans"></a></li></ul></div></div>
 <div id="sumt" class="sumwrap">{"".join(tabs)}</div>
 <div class="revh" id="rev"><h3>Test yourself <span>{qn} questions</span></h3><div class="qcols">{"".join(qs)}</div></div>
@@ -296,7 +296,7 @@ check('leads', ' '.join(C['LEADS'].values()))
 tm = sum(v[0] for v in COUNTS.values() if v); tb = sum(v[1] for v in COUNTS.values() if v)
 dash = ''
 if C.get('DASH'):
-    check('dash', C['DASH']); dash = f'<div class="mnum"><div class="ckick">The month in numbers</div>{C["DASH"]}</div>'
+    check('dash', C['DASH']); dash = f'<div class="mnum"><div class="ckick">{html.escape(C.get('DASH_TITLE', 'The month in numbers'))}</div>{C["DASH"]}</div>'
 contents = f'''<div class="contents"><div class="ckick">Inside this issue</div><h1 class="ct">{9 - len(EMPTY)} sections · {tm} stories · {tb} briefs</h1>
 <table class="toc">{''.join(rows)}</table>{dash}</div>'''
 
