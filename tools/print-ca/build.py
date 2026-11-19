@@ -332,7 +332,7 @@ def analyse(doc):
         fill.append(bottom)
     return splits, pages_of, fill
 keep, tight, flow = set(), set(), set()
-for it in range(8):
+for it in range(16):
     doc = HTML(string=build(keep, tight, flow), base_url='.').render()
     splits, pages_of, fill = analyse(doc); H = doc.pages[0].height - 14 * 96 / 25.4; new = False
     for tid, segs in splits.items():

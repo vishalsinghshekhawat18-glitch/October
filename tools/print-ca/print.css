@@ -239,3 +239,6 @@ table.score.keept { break-inside: avoid }
 .revh .gk { margin-top: 2mm }
 
 .cv-stats.long b { font-size: 17pt }
+
+/* wide tables inside In brief span both columns */
+.bi:has(td:nth-child(5)) { column-span: all; }

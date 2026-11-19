@@ -62,6 +62,8 @@ The fact file is the card's own content, in the card's order. Numbers that the o
 |---|---|
 | `build.py` | The builder |
 | `print.css` | The style; the month in the running header is filled in by the builder |
+| `content/sep2026.py` | September 2026 (130 stories) |
+| `content/apr2026.py` | April 2026 (124 stories) |
 | `content/oct2026.py` | October 2026 (129 stories) |
 | `content/sep2026.py` | September 2026 (130 stories) |
 | `content/may2026.py` | May 2026 (62 stories); set `CA_MAY_NOTES` to a local copy of the notes until they are archived |
