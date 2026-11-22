@@ -67,6 +67,7 @@ The fact file is the card's own content, in the card's order. Numbers that the o
 | `content/oct2026.py` | October 2026 (129 stories) |
 | `content/sep2026.py` | September 2026 (130 stories) |
 | `content/may2026.py` | May 2026 (62 stories); set `CA_MAY_NOTES` to a local copy of the notes until they are archived |
+| `content/aug2026.py` | August 2026 (115 stories) |
 | `content/nov2026.py`, `nov2026_charts.json`, `nov2026_dash.html` | November 2026, 1–17 Nov (72 stories) |
 
 Output goes to `archive/current-affairs/print/` as `CA_<Month>_2026_print.pdf`. Each build overwrites the same file name.
